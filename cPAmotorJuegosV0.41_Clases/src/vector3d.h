@@ -2,17 +2,19 @@
 #define VECTOR3D_H_
 class Vector3D{
  private:
-  float x,y,z;
+  double x,y,z;
  public:
   Vector3D():Vector3D(0,0,0){}
-  Vector3D(float x,float y,float z):x(x),y(y),z(z){}
+  Vector3D(double x,double y,double z):x(x),y(y),z(z){}
   Vector3D operator+(Vector3D b);
   Vector3D operator-(Vector3D b);
-  inline float getX(){return x;}
-  inline float getY(){return y;}
-  inline float getZ(){return z;}
-  inline void setX(float px){x=px;}
-  inline void setY(float py){y=py;}
-  inline void setZ(float pz){z=pz;}
+  Vector3D operator*(double d);
+  Vector3D operator/(double d);
+  inline double getX(){return x;}
+  inline double getY(){return y;}
+  inline double getZ(){return z;}
+  inline void setX(double px){x=px;}
+  inline void setY(double py){y=py;}
+  inline void setZ(double pz){z=pz;}
 };
 #endif

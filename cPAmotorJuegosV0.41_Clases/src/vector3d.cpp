@@ -19,6 +19,20 @@ Vector3D Vector3D::operator-(Vector3D b){
  ret.z=z-b.z;
  return ret;
 }
+Vector3D Vector3D::operator*(double d){
+ Vector3D ret;
+ ret.x=x*d;
+ ret.y=y*d;
+ ret.z=z*d;
+ return ret;
+}
+Vector3D Vector3D::operator/(double d){
+ Vector3D ret;
+ ret.x=x/d;
+ ret.y=y/d;
+ ret.z=z/d;
+ return ret;
+}
 
 
 

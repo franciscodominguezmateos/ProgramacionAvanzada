@@ -26,6 +26,14 @@ public:
 	 for(Esfera e:esferas)
 	  e.render();
 	}
+	void update(double dt){
+		for(unsigned int i=0;i<cubos.size();i++){
+			cubos[i].update(dt);
+		}
+		for(unsigned int i=0;i<esferas.size();i++){
+			esferas[i].update(dt);
+		}
+	}
 	vector<Cubo> getCubos(){return cubos;}
 	vector<Esfera> getEsferas(){return esferas;}
 	void add(Cubo c){cubos.push_back(c);}
