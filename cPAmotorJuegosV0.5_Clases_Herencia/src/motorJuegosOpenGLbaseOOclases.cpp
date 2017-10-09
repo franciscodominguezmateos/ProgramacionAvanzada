@@ -5,8 +5,9 @@
 #include "cubo.h"
 #include "escena.h"
 
-GLfloat t=0.0f;
-GLfloat pitch=0.0f; 
+double t=0.0;
+double dt=1.0/30;
+GLfloat pitch=0.0f;
 
 int mx=-1,my=-1;        // Previous mouse coordinates
 int rotangles[2] = {0}; // Panning angles
@@ -64,7 +65,8 @@ void displayMe(void){
 }
 
 void idle(){
- //update();
+ t+=dt;
+ e.update(dt);
  displayMe();
 }
 void keyPressed(unsigned char key,int x,int y){
@@ -126,9 +128,11 @@ int main(int argc, char** argv){
  Esfera f;
  Cilindro l;
  Vector3D v;
- c.setPos(Vector3D(0.6,0,0));
- c.setVel(Vector3D(-0.001,0,0));
+ c.setPos(Vector3D(0.6,1,0));
+ c.setVel(Vector3D(-0.01,0,0.07));
  c.setCol(Vector3D(1,0,0));
+ c.setF(Vector3D(0,-0.98,0));
+ c.setM(1);
  c.setS(0.4);
  e.add(c);
  v.setX(-0.4);
@@ -147,7 +151,7 @@ int main(int argc, char** argv){
  e.add(f);
  l.setPos(Vector3D(0,0,-1));
  e.add(l);
- 
+
  glutInit(&argc,argv);
  //glutInitDisplayMode(GLUT_SINGLE);
  glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
