@@ -16,16 +16,16 @@ public:
 	Camara();
 	Camara(double x,double y,double z):pos(Vector3D(x,y,z)){}
 	virtual ~Camara();
-	const Vector3D& getPos() const {
+	Vector3D getPos() const {
 		return pos;
 	}
-	void setPos(const Vector3D& pos) {
+	void setPos(Vector3D pos) {
 		this->pos = pos;
 	}
-	const Vector3D& getRot() const {
+	Vector3D getRot() const {
 		return rot;
 	}
-	void setRot(const Vector3D& rot) {
+	void setRot(Vector3D rot) {
 		this->rot = rot;
 	}
 };

@@ -3,24 +3,27 @@
 #include "vector3d.h"
 #include "esfera.h"
 #include "cubo.h"
+#include "pared.h"
 #include "escena.h"
+#include "camara.h"
 
 double t=0.0;
 double dt=1.0/30;
 GLfloat pitch=0.0f;
 
 int mx=-1,my=-1;        // Previous mouse coordinates
-int rotangles[2] = {0}; // Panning angles
+//int rotangles[2] = {0}; // Panning angles
 
 Escena e;
+Camara cam;
 
 void displayMe(void){
  glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
  glLoadIdentity();
- glTranslatef(0.0f,0.0f,-3.0f);
- glRotatef(pitch,1.0,0.0,0.0);
- glRotatef(rotangles[0], 1,0,0);
- glRotatef(rotangles[1], 0,1,0);
+ glTranslatef(-cam.getPos().getX(),-cam.getPos().getY(),-cam.getPos().getZ());
+ glRotatef(cam.getRot().getX(), 1,0,0);
+ glRotatef(cam.getRot().getY(), 0,1,0);
+ glRotatef(cam.getRot().getZ(), 1,0,1);
  //glRotatef(t/2,0.0,1.0,0.0);
  GLfloat lightpos[]={5.0,15.0,5.0,0.0};
  glLightfv(GL_LIGHT0,GL_POSITION,lightpos);
@@ -54,10 +57,10 @@ void displayMe(void){
  glEnd();
  glColor3f(1.0f,1.0f,1.0f);
  glBegin(GL_POLYGON);
-   glVertex3f(0.0,0.0,0.0);
-   glVertex3f(0.5,0.0,0.0);
-   glVertex3f(0.5,0.0,0.5);
-   glVertex3f(0.0,0.0,0.5);
+   glVertex3f(-50.0,0.0,-50.0);
+   glVertex3f( 50,0.0  ,-50.0);
+   glVertex3f( 50  ,0.0, 50.0);
+   glVertex3f(-50.0,0.0, 50.0);
  glEnd();
  glFlush();
  glutSwapBuffers();
@@ -81,7 +84,11 @@ void keyPressed(unsigned char key,int x,int y){
   break;
   case 't':
   case 'T':
-  t++;
+  cam.setPos(cam.getPos()+Vector3D(0,0,0.1));
+  break;
+  case 'g':
+  case 'G':
+  cam.setPos(cam.getPos()-Vector3D(0,0,0.1));
   break;
   case 27:
    exit(0);
@@ -91,8 +98,9 @@ void keyPressed(unsigned char key,int x,int y){
 void mouseMoved(int x, int y)
 {
     if (mx>=0 && my>=0) {
-        rotangles[0] += y-my;
-        rotangles[1] += x-mx;
+    	Vector3D r;
+    	r=cam.getRot()+Vector3D(y-my,x-mx,0);
+    	cam.setRot(r);
     }
     mx = x;
     my = y;
@@ -120,12 +128,14 @@ void reshape(int width,int height){
  glViewport(0,0,width,height);
  glMatrixMode(GL_PROJECTION);
  glLoadIdentity();
- gluPerspective(90.0f,(GLfloat)width/(GLfloat)height,1.0f,200.0f);
+ gluPerspective(90.0f,(GLfloat)width/(GLfloat)height,0.1f,200.0f);
  glMatrixMode(GL_MODELVIEW);
 }
 int main(int argc, char** argv){
+	 cam.setPos(Vector3D(0,0,10));
 	 Cubo *c;
 	 Esfera *f;
+	 Pared *p;
 	 Vector3D v;
 	 c=new Cubo();
 	 f=new Esfera();
@@ -143,6 +153,12 @@ int main(int argc, char** argv){
 	 f->setM(1);
 	 f->setR(0.4);
 	 e.add(f);
+	 p=new Pared(10);
+	 p->setPos(Vector3D(0,0,-2));
+	 e.add(p);
+	 p=new Pared(10);
+	 p->setPos(Vector3D(0,0, 2));
+	 e.add(p);
 
 	 f->setR(0.1);
 	 /*
