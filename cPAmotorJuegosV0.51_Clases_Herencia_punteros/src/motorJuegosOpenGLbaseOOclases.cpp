@@ -124,31 +124,34 @@ void reshape(int width,int height){
  glMatrixMode(GL_MODELVIEW);
 }
 int main(int argc, char** argv){
-	 Cubo c;
-	 Esfera f;
+	 Cubo *c;
+	 Esfera *f;
 	 Vector3D v;
-	 c.setPos(Vector3D(0.6,1,0));
-	 c.setVel(Vector3D(0.7,0,-0.71));
-	 c.setCol(Vector3D(1,0,0));
-	 c.setF(Vector3D(0,-0.98,0));
-	 c.setM(1);
-	 c.setS(0.4);
+	 c=new Cubo();
+	 f=new Esfera();
+	 c->setPos(Vector3D(0.6,1,0));
+	 c->setVel(Vector3D(0.7,0,-0.71));
+	 c->setCol(Vector3D(1,0,0));
+	 c->setF(Vector3D(0,-0.98,0));
+	 c->setM(1);
+	 c->setS(0.4);
 	 e.add(c);
-	 f.setPos(Vector3D(-0.4,1.2,0));
-	 f.setVel(Vector3D(-0.3,0,0.7));
-	 f.setCol(Vector3D(1,0,1));
-	 f.setF(Vector3D(0,-0.98,0));
-	 f.setM(1);
-	 f.setR(0.4);
+	 f->setPos(Vector3D(-0.4,1.2,0));
+	 f->setVel(Vector3D(-0.3,0,0.7));
+	 f->setCol(Vector3D(1,0,1));
+	 f->setF(Vector3D(0,-0.98,0));
+	 f->setM(1);
+	 f->setR(0.4);
 	 e.add(f);
 
-	 f.setR(0.1);
+	 f->setR(0.1);
+	 /*
 	 for(double i=-3;i<4;i++){
 		 for(double j=0-3;j<4;j++){
 			 f.setPos(Vector3D(i/2,0,j/2));
 			 e.add(f);
 		 }
-	 }
+	 }*/
 
 
  glutInit(&argc,argv);
