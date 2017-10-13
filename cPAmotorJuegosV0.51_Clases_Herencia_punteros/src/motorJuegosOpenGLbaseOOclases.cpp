@@ -15,7 +15,7 @@ int mx=-1,my=-1;        // Previous mouse coordinates
 //int rotangles[2] = {0}; // Panning angles
 
 Escena e;
-Camara cam;
+CamaraFPS cam;
 
 void displayMe(void){
  glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
@@ -81,11 +81,11 @@ void keyPressed(unsigned char key,int x,int y){
   break;
   case 't':
   case 'T':
-  cam.setPos(cam.getPos()-Vector3D(0,0,0.1));
+	cam.update(dt*2);
   break;
   case 'g':
   case 'G':
-  cam.setPos(cam.getPos()+Vector3D(0,0,0.1));
+     cam.update(-dt*2);
   break;
   case 27:
    exit(0);
@@ -156,16 +156,43 @@ int main(int argc, char** argv){
 	 p=new Pared(10);
 	 p->setPos(Vector3D(0,0, 2));
 	 e.add(p);
+	 p=new Pared(100);
+	 p->setPos(Vector3D(0,0,-50));
+	 e.add(p);
+	 p=new Pared(100);
+	 p->setPos(Vector3D(0,0, 50));
+	 e.add(p);
+	 p=new Pared(100);
+	 p->setPos(Vector3D(-50,0,0));
+	 p->setVertical(true);
+	 e.add(p);
+	 p=new Pared(100);
+	 p->setPos(Vector3D(50,0,0));
+	 p->setVertical(true);
+	 e.add(p);
 
-	 f->setR(0.1);
-	 /*
 	 for(double i=-3;i<4;i++){
 		 for(double j=0-3;j<4;j++){
-			 f.setPos(Vector3D(i/2,0,j/2));
+			 f=new Esfera();
+			 f->setPos(Vector3D(i/2,i*j/4,j/2));
+			 f->setVel(Vector3D(i*j/5,0,0.7));
+			 f->setCol(Vector3D(1,0,1));
+			 f->setF(Vector3D(0,-0.98,0));
+			 f->setM(1);
+			 f->setR(0.1);
 			 e.add(f);
 		 }
-	 }*/
-
+	 }
+	 for(double i=-30;i<31;i+=4){
+		 for(double j=-30;j<31;j+=4){
+			 f=new Esfera();
+			 f->setPos(Vector3D(i,0,j));
+			 f->setCol(Vector3D(1,1,0));
+			 f->setM(1);
+			 f->setR(0.5);
+			 e.add(f);
+		 }
+	 }
 
  glutInit(&argc,argv);
  //glutInitDisplayMode(GLUT_SINGLE);

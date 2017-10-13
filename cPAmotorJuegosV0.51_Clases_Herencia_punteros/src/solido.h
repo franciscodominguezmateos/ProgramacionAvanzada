@@ -36,10 +36,10 @@ public:
 	 void update(double dt){
 		 vel=vel+f/m*dt;
 		 pos=pos+vel*dt;
-		 if(abs(pos.getX())>2.0){
+		 if(abs(pos.getX())>25.0){
 			 vel.setX(vel.getX()*-1);
 		 }
-		 if(abs(pos.getZ())>2){
+		 if(abs(pos.getZ())>25){
 			 vel.setZ(vel.getZ()*-1);
 		 }
 		 if(pos.getY()<0){
