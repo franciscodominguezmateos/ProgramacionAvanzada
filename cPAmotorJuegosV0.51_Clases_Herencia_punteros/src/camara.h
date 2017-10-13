@@ -7,6 +7,7 @@
 
 #ifndef CAMARA_H_
 #define CAMARA_H_
+#include <GL/glut.h>
 #include "vector3d.h"
 
 class Camara {
@@ -16,17 +17,15 @@ public:
 	Camara();
 	Camara(double x,double y,double z):pos(Vector3D(x,y,z)){}
 	virtual ~Camara();
-	Vector3D getPos() const {
-		return pos;
-	}
-	void setPos(Vector3D pos) {
-		this->pos = pos;
-	}
-	Vector3D getRot() const {
-		return rot;
-	}
-	void setRot(Vector3D rot) {
-		this->rot = rot;
+	inline Vector3D getPos() const {return pos;	}
+	inline void setPos(Vector3D pos) {this->pos = pos;}
+	inline Vector3D getRot() const {return rot;	}
+	inline void setRot(Vector3D rot) {this->rot = rot;}
+	void render(){
+		 glTranslatef(-getPos().getX(),-getPos().getY(),-getPos().getZ());
+		 glRotatef(getRot().getX(), 1,0,0);
+		 glRotatef(getRot().getY(), 0,1,0);
+		 glRotatef(getRot().getZ(), 1,0,1);
 	}
 };
 

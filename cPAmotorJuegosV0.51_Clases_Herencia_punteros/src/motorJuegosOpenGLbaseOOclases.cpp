@@ -20,10 +20,7 @@ Camara cam;
 void displayMe(void){
  glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
  glLoadIdentity();
- glTranslatef(-cam.getPos().getX(),-cam.getPos().getY(),-cam.getPos().getZ());
- glRotatef(cam.getRot().getX(), 1,0,0);
- glRotatef(cam.getRot().getY(), 0,1,0);
- glRotatef(cam.getRot().getZ(), 1,0,1);
+ cam.render();
  //glRotatef(t/2,0.0,1.0,0.0);
  GLfloat lightpos[]={5.0,15.0,5.0,0.0};
  glLightfv(GL_LIGHT0,GL_POSITION,lightpos);
@@ -76,19 +73,19 @@ void keyPressed(unsigned char key,int x,int y){
  switch(key){
   case 'p':
   case 'P':
-  pitch++;
+    cam.setRot(cam.getRot()+Vector3D(0,1,0));
   break;
   case 'o':
   case 'O':
-  pitch--;
+	cam.setRot(cam.getRot()-Vector3D(0,1,0));
   break;
   case 't':
   case 'T':
-  cam.setPos(cam.getPos()+Vector3D(0,0,0.1));
+  cam.setPos(cam.getPos()-Vector3D(0,0,0.1));
   break;
   case 'g':
   case 'G':
-  cam.setPos(cam.getPos()-Vector3D(0,0,0.1));
+  cam.setPos(cam.getPos()+Vector3D(0,0,0.1));
   break;
   case 27:
    exit(0);
@@ -128,11 +125,11 @@ void reshape(int width,int height){
  glViewport(0,0,width,height);
  glMatrixMode(GL_PROJECTION);
  glLoadIdentity();
- gluPerspective(90.0f,(GLfloat)width/(GLfloat)height,0.1f,200.0f);
+ gluPerspective(60.0f,(GLfloat)width/(GLfloat)height,0.1f,200.0f);
  glMatrixMode(GL_MODELVIEW);
 }
 int main(int argc, char** argv){
-	 cam.setPos(Vector3D(0,0,10));
+	 cam.setPos(Vector3D(0,1.65,10));
 	 Cubo *c;
 	 Esfera *f;
 	 Pared *p;

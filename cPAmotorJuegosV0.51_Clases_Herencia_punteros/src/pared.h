@@ -21,11 +21,11 @@ public:
 	void render(){
 		glPushMatrix();
         glTranslatef(this->getPos().getX(),this->getPos().getY(),this->getPos().getZ());
-        glTranslatef(0,dim.getY()/4.0,0);
+        glTranslatef(0,dim.getY()/2.0,0);
         glRotatef(vertical?90:0,0,1,0);
  		glColor3f(this->getCol().getX(),this->getCol().getY(),this->getCol().getZ());
 		glScalef(dim.getX(),dim.getY(),dim.getZ());
-		glutSolidCube(0.5);
+		glutSolidCube(1);
 		glPopMatrix();
 	}
 };
