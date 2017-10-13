@@ -1,0 +1,39 @@
+/*
+ * vector3d.cpp
+ *
+ *  Created on: 13 Oct 2016
+ *      Author: Francisco Dominguez
+ */
+#include "vector3d.h"
+Vector3D Vector3D::operator+(Vector3D b){
+ Vector3D ret;
+ ret.x=x+b.x;
+ ret.y=y+b.y;
+ ret.z=z+b.z;
+ return ret;
+}
+Vector3D Vector3D::operator-(Vector3D b){
+ Vector3D ret;
+ ret.x=x-b.x;
+ ret.y=y-b.y;
+ ret.z=z-b.z;
+ return ret;
+}
+Vector3D Vector3D::operator*(double d){
+ Vector3D ret;
+ ret.x=x*d;
+ ret.y=y*d;
+ ret.z=z*d;
+ return ret;
+}
+Vector3D Vector3D::operator/(double d){
+ Vector3D ret;
+ ret.x=x/d;
+ ret.y=y/d;
+ ret.z=z/d;
+ return ret;
+}
+
+
+
+
