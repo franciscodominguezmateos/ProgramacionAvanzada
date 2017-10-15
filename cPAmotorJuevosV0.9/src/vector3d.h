@@ -13,7 +13,8 @@ class Vector3D{
   Vector3D(const Vector3D &v)      :x(v.x),y(v.y),z(v.z){}
   Vector3D operator+(Vector3D b);
   Vector3D operator-(Vector3D b);
-  Vector3D operator*(float f);
+  Vector3D operator*(double f);
+  Vector3D operator/(double f);
   inline float operator * (const Vector3D &v2){
 	  Vector3D &v1=*this;
       return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
