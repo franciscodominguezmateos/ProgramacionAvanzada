@@ -26,7 +26,7 @@ public:
 	void setR1(float r1) {this->r1 = r1;}
 	float getR2() const {return r2;}
 	void setR2(float r2) {this->r2 = r2;}
-	 friend std::ostream &operator << (std::ostream &os, const Rosco &r);
+	friend std::ostream &operator << (std::ostream &os, const Rosco &r);
 };
 	inline std::ostream &operator<<(std::ostream &os, const Rosco &r){
 		os << static_cast<const Solido&>( r );

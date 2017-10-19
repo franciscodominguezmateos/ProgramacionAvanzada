@@ -13,6 +13,7 @@
 #include "pared.h"
 #include "camara.h"
 #include "textura.h"
+#include "rectangulo.h"
 
 using namespace cv;
 
@@ -23,10 +24,10 @@ GLfloat pitch=0.0f;
 int mx=-1,my=-1;        // Previous mouse coordinates
 
 Escena e;
-Camara cam;
+CamaraFPS cam;
 Cubo *pc;
 Modelo *m;
-Textura tex;
+Textura tex,ladrillos,paredTex;
 VideoCapture cap(0);
 
 void displayMe(void){
@@ -36,13 +37,14 @@ void displayMe(void){
  GLfloat lightpos[]={50.0,50.0,15.0,0.0};
  glLightfv(GL_LIGHT0,GL_POSITION,lightpos);
  e.render();
+ tex.activar();
  glPushMatrix();
-  tex.activar();
-  glTranslatef(0,0,1);
+  glTranslatef(0,1,-2);
   glColor3f(1,1,1);
   glutSolidTeapot(1);
- tex.desactivar();
  glPopMatrix();
+ tex.desactivar();
+ /*11
  glRotatef(t*200,0,1,0);
  tex.activar();
  float w=640/128,h=480/128;
@@ -58,6 +60,7 @@ void displayMe(void){
 	glVertex2f(-w/2, -h/2);
  glEnd();
  tex.desactivar();
+ */
  glutSwapBuffers();
 }
 
@@ -66,8 +69,10 @@ void idle(){
  e.update(dt);
  Mat i;
  cap>>i;
- tex.setImage(i);
- tex.update();
+ tex.setImageFlipped(i);
+ //imshow("ladri",ladrillos.getImage());
+ //waitKey(1);
+ //tex.update();
  displayMe();
 }
 void keyPressed(unsigned char key,int x,int y){
@@ -100,11 +105,11 @@ void keyPressed(unsigned char key,int x,int y){
 break;
  case 't':
  case 'T':
-	 //cam.update(dt*2);
+	 cam.update(dt*2);
  break;
  case 'g':
  case 'G':
-    //cam.update(-dt*2);
+    cam.update(-dt*2);
  break;
   case 27:
    exit(0);
@@ -140,12 +145,14 @@ void init(void){
  glEnable(GL_COLOR_MATERIAL);
  glClearColor(0.0,0.0,0.0,0.0);
  tex.init();
+ ladrillos.init();
+ paredTex.init();
 }
 void reshape(int width,int height){
  glViewport(0,0,width,height);
  glMatrixMode(GL_PROJECTION);
  glLoadIdentity();
- gluPerspective(35.0f,(GLfloat)width/(GLfloat)height,1.0f,200.0f);
+ gluPerspective(45.0f,(GLfloat)width/(GLfloat)height,1.0f,200.0f);
  glMatrixMode(GL_MODELVIEW);
 }
 float getRand(float max,float min=0){
@@ -159,7 +166,7 @@ int main(int argc, char** argv){
  m=new Modelo("/home/francisco/git/ProgramacionAvanzada/cPAmotorJuevosV0.9/minion01.obj");
  m->setPos(Vector3D(0,-0.5,1));
  //m->setVel(Vector3D(0,0,-0.1));
- e.add(m);
+ //e.add(m);
 
  Pared *p;
  p=new Pared(10);
@@ -189,7 +196,7 @@ int main(int argc, char** argv){
  pc->setVel(Vector3D(-0.01,0,0));
  pc->setCol(Vector3D(1,0,0));
  pc->setS(0.4);
- e.add(pc);
+ //e.add(pc);
  cout <<"Cubo="<<*pc<<endl;
 
  Esfera *pf;
@@ -198,17 +205,17 @@ int main(int argc, char** argv){
  pf->setVel(Vector3D(-0.03,0,0.08));
  pf->setCol(Vector3D(1,0,1));
  pf->setR(0.4);
- e.add(pf);
+ //e.add(pf);
 
  Cilindro *pl;
  pl=new Cilindro();
  pl->setPos(Vector3D(0,0,-1));
- e.add(pl);
+ //e.add(pl);
 
  Rosco *pr;
  pr=new Rosco();
  pr->setPos(Vector3D(0,0,0.8));
- e.add(pr);
+ //e.add(pr);
  //cout <<"Rosco="<<*pr<<endl;
 
  cout << e <<endl;
@@ -254,6 +261,32 @@ int main(int argc, char** argv){
  glutInitWindowPosition(300,300);
  glutCreateWindow("Hello wold :D");
  init();
+
+ Vector3D p0(-50,0,-50);
+ Vector3D p1( 50,0,-50);
+ Vector3D p2( 50,0, 50);
+ Vector3D p3(-50,0, 50);
+ Rectangulo *ret;
+ ret=new Rectangulo(p0,p1,p2,p3);
+ ret->setCol(Vector3D(1,1,1));
+ ladrillos.setImage(imread("/home/francisco/Downloads/brick_pavement_0077_01_preview.jpg"));
+ ret->getTex()=ladrillos;
+ ret->setNU(50);
+ ret->setNV(50);
+ e.add(ret);
+ p0=Vector3D(  0, 0,-10);
+ p1=Vector3D( 10, 0,-10);
+ p2=Vector3D( 10,10,-10);
+ p3=Vector3D(  0,10,-10);
+ Rectangulo *pared;
+ pared=new Rectangulo(p0,p1,p2,p3);
+ ret->setCol(Vector3D(1,1,1));
+ paredTex.setImage(imread("/home/francisco/Downloads/brown_brick_texture_map.jpg"));
+ pared->getTex()=paredTex;
+ pared->setNU(5);
+ pared->setNV(5);
+ e.add(pared);
+
  glutDisplayFunc(displayMe);
  glutIdleFunc(idle);
  glutReshapeFunc(reshape);

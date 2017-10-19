@@ -15,10 +15,10 @@ Rosco::~Rosco() {
 	// TODO Auto-generated destructor stub
 }
 void Rosco::render(){
-glPushMatrix();
-  glColor3f(this->getCol().getX(),this->getCol().getY(),this->getCol().getZ());
-  glTranslatef(this->getPos().getX(),this->getPos().getY(),this->getPos().getZ());
-  glutSolidTorus(r1,r2,16,16);
+  glPushMatrix();
+    glColor3f(this->getCol().getX(),this->getCol().getY(),this->getCol().getZ());
+    glTranslatef(this->getPos().getX(),this->getPos().getY(),this->getPos().getZ());
+    glutSolidTorus(r1,r2,16,16);
   glPopMatrix();
 }
 
