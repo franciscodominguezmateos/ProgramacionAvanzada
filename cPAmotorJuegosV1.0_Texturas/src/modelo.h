@@ -19,6 +19,8 @@
 
 class Modelo: public Solido {
 	vector<Vector3D *> vertices;
+	vector<Vector3D *> textures;
+	vector<Vector3D *> normals;
 	vector<Triangulo *> triangulos;
 	float maxX,maxY,maxZ;
 	float minX,minY,minZ;
@@ -59,6 +61,7 @@ public:
 	void cargar(string &nombreFichero);
 
  	Vector3D  *parseVector3D(string &linea);
+ 	Vector3D  *parseVector2D(string &linea);
 
 	Triangulo *parseTriangulo(string &linea);
 	void calculaExtremos(Vector3D *v);

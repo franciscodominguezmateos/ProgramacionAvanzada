@@ -29,6 +29,15 @@ Vector3D *Modelo::parseVector3D(string &linea){
 	ss>>z;
 	return new Vector3D(x,y,z);
 }
+Vector3D *Modelo::parseVector2D(string &linea){
+	float x,y,z;
+
+	istringstream ss(linea);
+
+	ss>>x;
+	ss>>y;
+	return new Vector3D(x,y,0);
+}
 
 Triangulo *Modelo::parseTriangulo(string &linea){
 	istringstream ss(linea);
@@ -68,14 +77,35 @@ void Modelo::cargar(string &nombreFichero){
 		//while (! ficheroModeloObj.eof() ){
 		while (getline (ficheroModeloObj,linea)){
 			//getline (ficheroModeloObj,linea);
-			if (linea.c_str()[0] == 'v')	{
+			if (linea[0] == 'v')	{
 				linea[0] = ' ';
+				if(linea[1]=='t'){
+					//Texture detected
+					linea[1] = ' ';
+					Vector3D *v=parseVector2D(linea);
+					textures.push_back(v);
+				}
+				else if(linea[1]=='n'){
+					//Normal detected
+					linea[1] = ' ';
+					Vector3D *v=parseVector3D(linea);
+					normals.push_back(v);
+				}
+				else if(linea[1]==' '){
+					//Vertex detected
+					Vector3D *v=parseVector3D(linea);
+					calculaExtremos(v);
+					vertices.push_back(v);
+				}
+				else{
+					cout<<"vertice no detectado"<<endl;
+				}
 				Vector3D *v=parseVector3D(linea);
 				calculaExtremos(v);
 				vertices.push_back(v);
 			}
 			Vector3D centro(minX+getAncho()/2.0,minY+getAlto()/2.0,minZ+getProfundo()/2);
-			if (linea.c_str()[0] == 'f'){
+			if (linea[0] == 'f'){
 				linea[0] = ' ';
 				Triangulo *t=parseTriangulo(linea);
 				//triangulos.push_back(t);

@@ -17,6 +17,7 @@ void Triangulo::render(){
 	float vnx=vn.getX();
 	float vny=vn.getY();
 	float vnz=vn.getZ();
+	textura.activar();
 	glBegin(GL_TRIANGLES);
 	    glNormal3f(vnx,vny,vnz);
 	    glVertex3f(p0.getX(),p0.getY(),p0.getZ());
@@ -25,5 +26,6 @@ void Triangulo::render(){
 	    glNormal3f(vnx,vny,vnz);
 	    glVertex3f(p2.getX(),p2.getY(),p2.getZ());
     glEnd();
+    textura.desactivar();
 }
 

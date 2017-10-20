@@ -18,7 +18,7 @@
 using namespace cv;
 
 double t=0.0;
-double dt=1.0/30;
+double dt=1.0/10;
 GLfloat pitch=0.0f; 
 
 int mx=-1,my=-1;        // Previous mouse coordinates
@@ -27,7 +27,7 @@ Escena e;
 CamaraFPS cam;
 Cubo *pc;
 Modelo *m;
-Textura tex,ladrillos,paredTex;
+Textura tex,ladrillos,paredTex,texTv;
 VideoCapture cap(0);
 
 void displayMe(void){
@@ -40,6 +40,7 @@ void displayMe(void){
  tex.activar();
  glPushMatrix();
   glTranslatef(0,1,-2);
+  glRotatef(t*10.0,0,1,0);
   glColor3f(1,1,1);
   glutSolidTeapot(1);
  glPopMatrix();
@@ -70,6 +71,7 @@ void idle(){
  Mat i;
  cap>>i;
  tex.setImageFlipped(i);
+ texTv.setImage(i);
  //imshow("ladri",ladrillos.getImage());
  //waitKey(1);
  //tex.update();
@@ -147,6 +149,7 @@ void init(void){
  tex.init();
  ladrillos.init();
  paredTex.init();
+ texTv.init();
 }
 void reshape(int width,int height){
  glViewport(0,0,width,height);
@@ -241,12 +244,12 @@ int main(int argc, char** argv){
 	 pa->setPos(Vector3D(getRand(40,-40),0,getRand(40,-40)));
 	 e.add(pa);
  }
- for(int i=1;i<10;i++){
+ for(int i=1;i<100;i++){
 	 pf=new Esfera();
 	 pf->setPos(Vector3D(getRand(50,-50),getRand(2),-getRand(50,-50)));
-	 pf->setVel(Vector3D(getRand(1,-1),0,getRand(1,-1)));
+	 pf->setVel(Vector3D(getRand(3,-3),0,getRand(3,-3)));
 	 pf->setCol(Vector3D(getRand(1),getRand(1),getRand(1)));
-	 pf->setF(Vector3D(0,-0.95,0));
+	 pf->setF(Vector3D(0,-9.8,0));
 	 pf->setR(getRand(0.25)+0.25);
 	 e.add(pf);
  }
@@ -275,8 +278,8 @@ int main(int argc, char** argv){
  ret->setNV(50);
  e.add(ret);
  p0=Vector3D(  0, 0,-10);
- p1=Vector3D( 10, 0,-10);
- p2=Vector3D( 10,10,-10);
+ p1=Vector3D( 20, 0,-10);
+ p2=Vector3D( 20,10,-10);
  p3=Vector3D(  0,10,-10);
  Rectangulo *pared;
  pared=new Rectangulo(p0,p1,p2,p3);
@@ -286,6 +289,19 @@ int main(int argc, char** argv){
  pared->setNU(5);
  pared->setNV(5);
  e.add(pared);
+
+ p0=Vector3D(  9, 2,-9.9);
+ p1=Vector3D( 11, 2,-9.9);
+ p2=Vector3D( 11, 3,-9.9);
+ p3=Vector3D(  9, 3,-9.9);
+ Rectangulo *tv;
+ tv=new Rectangulo(p0,p1,p2,p3);
+ tv->setCol(Vector3D(1,1,1));
+ Mat i;
+ cap>>i;
+ texTv.setImage(i);
+ tv->getTex()=texTv;
+ e.add(tv);
 
  glutDisplayFunc(displayMe);
  glutIdleFunc(idle);
