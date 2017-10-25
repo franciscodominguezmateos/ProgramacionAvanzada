@@ -59,7 +59,7 @@ void displayMe(void){
    glVertex3f( 50  ,0.0, 50.0);
    glVertex3f(-50.0,0.0, 50.0);
  glEnd();
- glFlush();
+ //glFlush();
  glutSwapBuffers();
  //t++;
 }
@@ -201,6 +201,7 @@ int main(int argc, char** argv){
  glutInitWindowPosition(100,100);
  glutCreateWindow("Hello wold :D");
  init();
+ //glutFullScreen();           // making the window full screen
  glutDisplayFunc(displayMe);
  glutIdleFunc(idle);
  glutReshapeFunc(reshape);
