@@ -84,7 +84,7 @@ public:
 				getParticula(5)->getPos());
 		r3.getTex()=tex;
 		r3.render();
-		SolidoElastico::render();
+		//SolidoElastico::render();
 	}
 };
 

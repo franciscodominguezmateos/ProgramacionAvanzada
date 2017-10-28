@@ -36,24 +36,26 @@ VideoCapture cap(0);
 CuboElastico *ce;
 
 FondoTextura fondo;
-Vista vista0(0.0,0.0,0.5,1);
-Vista vista1(0.5,0.0,0.5,1);
+vector<Vista> vistas={{0.0,0.0,0.5,1},{0.5,0.0,0.5,1}};//,{0.0,0.5,0.5,0.5},{0.5,0.5,0.5,0.5}};
+vector<CamaraFPS> camaras(vistas.size());
+
 
 int w1,h1;
 void displayMe(void){
 	//glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-	vista0.render();
+	vistas[0].render();
 	fondo.render();
     glLoadIdentity();
-    cam.render();
+    camaras[0].render();
     GLfloat lightpos[]={50.0,50.0,15.0,0.0};
     glLightfv(GL_LIGHT0,GL_POSITION,lightpos);
     e.render();
 
-	vista1.render();
+	vistas[1].render();
 	fondo.render();
     glLoadIdentity();
-    cam.render();
+    camaras[1].render();
+    e.render();
 
  tex.activar();
  glPushMatrix();
@@ -109,11 +111,23 @@ void keyPressed(unsigned char key,int x,int y){
  break;
  case 't':
  case 'T':
-	 //cam.update(dt*2);
+ 	for(unsigned int i=0;i<vistas.size();i++){
+ 		if(vistas[i].contain(x,y)){
+ 			Vector3D r;
+ 			CamaraFPS &cam=camaras[i];
+ 			cam.update(dt*2);
+ 		}
+ 	}
  break;
  case 'g':
  case 'G':
-    //cam.update(-dt*2);
+	 	for(unsigned int i=0;i<vistas.size();i++){
+	 		if(vistas[i].contain(x,y)){
+	 			Vector3D r;
+	 			CamaraFPS &cam=camaras[i];
+	 			cam.update(-dt*2);
+	 		}
+	 	}
  break;
  case 'a':
  case 'A':
@@ -129,9 +143,14 @@ void keyPressed(unsigned char key,int x,int y){
 void mouseMoved(int x, int y)
 {
     if (mx>=0 && my>=0) {
-    	Vector3D r;
-    	r=cam.getRot()+Vector3D(y-my,x-mx,0);
-    	cam.setRot(r);
+    	for(unsigned int i=0;i<vistas.size();i++){
+    		if(vistas[i].contain(x,y)){
+    			Vector3D r;
+    			Camara &cam=camaras[i];
+    			r=cam.getRot()+Vector3D(y-my,x-mx,0);
+    			cam.setRot(r);
+    		}
+    	}
     }
     mx = x;
     my = y;
@@ -159,8 +178,8 @@ void init(void){
  texTv.init();
 }
 void reshape(int width,int height){
-	 vista0.reshape(width,height);
-	 vista1.reshape(width,height);
+	for(Vista &v:vistas)
+		v.reshape(width,height);
  /*
  glViewport(0,0,width,height);
  glMatrixMode(GL_PROJECTION);
@@ -176,7 +195,8 @@ float getRand(float max,float min=0){
 }
 int main(int argc, char** argv){
  srand(10);
- cam.setPos(Vector3D(0,1.65,10));
+ for(Camara &c:camaras)
+	 c.setPos(Vector3D(0,1.65,10));
  m=new Modelo("/home/francisco/git/ProgramacionAvanzada/cPAmotorJuevosV0.9/minion01.obj");
  m->setPos(Vector3D(0,-0.5,1));
  //m->setVel(Vector3D(0,0,-0.1));
