@@ -32,9 +32,40 @@ Modelo *m;
 Textura tex,ladrillos,paredTex,texTv;
 VideoCapture cap(0);
 CuboElastico *ce;
+Rectangulo fondo(
+		Vector3D(  0,  0,0),
+		Vector3D(640,  0,0),
+		Vector3D(640,480,0),
+		Vector3D(  0,480,0));
 
+int w1,h1;
 void displayMe(void){
- glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+	//Projection matrix mode
+    glMatrixMode(GL_PROJECTION);
+    //save perspective projection
+    glPushMatrix();
+    glLoadIdentity();
+    //set orthogonal projection
+    gluOrtho2D(-640/2, 640/2, -480/2, 480/2);
+
+    //Render  B A C K G R O U N D
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+     glLoadIdentity();
+     glTranslatef(-640/2,-480/2,0);
+     fondo.render();
+    glPopMatrix();
+
+	//Projection matrix mode
+    glMatrixMode(GL_PROJECTION);
+    //restore perspective projection
+    glPopMatrix();
+
+    //R E N D ER
+
+ glMatrixMode(GL_MODELVIEW);
+ glClear(GL_DEPTH_BUFFER_BIT);
  glLoadIdentity();
  cam.render();
  GLfloat lightpos[]={50.0,50.0,15.0,0.0};
@@ -49,23 +80,7 @@ void displayMe(void){
   glutSolidTeapot(1);
  glPopMatrix();
  tex.desactivar();
-/*
- glRotatef(t*200,0,1,0);
- tex.activar();
- float w=640/128,h=480/128;
- glColor3f(1,1,1);
- glBegin(GL_QUADS);
-	glTexCoord2f(1, 1);
-	glVertex2f(-w/2,  h/2);
-	glTexCoord2f(0, 1);
-	glVertex2f( w/2,  h/2);
-	glTexCoord2f(0, 0);
-	glVertex2f( w/2, -h/2);
-	glTexCoord2f(1, 0);
-	glVertex2f(-w/2, -h/2);
- glEnd();
- tex.desactivar();
- */
+
  glutSwapBuffers();
 }
 
@@ -162,6 +177,8 @@ void init(void){
  texTv.init();
 }
 void reshape(int width,int height){
+	w1=width;
+	h1=height;
  glViewport(0,0,width,height);
  glMatrixMode(GL_PROJECTION);
  glLoadIdentity();
@@ -324,6 +341,8 @@ int main(int argc, char** argv){
  ce=new CuboElastico(1);
  ce->setTexture(texTv);
  e.add(ce);
+
+ fondo.getTex()=texTv;
 
  glutDisplayFunc(displayMe);
  glutIdleFunc(idle);

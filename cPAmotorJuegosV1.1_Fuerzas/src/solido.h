@@ -45,13 +45,13 @@ public:
 		 vel=vel+f/m*dt;
 		 pos=pos+vel*dt;
 		 if(abs(pos.getX())>50.0){
-			 vel.setX(vel.getX()*-1);
+			 vel.setX(vel.getX()*-0.9);
 		 }
 		 if(abs(pos.getZ())>50){
-		 	 vel.setZ(vel.getZ()*-1);
+		 	 vel.setZ(vel.getZ()*-0.9);
 		 }
 		 if(pos.getY()<0){
-			 vel.setY(vel.getY()*-1);
+			 vel.setY(vel.getY()*-0.9);
 			 pos.setY(0.0001);
 		 }
 	 }
