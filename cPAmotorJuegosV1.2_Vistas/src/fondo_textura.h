@@ -22,7 +22,6 @@ public:
 	virtual ~FondoTextura();
 	inline void setTextura(Textura t){fondo.setTextura(t);}
 	void render(){
-		//glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 		int w=fondo.getTex().getImage().cols;
 		int h=fondo.getTex().getImage().rows;
 		//Projection matrix mode

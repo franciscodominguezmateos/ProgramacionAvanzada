@@ -17,6 +17,7 @@
 #include "pendulo.h"
 #include "cubo_elastico.h"
 #include "fondo_textura.h"
+#include "vista.h"
 
 using namespace cv;
 
@@ -35,15 +36,24 @@ VideoCapture cap(0);
 CuboElastico *ce;
 
 FondoTextura fondo;
+Vista vista0(0.0,0.0,0.5,1);
+Vista vista1(0.5,0.0,0.5,1);
 
 int w1,h1;
 void displayMe(void){
+	//glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+	vista0.render();
 	fondo.render();
     glLoadIdentity();
     cam.render();
     GLfloat lightpos[]={50.0,50.0,15.0,0.0};
     glLightfv(GL_LIGHT0,GL_POSITION,lightpos);
     e.render();
+
+	vista1.render();
+	fondo.render();
+    glLoadIdentity();
+    cam.render();
 
  tex.activar();
  glPushMatrix();
@@ -149,13 +159,15 @@ void init(void){
  texTv.init();
 }
 void reshape(int width,int height){
-	w1=width;
-	h1=height;
+	 vista0.reshape(width,height);
+	 vista1.reshape(width,height);
+ /*
  glViewport(0,0,width,height);
  glMatrixMode(GL_PROJECTION);
  glLoadIdentity();
  gluPerspective(45.0f,(GLfloat)width/(GLfloat)height,1.0f,200.0f);
  glMatrixMode(GL_MODELVIEW);
+ */
 }
 float getRand(float max,float min=0){
 	float n=max-min;
@@ -268,7 +280,7 @@ int main(int argc, char** argv){
  glutInit(&argc,argv);
  //glutInitDisplayMode(GLUT_SINGLE);
  glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
- glutInitWindowSize(640,480);
+ glutInitWindowSize(640*2,480);
  glutInitWindowPosition(300,300);
  glutCreateWindow("Hello wold :D");
  init();

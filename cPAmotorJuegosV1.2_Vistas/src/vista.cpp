@@ -7,11 +7,6 @@
 
 #include "vista.h"
 
-Vista::Vista() {
-	// TODO Auto-generated constructor stub
-
-}
-
 Vista::~Vista() {
 	// TODO Auto-generated destructor stub
 }
