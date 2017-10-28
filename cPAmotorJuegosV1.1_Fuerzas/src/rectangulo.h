@@ -23,6 +23,7 @@ public:
 	virtual Rectangulo *clone(){return new Rectangulo(*this);}
 	inline Vector3D getP3(){return p3;}
 	inline Textura &getTex(){return tex;}
+	inline void setTextura(Textura t){tex=t;}
 	inline void setNU(unsigned int u){nu=u;}
 	inline void setNV(unsigned int v){nv=v;}
 	void render(){	//Triangulo::render();

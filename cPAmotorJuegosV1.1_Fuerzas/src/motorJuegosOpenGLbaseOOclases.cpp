@@ -16,6 +16,7 @@
 #include "rectangulo.h"
 #include "pendulo.h"
 #include "cubo_elastico.h"
+#include "fondo_textura.h"
 
 using namespace cv;
 
@@ -32,45 +33,17 @@ Modelo *m;
 Textura tex,ladrillos,paredTex,texTv;
 VideoCapture cap(0);
 CuboElastico *ce;
-Rectangulo fondo(
-		Vector3D(  0,  0,0),
-		Vector3D(640,  0,0),
-		Vector3D(640,480,0),
-		Vector3D(  0,480,0));
+
+Fondo fondo;
 
 int w1,h1;
 void displayMe(void){
-	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-	//Projection matrix mode
-    glMatrixMode(GL_PROJECTION);
-    //save perspective projection
-    glPushMatrix();
+	fondo.render();
     glLoadIdentity();
-    //set orthogonal projection
-    gluOrtho2D(-640/2, 640/2, -480/2, 480/2);
-
-    //Render  B A C K G R O U N D
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix();
-     glLoadIdentity();
-     glTranslatef(-640/2,-480/2,0);
-     fondo.render();
-    glPopMatrix();
-
-	//Projection matrix mode
-    glMatrixMode(GL_PROJECTION);
-    //restore perspective projection
-    glPopMatrix();
-
-    //R E N D ER
-
- glMatrixMode(GL_MODELVIEW);
- glClear(GL_DEPTH_BUFFER_BIT);
- glLoadIdentity();
- cam.render();
- GLfloat lightpos[]={50.0,50.0,15.0,0.0};
- glLightfv(GL_LIGHT0,GL_POSITION,lightpos);
- e.render();
+    cam.render();
+    GLfloat lightpos[]={50.0,50.0,15.0,0.0};
+    glLightfv(GL_LIGHT0,GL_POSITION,lightpos);
+    e.render();
 
  tex.activar();
  glPushMatrix();
@@ -170,7 +143,6 @@ void init(void){
  glEnable(GL_LIGHTING);
  glEnable(GL_LIGHT0);
  glEnable(GL_COLOR_MATERIAL);
- glClearColor(0.0,0.0,0.0,0.0);
  tex.init();
  ladrillos.init();
  paredTex.init();
@@ -213,6 +185,7 @@ int main(int argc, char** argv){
  p=new Pared(10);
  p->setPos(Vector3D(0,0, 2));
  //e.add(p);
+
  p=new Pared(100);
  p->setPos(Vector3D(0,0,-50));
  e.add(p);
@@ -342,7 +315,7 @@ int main(int argc, char** argv){
  ce->setTexture(texTv);
  e.add(ce);
 
- fondo.getTex()=texTv;
+ //fondo.setTextura(texTv);
 
  glutDisplayFunc(displayMe);
  glutIdleFunc(idle);
