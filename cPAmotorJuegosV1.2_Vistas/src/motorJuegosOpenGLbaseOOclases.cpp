@@ -29,7 +29,7 @@ GLfloat pitch=0.0f;
 int mx=-1,my=-1;        // Previous mouse coordinates
 
 Escena e;
-Camara cam;
+//Camara cam;
 Cubo *pc;
 Modelo *m;
 Textura tex,ladrillos,paredTex,texTv;
@@ -38,7 +38,7 @@ CuboElastico *ce;
 
 FondoTextura fondo;
 vector<Vista> vistas={{0.0,0.0,0.5,1},{0.5,0.0,0.5,1}};//,{0.0,0.5,0.5,0.5},{0.5,0.5,0.5,0.5}};
-vector<CamaraFPS> camaras(vistas.size());
+vector<CamaraFly> camaras(vistas.size());
 
 
 int w1,h1;
@@ -48,15 +48,12 @@ void displayMe(void){
 	fondo.render();
     glLoadIdentity();
     camaras[0].render();
-    //GLfloat lightpos[]={50.0,50.0,15.0,0.0};
-    //glLightfv(GL_LIGHT0,GL_POSITION,lightpos);
     e.render();
 
 	vistas[1].render();
 	fondo.render();
     glLoadIdentity();
     camaras[1].render();
-    //glLightfv(GL_LIGHT0,GL_POSITION,lightpos);
     e.render();
 
  tex.activar();
@@ -116,7 +113,7 @@ void keyPressed(unsigned char key,int x,int y){
  	for(unsigned int i=0;i<vistas.size();i++){
  		if(vistas[i].contain(x,y)){
  			Vector3D r;
- 			CamaraFPS &cam=camaras[i];
+ 			CamaraFly &cam=camaras[i];
  			cam.update(dt*2);
  		}
  	}
@@ -126,7 +123,7 @@ void keyPressed(unsigned char key,int x,int y){
 	 	for(unsigned int i=0;i<vistas.size();i++){
 	 		if(vistas[i].contain(x,y)){
 	 			Vector3D r;
-	 			CamaraFPS &cam=camaras[i];
+	 			CamaraFly &cam=camaras[i];
 	 			cam.update(-dt*2);
 	 		}
 	 	}

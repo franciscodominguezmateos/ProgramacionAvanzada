@@ -2,7 +2,7 @@
  * vista.h
  *
  *  Created on: Oct 28, 2017
- *      Author: francisco
+ *      Author: Francisco Dominguez
  */
 
 #ifndef VISTA_H_

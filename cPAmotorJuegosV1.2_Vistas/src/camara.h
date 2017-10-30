@@ -46,5 +46,21 @@ public:
 		 glTranslatef(-getPos().getX(),-getPos().getY(),-getPos().getZ());
 	}
 };
+class CamaraFly: public Camara {
+public:
+	CamaraFly(double x=0,double y=1.65,double z=0):Camara(x,y,z){}
+	void update(double dt){
+		double ry=rot2rad(getRot().getY());
+		double rx=rot2rad(getRot().getX());
+		Vector3D vel={-cos(rx)*sin(ry),sin(rx),cos(rx)*cos(ry)};
+		setPos(getPos()-vel*dt);
+	}
+	void render(){
+		 glRotatef(getRot().getX(), 1,0,0);
+		 glRotatef(getRot().getY(), 0,1,0);
+		 glRotatef(getRot().getZ(), 1,0,1);
+		 glTranslatef(-getPos().getX(),-getPos().getY(),-getPos().getZ());
+	}
+};
 
 #endif /* CAMARA_H_ */
