@@ -18,6 +18,7 @@
 #include "cubo_elastico.h"
 #include "fondo_textura.h"
 #include "vista.h"
+#include "luz.h"
 
 using namespace cv;
 
@@ -47,14 +48,15 @@ void displayMe(void){
 	fondo.render();
     glLoadIdentity();
     camaras[0].render();
-    GLfloat lightpos[]={50.0,50.0,15.0,0.0};
-    glLightfv(GL_LIGHT0,GL_POSITION,lightpos);
+    //GLfloat lightpos[]={50.0,50.0,15.0,0.0};
+    //glLightfv(GL_LIGHT0,GL_POSITION,lightpos);
     e.render();
 
 	vistas[1].render();
 	fondo.render();
     glLoadIdentity();
     camaras[1].render();
+    //glLightfv(GL_LIGHT0,GL_POSITION,lightpos);
     e.render();
 
  tex.activar();
@@ -171,6 +173,7 @@ void init(void){
  glEnable(GL_DEPTH_TEST);
  glEnable(GL_LIGHTING);
  glEnable(GL_LIGHT0);
+ glEnable(GL_LIGHT1);
  glEnable(GL_COLOR_MATERIAL);
  tex.init();
  ladrillos.init();
@@ -197,6 +200,8 @@ int main(int argc, char** argv){
  srand(10);
  for(Camara &c:camaras)
 	 c.setPos(Vector3D(0,1.65,10));
+ e.add(new Luz(Vector3D( 50,50,15)));
+ e.add(new Luz(Vector3D(-50,50,15)));
  m=new Modelo("/home/francisco/git/ProgramacionAvanzada/cPAmotorJuevosV0.9/minion01.obj");
  m->setPos(Vector3D(0,-0.5,1));
  //m->setVel(Vector3D(0,0,-0.1));

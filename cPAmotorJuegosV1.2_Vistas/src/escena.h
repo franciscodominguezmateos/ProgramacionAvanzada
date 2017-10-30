@@ -10,9 +10,11 @@
 #include <vector>
 #include "vector3d.h"
 #include "solido.h"
+#include "luz.h"
 using namespace std;
 
 class Escena {
+	vector<Luz*> luces;
 	vector<Solido*> solidos;
 public:
 	Escena();
@@ -23,8 +25,10 @@ public:
 	}
 	virtual ~Escena();
 	void render(){
-	 for(Solido *s:solidos)
-	  s->render();
+		for(Luz *l:luces)
+			l->render();
+		for(Solido *s:solidos)
+			s->render();
 	}
 	void update(double dt){
 		 for(Solido *s:solidos){
@@ -34,6 +38,7 @@ public:
 	}
 	vector<Solido*> getSolidos(){return solidos;}
 	void add(Solido *s){solidos.push_back(s);}
+	void add(Luz *l){luces.push_back(l);}
 	friend std::ostream &operator << (std::ostream &os, const Escena &v);
 };
 inline std::ostream &operator<<(std::ostream &os, const Escena &e){
