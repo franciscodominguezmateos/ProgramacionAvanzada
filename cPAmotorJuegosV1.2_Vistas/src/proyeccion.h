@@ -12,6 +12,7 @@ class Proyeccion {
 public:
 	Proyeccion();
 	virtual ~Proyeccion();
+	virtual void render()=0;
 };
 
 #endif /* PROYECCION_H_ */
