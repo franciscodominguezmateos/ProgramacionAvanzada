@@ -10,8 +10,9 @@
 #include <assert.h>
 #include <GL/glut.h>
 #include "vector3d.h"
+#include "solido.h"
 
-class Luz {
+class Luz:public Solido {
 	// here you can see const vs constexpr
 	static const unsigned char NLIGHTS=8;
 	static constexpr GLenum ids[]={
@@ -25,15 +26,14 @@ class Luz {
 			GL_LIGHT7};
 	static unsigned char idCount;
 	unsigned char idLight;
-	Vector3D pos;
 public:
-	Luz(Vector3D p):idLight(idCount++),pos(p){
+	Luz(Vector3D p):Solido(p),idLight(idCount++){
 		assert(idCount<=NLIGHTS);
 	}
 	Luz():Luz(Vector3D(5,10,5)){}
 	virtual ~Luz();
 	void render(){
-	    GLfloat lightpos[]={pos.getX(),pos.getY(),pos.getZ(),0.0};
+	    GLfloat lightpos[]={getPos().getX(),getPos().getY(),getPos().getZ(),0.0};
 	    glLightfv(ids[idLight],GL_POSITION,lightpos);
 	}
 };

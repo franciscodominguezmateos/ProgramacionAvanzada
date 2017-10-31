@@ -19,6 +19,7 @@ class Solido {
 	 bool fija;
 public:
 	 Solido():pos(0,0,0),vel(0,0,0),color(1,1,1),f(0,0,0),m(1.0),fija(false) {}
+	 Solido(Vector3D p):pos(p),vel(0,0,0),color(1,1,0),f(0,0,0),m(1.0),fija(false){}
 	 Solido(double x,double y,double z):pos(x,y,z),vel(0,0,0),color(1,1,0),f(0,0,0),m(1.0),fija(false){}
 	 Solido(const Solido &s):pos(s.pos),vel(s.vel),color(s.color),f(s.f),m(s.m),fija(false){}
 	 virtual Solido *clone (){return new Solido(*this);}

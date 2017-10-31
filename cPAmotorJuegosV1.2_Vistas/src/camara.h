@@ -10,10 +10,11 @@
 #include <cmath>
 #include <GL/glut.h>
 #include "vector3d.h"
+#include "solido.h"
 
 inline double rot2rad(double  a){return a/180*M_PI;}
 
-class Camara {
+class Camara:public Solido {
 	Vector3D pos;
 	Vector3D rot;
 public:

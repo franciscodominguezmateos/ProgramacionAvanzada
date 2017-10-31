@@ -27,10 +27,10 @@ public:
 	}
 	void render(){
 	 glViewport(px,py,width,height);
-	 glMatrixMode(GL_PROJECTION);
-	 glLoadIdentity();
-	 gluPerspective(45.0f,(GLfloat)width/(GLfloat)height,0.1f,200.0f);
-	 glMatrixMode(GL_MODELVIEW);
+//	 glMatrixMode(GL_PROJECTION);
+//	 glLoadIdentity();
+//	 gluPerspective(45.0f,(GLfloat)width/(GLfloat)height,0.1f,200.0f);
+//	 glMatrixMode(GL_MODELVIEW);
 	}
 	bool contain(int x,int y){
 		y=windowHeight-y;

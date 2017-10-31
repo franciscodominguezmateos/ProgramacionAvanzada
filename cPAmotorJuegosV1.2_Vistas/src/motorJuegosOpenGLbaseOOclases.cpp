@@ -19,6 +19,7 @@
 #include "fondo_textura.h"
 #include "vista.h"
 #include "luz.h"
+#include "proyeccion_perspectiva.h"
 
 using namespace cv;
 
@@ -39,18 +40,21 @@ CuboElastico *ce;
 FondoTextura fondo;
 vector<Vista> vistas={{0.0,0.0,0.5,1},{0.5,0.0,0.5,1}};//,{0.0,0.5,0.5,0.5},{0.5,0.5,0.5,0.5}};
 vector<CamaraFly> camaras(vistas.size());
+ProyeccionPerspectiva proyeccion;
 
 
-int w1,h1;
+//int w1,h1;
 void displayMe(void){
 	//glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 	vistas[0].render();
+	proyeccion.render();
 	fondo.render();
     glLoadIdentity();
     camaras[0].render();
     e.render();
 
 	vistas[1].render();
+	proyeccion.render();
 	fondo.render();
     glLoadIdentity();
     camaras[1].render();
