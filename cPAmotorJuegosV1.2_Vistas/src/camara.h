@@ -15,16 +15,10 @@
 inline double rot2rad(double  a){return a/180*M_PI;}
 
 class Camara:public Solido {
-	Vector3D pos;
-	Vector3D rot;
 public:
 	Camara();
-	Camara(double x,double y,double z):pos(Vector3D(x,y,z)){}
+	Camara(double x,double y,double z):Solido(x,y,z){}
 	virtual ~Camara();
-	inline Vector3D getPos() const {return pos;	}
-	inline void setPos(Vector3D pos) {this->pos = pos;}
-	inline Vector3D getRot() const {return rot;	}
-	inline void setRot(Vector3D rot) {this->rot = rot;}
 	void render(){
 		 glTranslatef(-getPos().getX(),-getPos().getY(),-getPos().getZ());
 		 glRotatef(getRot().getX(), 1,0,0);

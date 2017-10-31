@@ -12,15 +12,17 @@
 
 class Solido {
 	 Vector3D pos;
+	 Vector3D rot;
 	 Vector3D vel;
 	 Vector3D color;
 	 Vector3D f;
 	 double m;
 	 bool fija;
+	 double edad;
 public:
-	 Solido():pos(0,0,0),vel(0,0,0),color(1,1,1),f(0,0,0),m(1.0),fija(false) {}
-	 Solido(Vector3D p):pos(p),vel(0,0,0),color(1,1,0),f(0,0,0),m(1.0),fija(false){}
-	 Solido(double x,double y,double z):pos(x,y,z),vel(0,0,0),color(1,1,0),f(0,0,0),m(1.0),fija(false){}
+	 Solido(Vector3D p):pos(p),rot(0,0,0),vel(0,0,0),color(1,1,1),f(0,0,0),m(1.0),fija(false),edad(0){}
+	 Solido(double x,double y,double z):Solido(Vector3D(x,y,z)){}
+	 Solido():Solido(0,0,0) {}
 	 Solido(const Solido &s):pos(s.pos),vel(s.vel),color(s.color),f(s.f),m(s.m),fija(false){}
 	 virtual Solido *clone (){return new Solido(*this);}
 	 inline Vector3D getPos(){return pos;}
@@ -29,6 +31,8 @@ public:
 	 inline Vector3D getF(){return f;}
 	 inline double getM(){return m;}
 	 inline bool getFija(){return fija;}
+     inline Vector3D getRot() const {return rot;	}
+	 inline void setRot(Vector3D rot) {this->rot = rot;}
 	 inline void setPos(Vector3D p){pos=p;}
 	 inline void setVel(Vector3D v){vel=v;}
 	 inline void setCol(Vector3D c){color=c;}
