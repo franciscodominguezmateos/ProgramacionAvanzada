@@ -191,7 +191,7 @@ void reshape(int width,int height){
 }
 void initCamAR(){
 	 tablero=imread("imgname.bmp");
-	 Size patternsize(8,6); //interior number of corners
+	 Size patternsize(6,8); //interior number of corners
 	 Mat gray;
 	 cvtColor(tablero,gray, COLOR_BGR2GRAY);
 	 vector<Point2f> corners; //this will be filled by the detected corners
@@ -203,7 +203,7 @@ void initCamAR(){
 	         + CALIB_CB_FAST_CHECK);
 
 	 if(patternfound)
-	   cornerSubPix(gray, corners, Size(11, 11), Size(-1, -1),
+	   cornerSubPix(gray, corners, Size(4, 5), Size(-1, -1),
 	     TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 30, 0.1));
 
 	 drawChessboardCorners(tablero, patternsize, Mat(corners), patternfound);
