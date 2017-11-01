@@ -79,7 +79,7 @@ void displayMe(void){
   glTranslatef(0,1,-2);
   glRotatef(t*10.0,0,1,0);
   glColor3f(1,1,1);
-  glutSolidTeapot(1);
+  glutSolidTeapot(5);
  glPopMatrix();
  tex.desactivar();
 
@@ -203,23 +203,29 @@ void initCamAR(){
 	         + CALIB_CB_FAST_CHECK);
 
 	 if(patternfound)
-	   cornerSubPix(gray, corners, Size(4, 5), Size(-1, -1),
+	   cornerSubPix(gray, corners, Size(4, 4), Size(-1, -1),
 	     TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 30, 0.1));
 
-	 drawChessboardCorners(tablero, patternsize, Mat(corners), patternfound);
+	 //drawChessboardCorners(tablero, patternsize, Mat(corners), patternfound);
 
 	 vector<Point3d> model_points;
-	 double squareSize=1.0;
-	 for(double x=0;x<8*squareSize-0.1;x+=squareSize)
-		 for(double y=0;y<6*squareSize-0.1;y+=squareSize)
+
+	 double squareSize=10;
+	 double x,y;
+	 int i,j;
+	 for(i=0,x=-30;i<8;i++,x+=squareSize){
+		 for(j=0,y=-30;j<6;j++,y+=squareSize){
 			 model_points.push_back(Point3d(y,x,0));
+			 cout << "x="<<x<<"y="<<y<<endl;
+		 }
+	 }
 	 //Solve for pose
 	 Mat rvec,tvec;
 	 solvePnP(model_points,corners,K,dist,rvec,tvec);
 	 camAR=new CamaraAR(rvec,tvec);
 	 texTablero.setImage(tablero);
-	 imshow("tablero",tablero);
-	 waitKey(1);
+	 //imshow("tablero",tablero);
+	 //waitKey(1);
 }
 int main(int argc, char** argv){
  srand(10);
@@ -374,7 +380,7 @@ int main(int argc, char** argv){
  tv->getTex()=texTv;
  e.add(tv);
 
- ce=new CuboElastico(1);
+ ce=new CuboElastico(2);
  ce->setTexture(texTv);
  e.add(ce);
 
