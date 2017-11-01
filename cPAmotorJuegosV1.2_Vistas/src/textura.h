@@ -35,7 +35,7 @@ public:
 	void setImage(Mat i){
 		flip(i,img,0);
 		//reflexion
-		flip(img,img,1);
+		//flip(img,img,1);
 		update();
 	}
 	void setImageFlipped(Mat i){

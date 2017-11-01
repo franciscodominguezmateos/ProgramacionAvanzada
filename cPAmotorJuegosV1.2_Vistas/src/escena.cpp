@@ -13,9 +13,6 @@ Escena::Escena() {
 }
 
 Escena::~Escena() {
-	for(Luz *l:luces)
-		delete l;
-	luces.clear();
 	for(Solido *s:solidos){
 		delete s;
 	}

@@ -25,39 +25,53 @@ using namespace cv;
 
 double t=0.0;
 double dt=1.0/30;
-GLfloat pitch=0.0f; 
 
 int mx=-1,my=-1;        // Previous mouse coordinates
 
+Mat tablero;
+
 Escena e;
-//Camara cam;
 Cubo *pc;
 Modelo *m;
-Textura tex,ladrillos,paredTex,texTv;
+Textura tex,ladrillos,paredTex,texTv,texTablero;
 VideoCapture cap(0);
 CuboElastico *ce;
 
-FondoTextura fondo;
-vector<Vista> vistas={{0.0,0.0,0.5,1},{0.5,0.0,0.5,1}};//,{0.0,0.5,0.5,0.5},{0.5,0.5,0.5,0.5}};
-vector<CamaraFly> camaras(vistas.size());
+FondoTextura fondo,fondoTablero;
+
+Mat K=(Mat_<double>(3,3) <<
+		 1053.755323784897,                 0, 317.160420774003,
+		                 0, 1067.981896308737, 203.4946241428054,
+						 0,                 0,                 1);
+
+Mat dist=Mat::zeros(4,1,cv::DataType<double>::type); // Assuming no lens distortion
+CamaraAR *camAR;
+ProyeccionCamara pCam(K);
+
 ProyeccionPerspectiva proyeccion;
+vector<Vista> vistas={{0.0,0.0,0.5,1,&proyeccion},{0.5,0.0,0.5,1,&pCam}};//,{0.0,0.5,0.5,0.5},{0.5,0.5,0.5,0.5}};
+vector<CamaraFly> camaras(vistas.size());
 
 
-//int w1,h1;
+float getRand(float max,float min=0){
+	float n=max-min;
+	int ir=rand()%1000;
+	return min+n*(float)ir/1000;
+}
+
 void displayMe(void){
-	//glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 	vistas[0].render();
-	proyeccion.render();
-	fondo.render();
+	fondoTablero.render();
     glLoadIdentity();
     camaras[0].render();
     e.render();
 
 	vistas[1].render();
-	proyeccion.render();
-	fondo.render();
+	fondoTablero.render();
     glLoadIdentity();
-    camaras[1].render();
+    camAR->render();
+    //camaras[1].render();
     e.render();
 
  tex.activar();
@@ -79,22 +93,11 @@ void idle(){
  cap>>i;
  tex.setImageFlipped(i);
  texTv.setImage(i);
- //imshow("ladri",ladrillos.getImage());
- //waitKey(1);
  //tex.update();
  displayMe();
 }
 void keyPressed(unsigned char key,int x,int y){
  switch(key){
- case 'p':
- case 'P':
- pitch++;
- break;
- case 'o':
- case 'O':
- pitch--;
- break;
-
  case 'q':
  case 'Q':
 	 m->setPos(m->getPos()+Vector3D(0.25,0,0));
@@ -135,7 +138,7 @@ void keyPressed(unsigned char key,int x,int y){
  case 'a':
  case 'A':
 	 for(Solido *s:ce->getParticulas()){
-		 s->setVel(s->getVel()+Vector3D(-7,10,-10));
+		 s->setVel(s->getVel()+Vector3D(getRand(7,-7),10,-10));
 	 }
  break;
  case 27:
@@ -180,22 +183,43 @@ void init(void){
  ladrillos.init();
  paredTex.init();
  texTv.init();
+ texTablero.init();
 }
 void reshape(int width,int height){
 	for(Vista &v:vistas)
 		v.reshape(width,height);
- /*
- glViewport(0,0,width,height);
- glMatrixMode(GL_PROJECTION);
- glLoadIdentity();
- gluPerspective(45.0f,(GLfloat)width/(GLfloat)height,1.0f,200.0f);
- glMatrixMode(GL_MODELVIEW);
- */
 }
-float getRand(float max,float min=0){
-	float n=max-min;
-	int ir=rand()%1000;
-	return min+n*(float)ir/1000;
+void initCamAR(){
+	 tablero=imread("imgname.bmp");
+	 Size patternsize(8,6); //interior number of corners
+	 Mat gray;
+	 cvtColor(tablero,gray, COLOR_BGR2GRAY);
+	 vector<Point2f> corners; //this will be filled by the detected corners
+
+	 //CALIB_CB_FAST_CHECK saves a lot of time on images
+	 //that do not contain any chessboard corners
+	 bool patternfound = findChessboardCorners(gray, patternsize, corners,
+	         CALIB_CB_ADAPTIVE_THRESH + CALIB_CB_NORMALIZE_IMAGE
+	         + CALIB_CB_FAST_CHECK);
+
+	 if(patternfound)
+	   cornerSubPix(gray, corners, Size(11, 11), Size(-1, -1),
+	     TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 30, 0.1));
+
+	 drawChessboardCorners(tablero, patternsize, Mat(corners), patternfound);
+
+	 vector<Point3d> model_points;
+	 double squareSize=1.0;
+	 for(double x=0;x<8*squareSize-0.1;x+=squareSize)
+		 for(double y=0;y<6*squareSize-0.1;y+=squareSize)
+			 model_points.push_back(Point3d(y,x,0));
+	 //Solve for pose
+	 Mat rvec,tvec;
+	 solvePnP(model_points,corners,K,dist,rvec,tvec);
+	 camAR=new CamaraAR(rvec,tvec);
+	 texTablero.setImage(tablero);
+	 imshow("tablero",tablero);
+	 waitKey(1);
 }
 int main(int argc, char** argv){
  srand(10);
@@ -203,10 +227,11 @@ int main(int argc, char** argv){
 	 c.setPos(Vector3D(0,1.65,10));
  e.add(new Luz(Vector3D( 50,50,15)));
  e.add(new Luz(Vector3D(-50,50,15)));
- m=new Modelo("/home/francisco/git/ProgramacionAvanzada/cPAmotorJuevosV0.9/minion01.obj");
+ //m=new Modelo("/home/francisco/git/ProgramacionAvanzada/cPAmotorJuevosV0.9/minion01.obj");
+ m=new Modelo("Debug/minion.obj");
  m->setPos(Vector3D(0,-0.5,1));
- //m->setVel(Vector3D(0,0,-0.1));
- //e.add(m);
+ m->setVel(Vector3D(getRand(10,-10),0,-1.1));
+ e.add(m);
 
 
  Solido *pt1=new Solido();
@@ -318,11 +343,11 @@ int main(int argc, char** argv){
  Rectangulo *ret;
  ret=new Rectangulo(p0,p1,p2,p3);
  ret->setCol(Vector3D(1,1,1));
- ladrillos.setImage(imread("/home/francisco/Downloads/brick_pavement_0077_01_preview.jpg"));
+ ladrillos.setImage(imread("brick_pavement_0077_01_preview.jpg"));
  ret->getTex()=ladrillos;
- ret->setNU(50);
- ret->setNV(50);
- e.add(ret);
+ ret->setNU(25);
+ ret->setNV(25);
+ //e.add(ret);
  p0=Vector3D(  0, 0,-10);
  p1=Vector3D( 20, 0,-10);
  p2=Vector3D( 20,10,-10);
@@ -330,7 +355,7 @@ int main(int argc, char** argv){
  Rectangulo *pared;
  pared=new Rectangulo(p0,p1,p2,p3);
  ret->setCol(Vector3D(1,1,1));
- paredTex.setImage(imread("/home/francisco/Downloads/brown_brick_texture_map.jpg"));
+ paredTex.setImage(imread("brown_brick_texture_map.jpg"));
  pared->getTex()=paredTex;
  pared->setNU(5);
  pared->setNV(5);
@@ -353,7 +378,9 @@ int main(int argc, char** argv){
  ce->setTexture(texTv);
  e.add(ce);
 
+ initCamAR();
  fondo.setTextura(texTv);
+ fondoTablero.setTextura(texTablero);
 
  glutDisplayFunc(displayMe);
  glutIdleFunc(idle);

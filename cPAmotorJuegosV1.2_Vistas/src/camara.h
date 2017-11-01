@@ -69,6 +69,7 @@ class CamaraAR: public Camara {
 	double modelviewMat[16];
 public:
 	CamaraAR(double x=0,double y=1.65,double z=0):Camara(x,y,z){}
+	CamaraAR(Mat rvec,Mat tvec){setPose(rvec,tvec);}
 	void setPose(Mat RVec,Mat tVec){
 		Mat rotMtx;
 		Rodrigues(RVec, rotMtx);

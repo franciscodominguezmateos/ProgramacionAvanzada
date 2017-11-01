@@ -38,6 +38,7 @@
 							<tool id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.34175310" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug">
 								<option id="gnu.cpp.link.option.libs.1384103077" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" value="GLU"/>
+									<listOptionValue builtIn="false" value="opencv_calib3d3"/>
 									<listOptionValue builtIn="false" value="opencv_imgcodecs3"/>
 									<listOptionValue builtIn="false" value="opencv_imgproc3"/>
 									<listOptionValue builtIn="false" value="opencv_highgui3"/>

@@ -14,7 +14,6 @@
 using namespace std;
 
 class Escena {
-	vector<Luz*> luces;
 	vector<Solido*> solidos;
 public:
 	Escena();
@@ -25,8 +24,6 @@ public:
 	}
 	virtual ~Escena();
 	void render(){
-		for(Luz *l:luces)
-			l->render();
 		for(Solido *s:solidos)
 			s->render();
 	}
@@ -38,7 +35,6 @@ public:
 	}
 	vector<Solido*> getSolidos(){return solidos;}
 	void add(Solido *s){solidos.push_back(s);}
-	void add(Luz *l){luces.push_back(l);}
 	friend std::ostream &operator << (std::ostream &os, const Escena &v);
 };
 inline std::ostream &operator<<(std::ostream &os, const Escena &e){
