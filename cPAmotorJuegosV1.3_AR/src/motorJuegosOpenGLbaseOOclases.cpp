@@ -20,6 +20,7 @@
 #include "vista.h"
 #include "luz.h"
 #include "proyeccion_perspectiva.h"
+#include "pose_estimation_chessboard.h"
 
 using namespace cv;
 
@@ -47,6 +48,7 @@ Mat K=(Mat_<double>(3,3) <<
 Mat dist=Mat::zeros(4,1,cv::DataType<double>::type); // Assuming no lens distortion
 CamaraAR *camAR;
 ProyeccionCamara pCam(K);
+PoseEstimationChessBoard peChessBoard(K,dist);
 
 ProyeccionPerspectiva proyeccion;
 vector<Vista> vistas={{0.0,0.0,0.5,1,&proyeccion},{0.5,0.0,0.5,1,&pCam}};//,{0.0,0.5,0.5,0.5},{0.5,0.5,0.5,0.5}};
@@ -191,6 +193,7 @@ void reshape(int width,int height){
 }
 void initCamAR(){
 	 tablero=imread("imgname.bmp");
+	 /*
 	 Size patternsize(6,8); //interior number of corners
 	 Mat gray;
 	 cvtColor(tablero,gray, COLOR_BGR2GRAY);
@@ -202,31 +205,44 @@ void initCamAR(){
 	         CALIB_CB_ADAPTIVE_THRESH + CALIB_CB_NORMALIZE_IMAGE
 	         + CALIB_CB_FAST_CHECK);
 
-	 if(patternfound)
-	   cornerSubPix(gray, corners, Size(4, 4), Size(-1, -1),
-	     TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 30, 0.1));
+	 if(patternfound){
+		 cornerSubPix(gray, corners, Size(4, 4), Size(-1, -1),TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 30, 0.1));
 
-	 //drawChessboardCorners(tablero, patternsize, Mat(corners), patternfound);
+		 drawChessboardCorners(tablero, patternsize, Mat(corners), patternfound);
 
-	 vector<Point3d> model_points;
+		 vector<Point3d> model_points;
 
-	 double squareSize=10;
-	 double x,y;
-	 int i,j;
-	 for(i=0,x=-30;i<8;i++,x+=squareSize){
-		 for(j=0,y=-30;j<6;j++,y+=squareSize){
-			 model_points.push_back(Point3d(y,x,0));
-			 cout << "x="<<x<<"y="<<y<<endl;
+		 double squareSize=10;
+		 double x,y;
+		 int i,j;
+		 for(i=0,x=-30;i<8;i++,x+=squareSize){
+			 for(j=0,y=-30;j<6;j++,y+=squareSize){
+				 model_points.push_back(Point3d(y,x,0));
+				 cout << "x="<<x<<"y="<<y<<endl;
+			 }
 		 }
+		 //Solve for pose
+		 Mat rvec,tvec;
+		 solvePnP(model_points,corners,K,dist,rvec,tvec);
+		 camAR=new CamaraAR(rvec,tvec);
+		 texTablero.setImage(tablero);
+		 //imshow("tablero",tablero);
+		 //waitKey(1);
 	 }
-	 //Solve for pose
-	 Mat rvec,tvec;
-	 solvePnP(model_points,corners,K,dist,rvec,tvec);
-	 camAR=new CamaraAR(rvec,tvec);
-	 texTablero.setImage(tablero);
-	 //imshow("tablero",tablero);
-	 //waitKey(1);
+	 else{
+		 cout << "Tablero no detectado!!!"<< endl;
+		 camAR= new CamaraAR(Mat::zeros(3,1,cv::DataType<double>::type),Mat::zeros(3,1,cv::DataType<double>::type));
+	 }*/
+	 if(peChessBoard.estimatePose(tablero)){
+		 camAR=new CamaraAR(peChessBoard.getRvec(),peChessBoard.getTvec());
+	 }
+	 else{
+		 cout << "Tablero no detectado!!!"<< endl;
+		 camAR= new CamaraAR(Mat::zeros(3,1,cv::DataType<double>::type),
+				             Mat::zeros(3,1,cv::DataType<double>::type));
+	 }
 }
+
 int main(int argc, char** argv){
  srand(10);
  for(Camara &c:camaras)
