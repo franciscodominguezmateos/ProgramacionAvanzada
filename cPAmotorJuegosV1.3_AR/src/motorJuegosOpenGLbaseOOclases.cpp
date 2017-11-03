@@ -87,6 +87,17 @@ void displayMe(void){
 
  glutSwapBuffers();
 }
+void setPoseCamAR(Mat &tablero){
+	 if(peChessBoard.estimatePose(tablero)){
+		 camAR->setPose(peChessBoard.getRvec(),peChessBoard.getTvec());
+	 }
+	 else{
+		 cout << "Tablero no detectado!!!"<< endl;
+		 camAR->setPose(Mat::zeros(3,1,cv::DataType<double>::type),
+				        Mat::zeros(3,1,cv::DataType<double>::type));
+	 }
+	 texTablero.setImage(tablero);
+}
 
 void idle(){
 	t+=dt;
@@ -95,6 +106,7 @@ void idle(){
  cap>>i;
  tex.setImageFlipped(i);
  texTv.setImage(i);
+ //setPoseCamAR(i);
  //tex.update();
  displayMe();
 }
@@ -192,49 +204,7 @@ void reshape(int width,int height){
 		v.reshape(width,height);
 }
 void initCamAR(){
-	 tablero=imread("imgname.bmp");
-
-	 /*
-
-	 Size patternsize(6,8); //interior number of corners
-	 Mat gray;
-	 cvtColor(tablero,gray, COLOR_BGR2GRAY);
-	 vector<Point2f> corners; //this will be filled by the detected corners
-
-	 //CALIB_CB_FAST_CHECK saves a lot of time on images
-	 //that do not contain any chessboard corners
-	 bool patternfound = findChessboardCorners(gray, patternsize, corners,
-	         CALIB_CB_ADAPTIVE_THRESH + CALIB_CB_NORMALIZE_IMAGE
-	         + CALIB_CB_FAST_CHECK);
-
-	 if(patternfound){
-		 cornerSubPix(gray, corners, Size(4, 4), Size(-1, -1),TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 30, 0.1));
-
-		 drawChessboardCorners(tablero, patternsize, Mat(corners), patternfound);
-
-		 vector<Point3d> model_points;
-
-		 double squareSize=10;
-		 double x,y;
-		 int i,j;
-		 for(i=0,x=-30;i<8;i++,x+=squareSize){
-			 for(j=0,y=-30;j<6;j++,y+=squareSize){
-				 model_points.push_back(Point3d(y,x,0));
-				 cout << "x="<<x<<"y="<<y<<endl;
-			 }
-		 }
-		 //Solve for pose
-		 Mat rvec,tvec;
-		 solvePnP(model_points,corners,K,dist,rvec,tvec);
-		 camAR=new CamaraAR(rvec,tvec);
-		 texTablero.setImage(tablero);
-		 //imshow("tablero",tablero);
-		 //waitKey(1);
-	 }
-	 else{
-		 cout << "Tablero no detectado!!!"<< endl;
-		 camAR= new CamaraAR(Mat::zeros(3,1,cv::DataType<double>::type),Mat::zeros(3,1,cv::DataType<double>::type));
-	 }*/
+	 tablero=imread("2017-11-03-091218.jpg");
 	 if(peChessBoard.estimatePose(tablero)){
 		 camAR=new CamaraAR(peChessBoard.getRvec(),peChessBoard.getTvec());
 	 }
@@ -337,7 +307,7 @@ int main(int argc, char** argv){
  Compuesto *pa;
  for(int i=1;i<10;i++){
 	 pa=new Compuesto(*arbol);
-	 pa->setPos(Vector3D(getRand(40,-40),0,getRand(40,-40)));
+	 pa->setPos(Vector3D(getRand(50,-50),0,getRand(50,-50)));
 	 e.add(pa);
  }
  for(int i=1;i<100;i++){
@@ -346,7 +316,7 @@ int main(int argc, char** argv){
 	 pf->setVel(Vector3D(getRand(1,-1),0,getRand(1,-1)));
 	 pf->setCol(Vector3D(getRand(1),getRand(1),getRand(1)));
 	 pf->setF(Vector3D(0,-9.8,0));
-	 pf->setR(getRand(0.25)+0.1);
+	 pf->setR(getRand(3,0.25));
 	 e.add(pf);
  }
  cout<< pf->getPos() << endl;
@@ -370,9 +340,9 @@ int main(int argc, char** argv){
  ret->setCol(Vector3D(1,1,1));
  ladrillos.setImage(imread("brick_pavement_0077_01_preview.jpg"));
  ret->getTex()=ladrillos;
- ret->setNU(25);
- ret->setNV(25);
- //e.add(ret);
+ ret->setNU(5);
+ ret->setNV(5);
+ e.add(ret);
  p0=Vector3D(  0, 0,-10);
  p1=Vector3D( 20, 0,-10);
  p2=Vector3D( 20,10,-10);
