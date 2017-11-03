@@ -53,8 +53,8 @@ public:
 			 double squareSize=10;
 			 double x,y;
 			 int i,j;
-			 for(i=0,x=-xMin;i<colCorners;i++,x+=squareSize){
-				 for(j=0,y=-yMin;j<rowCorners;j++,y+=squareSize){
+			 for(i=0,x=xMin;i<colCorners;i++,x+=squareSize){
+				 for(j=0,y=yMin;j<rowCorners;j++,y+=squareSize){
 					 model_points.push_back(Point3d(y,x,0));
 					 cout << "x="<<x<<"y="<<y<<endl;
 				 }

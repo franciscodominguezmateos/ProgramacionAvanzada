@@ -64,7 +64,7 @@ float getRand(float max,float min=0){
 void displayMe(void){
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 	vistas[0].render();
-	fondoTablero.render();
+	fondo.render();
     glLoadIdentity();
     camaras[0].render();
     e.render();
@@ -193,7 +193,9 @@ void reshape(int width,int height){
 }
 void initCamAR(){
 	 tablero=imread("imgname.bmp");
+
 	 /*
+
 	 Size patternsize(6,8); //interior number of corners
 	 Mat gray;
 	 cvtColor(tablero,gray, COLOR_BGR2GRAY);
@@ -241,6 +243,7 @@ void initCamAR(){
 		 camAR= new CamaraAR(Mat::zeros(3,1,cv::DataType<double>::type),
 				             Mat::zeros(3,1,cv::DataType<double>::type));
 	 }
+	 texTablero.setImage(tablero);
 }
 
 int main(int argc, char** argv){
