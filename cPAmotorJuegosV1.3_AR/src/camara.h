@@ -44,6 +44,36 @@ public:
 		 glTranslatef(-getPos().getX(),-getPos().getY(),-getPos().getZ());
 	}
 };
+class CamaraTPS : public Camara {
+	Solido *s;
+public:
+	CamaraTPS(double x = 0, double y = 1.65, double z = 0) :Camara(x, y, z) {}
+	void setSolido(Solido *s) { this->s = s; }
+	Solido *getSolido() { return s; }
+	void update(double dt) {
+		double ry = rot2rad(s->getRot().getY());
+		Vector3D vel = { sin(ry),0,cos(ry) };
+		//cout << "vel=" << vel << endl;
+		//s->setVel(vel);
+		s->setPos(s->getPos() + vel * dt);
+	}
+	void updateLateral(double dt) {
+		double ry = rot2rad(s->getRot().getY());
+		Vector3D newV = { -cos(ry),0,sin(ry) };
+		s->setPos(s->getPos() + newV * dt);
+	}
+	void render() {
+		glTranslatef(-this->getPos().getX(), -this->getPos().getY(), -this->getPos().getZ());
+		glRotatef(getRot().getX(), 1, 0, 0);
+		glRotatef(getRot().getY(), 0, 1, 0);
+		glRotatef(getRot().getZ(), 0, 0, 1);
+
+		glRotatef(-s->getRot().getX(), 1, 0, 0);
+		glRotatef(-s->getRot().getY(), 0, 1, 0);
+		glRotatef(-s->getRot().getZ(), 1, 0, 1);
+		glTranslatef(-s->getPos().getX(), -s->getPos().getY(), -s->getPos().getZ());
+	}
+};
 class CamaraFly: public Camara {
 public:
 	CamaraFly(double x=0,double y=1.65,double z=0):Camara(x,y,z){}

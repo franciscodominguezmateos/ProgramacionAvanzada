@@ -223,7 +223,7 @@ int main(int argc, char** argv){
  e.add(new Luz(Vector3D( 50,50,15)));
  e.add(new Luz(Vector3D(-50,50,15)));
  //m=new Modelo("/home/francisco/git/ProgramacionAvanzada/cPAmotorJuevosV0.9/minion01.obj");
- m=new Modelo("Debug/minion.obj");
+ m=new Modelo("mk_kart_triangles_only.obj");
  m->setPos(Vector3D(0,-0.5,1));
  m->setVel(Vector3D(getRand(10,-10),0,-1.1));
  e.add(m);
