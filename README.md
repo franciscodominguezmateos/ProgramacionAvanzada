@@ -1,5 +1,6 @@
 # ProgramacionAvanzada
-Material de la Asignatura de Programacion Avanzada
+## Material de la Asignatura de Programacion Avanzada
+En esta asignatura de construye un motor de video juegos desde cero a la vez que se introducen conceptos avanzados de programacion orientada a objetos y C++.
 
 ![Screenshot](Screenshot_from_2018-12-10_18-58-44.png)
 
