@@ -293,7 +293,7 @@ int main(int argc, char** argv){
  p=new Pared(10);
  p->setPos(Vector3D(0,0, 2));
  //e.add(p);
-
+/*
  p=new Pared(100);
  p->setPos(Vector3D(0,0,-50));
  e.add(p);
@@ -308,7 +308,7 @@ int main(int argc, char** argv){
  p->setPos(Vector3D(50,0,0));
  p->setVertical(true);
  e.add(p);
-
+*/
  Vector3D v;
  pc=new Cubo();
  pc->setPos(Vector3D(0.6,0,0));
@@ -381,17 +381,17 @@ int main(int argc, char** argv){
  glutCreateWindow("Hello wold :D");
  init();
 
- Vector3D p0(-50,0,-50);
- Vector3D p1( 50,0,-50);
- Vector3D p2( 50,0, 50);
- Vector3D p3(-50,0, 50);
+ Vector3D p0(-80,0,-80);
+ Vector3D p1(-80,0, 80);
+ Vector3D p2( 80,0, 80);
+ Vector3D p3( 80,0,-80);
  Rectangulo *ret;
  ret=new Rectangulo(p0,p1,p2,p3);
  ret->setCol(Vector3D(1,1,1));
- ladrillos.setImage(imread("brick_pavement_0077_01_preview.jpg"));
+ ladrillos.setImage(imread("mario_kart_circuit.jpg"));
  ret->getTex()=ladrillos;
- ret->setNU(2);
- ret->setNV(2);
+ ret->setNU(1);
+ ret->setNV(1);
  e.add(ret);
  p0=Vector3D(  0, 0,-10);
  p1=Vector3D( 20, 0,-10);
