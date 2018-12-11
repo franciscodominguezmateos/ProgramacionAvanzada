@@ -224,7 +224,8 @@ void init(void){
  texTv.init();
  texTablero.init();
  spiderTex.init();
- spiderTex.setImage(imread("TheAmazingSpiderman1Tex.png"));
+ //spiderTex.setImage(imread("TheAmazingSpiderman1Tex.png"));
+ spiderTex.setImage(imread("M-FF_iOS_HERO_Natasha_Romanoff_Black_Widow_Age_Of_Ultron_Body_D.png"));
  marioKartTex.init();
  marioKartTex.setImage(imread("E_main.png"));
  minionTex.init();
@@ -257,8 +258,10 @@ int main(int argc, char** argv){
  e.add(new Luz(Vector3D( 50,50,15)));
  e.add(new Luz(Vector3D(-50,50,15)));
  //m=new Modelo("/home/francisco/git/ProgramacionAvanzada/cPAmotorJuevosV0.9/minion01.obj");
- m=new Modelo("TheAmazingSpiderman.obj");
+ //m=new Modelo("TheAmazingSpiderman.obj");
+ m=new Modelo("M-FF_iOS_HERO_Natasha_Romanoff_Black_Widow_Age_Of_Ultron.obj");
  m->setTexture(&spiderTex);
+ m->setScale(Vector3D(2,2,2));
  //m->setPos(Vector3D(0,-0.5,1));
  //m->setVel(Vector3D(getRand(10,-10),0,-1.1));
  e.add(m);

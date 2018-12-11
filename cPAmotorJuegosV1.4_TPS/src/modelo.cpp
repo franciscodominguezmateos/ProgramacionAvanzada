@@ -69,7 +69,7 @@ Triangulo *Modelo::parseTriangulo(string &linea){
 Triangulo *Modelo::parseTriangulos(string &linea){
 	vector<string> vs=split(linea);
 	if (vs.size()!=4)
-		throw runtime_error("not triangle detected in parseTriangulos from model.cpp");
+		throw runtime_error("Not triangle detected in parseTriangulos from model.cpp");
 	if (vs[0]!="f")
 		throw runtime_error("Not face line in parseTriangulos from model.cpp");
 	vector<string> vs0=split(vs[1],'/');
@@ -98,15 +98,17 @@ Triangulo *Modelo::parseTriangulos(string &linea){
 		Vector3D t0=*textures[vid0[1]];
 		Vector3D t1=*textures[vid1[1]];
 		Vector3D t2=*textures[vid2[1]];
+		t->setT0(t0);
+		t->setT1(t1);
+		t->setT2(t2);
+	}
+	if(vid0.size()==3){
 		Vector3D n0=*normals[vid0[2]];
 		Vector3D n1=*normals[vid1[2]];
 		Vector3D n2=*normals[vid2[2]];
 		t->setN0(n0);
 		t->setN1(n1);
 		t->setN2(n2);
-		t->setT0(t0);
-		t->setT1(t1);
-		t->setT2(t2);
 	}
 return t;
 }
