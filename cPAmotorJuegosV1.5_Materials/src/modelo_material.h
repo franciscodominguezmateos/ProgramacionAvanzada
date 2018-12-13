@@ -54,6 +54,7 @@ public:
 	inline float getAlto() {return maxY-minY;}
 	inline float getProfundo(){return maxZ-minZ;}
 	inline void setScale(Vector3D s){scale=s;}
+	inline void setScale(double d){scale=Vector3D(d,d,d);}
 	inline Vector3D getScale(){return scale;}
 	void setTexture(Textura* tex){
 		for(Triangulo* t:triangulos)

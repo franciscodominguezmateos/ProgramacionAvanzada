@@ -34,6 +34,15 @@ void Triangulo::render(){
 	    glNormal3d(n2.getX(),n2.getY(),n2.getZ());
 	    glVertex3d(p2.getX(),p2.getY(),p2.getZ());
     glEnd();
+    if(drawNormals){
+		//Draw normal
+		glColor3f(1.0,0,0);
+		glBegin(GL_LINES);
+		  Vector3D up=center+vn;
+		  glVertex3f(center.getX(),center.getY(),center.getZ());
+		  glVertex3f(up.getX(),up.getY(),up.getZ());
+		glEnd();
+    }
     if(textura!=nullptr) textura->desactivar();
 }
 

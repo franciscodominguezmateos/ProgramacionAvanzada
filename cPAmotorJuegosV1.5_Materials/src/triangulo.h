@@ -16,26 +16,29 @@ using namespace std;
 
 class Triangulo: public Plano {
 protected:
-	Vector3D p0,p1,p2;
+	Vector3D p0,p1,p2,center;
 	Vector3D n0,n1,n2;
 	Vector3D t0,t1,t2;
 	Textura* textura;
+	bool drawNormals;
 public:
 	Triangulo(Vector3D p0,Vector3D p1,Vector3D p2):Plano(),p0(p0),p1(p1),p2(p2){
 		textura=nullptr;
 		Vector3D v0=p1-p0;
 		Vector3D v1=p2-p1;
 		Vector3D vn=v0.crossProduct(v1);
-		if(vn.length()<0.00001)
-			cout << "Longitud muy pequeña"<<endl;
-		else
+		if(vn.length()>0.00001)
 			vn.normalize();
+		//else
+			//cout << "Longitud muy pequeña"<<endl;
 		n0=n1=n2=vn;
 		float d=vn*p2;
 		this->setA(vn.getX());
 		this->setB(vn.getY());
 		this->setC(vn.getZ());
 		this->setD(d);
+		center=(p0+p1+p2)/3;
+		drawNormals=false;
 	}
 	Triangulo(const Triangulo &t):Plano(t),p0(t.p0),p1(t.p1),p2(t.p2){}
 	virtual Triangulo *clone(){return new Triangulo(*this);}
@@ -58,6 +61,7 @@ public:
 	inline void setT1(Vector3D &n){t1=n;}
 	inline void setT2(Vector3D &n){t2=n;}
 	inline void setTextura(Textura* &t){textura=t;}
+	inline void setDrawNormals(bool b){drawNormals=b;}
 	virtual ~Triangulo();
 	void render();
 };

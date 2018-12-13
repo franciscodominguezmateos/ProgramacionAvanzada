@@ -61,8 +61,11 @@ Triangulo *ModeloMaterial::parseTriangulo(string &linea){
 }
 Triangulo *ModeloMaterial::parseTriangulos(string &linea){
 	vector<string> vs=split(linea);
-	if (vs.size()!=4)
-		throw runtime_error("Not triangle detected in parseTriangulos from model.cpp");
+	if (vs.size()!=4){
+		//throw runtime_error("Not triangle detected in parseTriangulos from model.cpp");
+		//cout << "No triangle detected in "<<name<<" NO PROCESSED. May be a "<<vs.size()-1<<" faces poligon"<<endl;
+		return nullptr;
+	}
 	if (vs[0]!="f")
 		throw runtime_error("Not face line in parseTriangulos from model.cpp");
 	vector<string> vs0=split(vs[1],'/');
@@ -156,9 +159,11 @@ void ModeloMaterial::cargar(){
 			}
 			if (linea[0] == 'f'){
 				Triangulo *t=parseTriangulos(linea);
-				Textura* tex=materiales[currentMaterial].getMapKdTex();
-				t->setTextura(tex);
-				triangulos.push_back(t);
+				if(t){
+					Textura* tex=materiales[currentMaterial].getMapKdTex();
+					t->setTextura(tex);
+					triangulos.push_back(t);
+				}
 			}
 			if(linea.find("mtllib")!=string::npos){
 				vector<string> vs=split(linea);
@@ -174,6 +179,7 @@ void ModeloMaterial::cargar(){
 	else{
 		cout << "Fichero "+nombreFichero+" no existe."<<endl;
 	}
+	cout<< "El modelo "<< name << " tiene "<< triangulos.size() << " triangulos."<<endl;
 }
 void ModeloMaterial::cargarMateriales(string nombre){
 	string lineaUntrimmed;

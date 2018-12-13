@@ -123,7 +123,6 @@ void keyPressed(unsigned char key,int x,int y){
 	    CamaraTPS &cam=camaras[0];
 		s = cam.getSolido();
 		s->setRot(s->getRot() + Vector3D(0, 2, 0));
-		cout << "s->getRot()=" << s->getRot() << endl;
 		cam.update(dt);
 		break;}
  case 'p':
@@ -131,7 +130,6 @@ void keyPressed(unsigned char key,int x,int y){
 	    CamaraTPS &cam=camaras[0];
 		s = cam.getSolido();
 		s->setRot(s->getRot() - Vector3D(0, 2, 0));
-		cout << "s->getRot()=" << s->getRot() << endl;
 		cam.update(dt);
 		break;}
  break;
@@ -229,8 +227,6 @@ void init(void){
  spiderTex.setImage(imread("TheAmazingSpiderman1Tex.png"));
  marioKartTex.init();
  marioKartTex.setImage(imread("E_main.png"));
- minionTex.init();
- minionTex.setImage(imread("mc_golf_df.png"));
  mariokartTex.init();
  mariokartTex.setImage(imread("tex_0301.png"));
 }
@@ -256,8 +252,10 @@ int main(int argc, char** argv){
  vel=0;
  for(Camara &c:camaras)
 	 c.setPos(Vector3D(0,1.65,10));
- e.add(new Luz(Vector3D( 50,50,15)));
- e.add(new Luz(Vector3D(-50,50,15)));
+ Luz* l1=new Luz(Vector3D( 50,50,15));
+ l1->hazFija();
+ e.add(l1);
+ //e.add(new Luz(Vector3D(-50,50,15)));
  //m=new Modelo("/home/francisco/git/ProgramacionAvanzada/cPAmotorJuevosV0.9/minion01.obj");
  m=new Modelo("TheAmazingSpiderman.obj");
  m->setTexture(&spiderTex);
@@ -269,12 +267,6 @@ int main(int argc, char** argv){
  //Modelo* marioKart=new Modelo("mk_kart.obj");
  //marioKart->setTexture(&marioKartTex);
  //e.add(marioKart);
-
- Modelo* minion=new Modelo("mc_golf.obj");
- minion->setTexture(&minionTex);
- minion->setScale(Vector3D(4,4,4));
- minion->setVel(Vector3D(getRand(10,-10),0,getRand(10,-10)));
- e.add(minion);
 
 
 
@@ -307,7 +299,7 @@ int main(int argc, char** argv){
  p->setPos(Vector3D(50,0,0));
  p->setVertical(true);
  e.add(p);
-*/
+
  Vector3D v;
  pc=new Cubo();
  pc->setPos(Vector3D(0.6,0,0));
@@ -336,7 +328,7 @@ int main(int argc, char** argv){
  //e.add(pr);
  //cout <<"Rosco="<<*pr<<endl;
 
- cout << e <<endl;
+ //cout << e <<endl;
 
  Escena e0(e);
 
@@ -371,7 +363,7 @@ int main(int argc, char** argv){
  cout<< pf->getPos() << endl;
  cout<<"Escena guardada"<<endl;
  //cout <<e0<<endl;
-
+*/
  glutInit(&argc,argv);
  //glutInitDisplayMode(GLUT_SINGLE);
  glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
@@ -382,20 +374,41 @@ int main(int argc, char** argv){
 
 
 
- ModeloMaterial* mariokart=new ModeloMaterial("mariokart.obj");
- mariokart->setScale(Vector3D(0.25,0.25,0.25));
+ ModeloMaterial* mariokart=new ModeloMaterial("mk_kart.obj");
+ mariokart->setScale(3);
  e.add(mariokart);
  camaras[0].setSolido(mariokart);
 
  ModeloMaterial* mm=new ModeloMaterial("M-FF_iOS_HERO_Natasha_Romanoff_Black_Widow_Age_Of_Ultron.obj");
  mm->setPos(Vector3D(4,0,0));
  mm->setScale(Vector3D(4,4,4));
+ mm->setVel(Vector3D(getRand(10,-10),0,getRand(10,-10)));
  e.add(mm);
 
- ModeloMaterial* copcar=new ModeloMaterial("mario_course.obj");
- copcar->setPos(Vector3D(0,-5000,0));
- copcar->setScale(Vector3D(0.5,0.5,0.5));
- e.add(copcar);
+ ModeloMaterial* felicia=new ModeloMaterial("Felicia.obj");
+ felicia->setPos(Vector3D(4,0,0));
+ felicia->setScale(0.5);
+ felicia->setVel(Vector3D(getRand(10,-10),0,getRand(10,-10)));
+ e.add(felicia);
+
+ ModeloMaterial* circuit=new ModeloMaterial("course_model.obj");
+ circuit->hazFija();
+ circuit->setPos(Vector3D(10,-6,-10));
+ circuit->setScale(1);
+ //circuit->drawNormals();
+ e.add(circuit);
+
+ ModeloMaterial* shrek=new ModeloMaterial("shrek.obj");
+ shrek->setPos(Vector3D(-8,0,0));
+ shrek->setScale(0.25);
+ shrek->setVel(Vector3D(getRand(10,-10),0,getRand(10,-10)));
+ e.add(shrek);
+
+ ModeloMaterial* minion_golf=new ModeloMaterial("mc_golf.obj");
+ minion_golf->setPos(Vector3D(-4,0,0));
+ minion_golf->setScale(4);
+ minion_golf->setVel(Vector3D(getRand(10,-10),10,getRand(10,-10)));
+ e.add(minion_golf);
 
  Vector3D p0(-80,0,-80);
  Vector3D p1(-80,0, 80);
@@ -408,7 +421,7 @@ int main(int argc, char** argv){
  ret->getTex()=ladrillos;
  ret->setNU(1);
  ret->setNV(1);
- e.add(ret);
+ //e.add(ret);
  p0=Vector3D(  0, 0,-10);
  p1=Vector3D( 20, 0,-10);
  p2=Vector3D( 20,10,-10);

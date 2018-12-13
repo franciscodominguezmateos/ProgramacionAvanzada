@@ -1,0 +1,308 @@
+# 3ds Max Wavefront OBJ Exporter v0.97b - (c)2007 guruware
+# File Created: 05.01.2012 00:26:55
+
+newmtl Material__280
+	Ns 10.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.5880 0.5880 0.5880
+	Kd 0.5880 0.5880 0.5880
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Documents and Settings\user1\Desktop\quickbms\Felicia\felicia_tex01_bm.png
+	map_Kd C:\Documents and Settings\user1\Desktop\quickbms\Felicia\felicia_tex01_bm.png
+
+newmtl Material__267
+	Ns 10.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.5880 0.5880 0.5880
+	Kd 0.5880 0.5880 0.5880
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Documents and Settings\user1\Desktop\quickbms\Felicia\felicia_tex01_bm.png
+	map_Kd C:\Documents and Settings\user1\Desktop\quickbms\Felicia\felicia_tex01_bm.png
+
+newmtl Material__258
+	Ns 10.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.5880 0.5880 0.5880
+	Kd 0.5880 0.5880 0.5880
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Documents and Settings\user1\Desktop\quickbms\Felicia\felicia_tex01_bm.png
+	map_Kd C:\Documents and Settings\user1\Desktop\quickbms\Felicia\felicia_tex01_bm.png
+
+newmtl Material__265
+	Ns 10.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.5880 0.5880 0.5880
+	Kd 0.5880 0.5880 0.5880
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Documents and Settings\user1\Desktop\quickbms\Felicia\felicia_tex01_bm.png
+	map_Kd C:\Documents and Settings\user1\Desktop\quickbms\Felicia\felicia_tex01_bm.png
+
+newmtl Material__273
+	Ns 10.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.5880 0.5880 0.5880
+	Kd 0.5880 0.5880 0.5880
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Documents and Settings\user1\Desktop\quickbms\Felicia\felicia_tex01_bm.png
+	map_Kd C:\Documents and Settings\user1\Desktop\quickbms\Felicia\felicia_tex01_bm.png
+
+newmtl Material__281
+	Ns 10.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.5880 0.5880 0.5880
+	Kd 0.5880 0.5880 0.5880
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Documents and Settings\user1\Desktop\quickbms\Felicia\felicia_tex01_bm.png
+	map_Kd C:\Documents and Settings\user1\Desktop\quickbms\Felicia\felicia_tex01_bm.png
+
+newmtl Material__261
+	Ns 10.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.5880 0.5880 0.5880
+	Kd 0.5880 0.5880 0.5880
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Documents and Settings\user1\Desktop\quickbms\Felicia\felicia_tex01_bm.png
+	map_Kd C:\Documents and Settings\user1\Desktop\quickbms\Felicia\felicia_tex01_bm.png
+
+newmtl Material__260
+	Ns 10.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.5880 0.5880 0.5880
+	Kd 0.5880 0.5880 0.5880
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Documents and Settings\user1\Desktop\quickbms\Felicia\felicia_tex03_bm.png
+	map_Kd C:\Documents and Settings\user1\Desktop\quickbms\Felicia\felicia_tex03_bm.png
+
+newmtl Material__257
+	Ns 10.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.5880 0.5880 0.5880
+	Kd 0.5880 0.5880 0.5880
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Documents and Settings\user1\Desktop\quickbms\Felicia\felicia_tex01_bm.png
+	map_Kd C:\Documents and Settings\user1\Desktop\quickbms\Felicia\felicia_tex01_bm.png
+
+newmtl Material__263
+	Ns 10.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.5880 0.5880 0.5880
+	Kd 0.5880 0.5880 0.5880
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Documents and Settings\user1\Desktop\quickbms\Felicia\felicia_tex01_bm.png
+	map_Kd C:\Documents and Settings\user1\Desktop\quickbms\Felicia\felicia_tex01_bm.png
+
+newmtl chr_Felicia_model_1p_Felicia_tex01_BM
+	Ns 10.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.5880 0.5880 0.5880
+	Kd 0.5880 0.5880 0.5880
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+
+newmtl Material__272
+	Ns 10.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.5880 0.5880 0.5880
+	Kd 0.5880 0.5880 0.5880
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Documents and Settings\user1\Desktop\quickbms\Felicia\felicia_tex03_bm.png
+	map_Kd C:\Documents and Settings\user1\Desktop\quickbms\Felicia\felicia_tex03_bm.png
+
+newmtl Material__256
+	Ns 10.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.5880 0.5880 0.5880
+	Kd 0.5880 0.5880 0.5880
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Documents and Settings\user1\Desktop\quickbms\Felicia\felicia_tex01_bm.png
+	map_Kd C:\Documents and Settings\user1\Desktop\quickbms\Felicia\felicia_tex01_bm.png
+
+newmtl Material__254
+	Ns 10.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.5880 0.5880 0.5880
+	Kd 0.5880 0.5880 0.5880
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Documents and Settings\user1\Desktop\quickbms\Felicia\felicia_tex03_bm.png
+	map_Kd C:\Documents and Settings\user1\Desktop\quickbms\Felicia\felicia_tex03_bm.png
+
+newmtl Material__255
+	Ns 10.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.5880 0.5880 0.5880
+	Kd 0.5880 0.5880 0.5880
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Documents and Settings\user1\Desktop\quickbms\Felicia\felicia_tex01_bm.png
+	map_Kd C:\Documents and Settings\user1\Desktop\quickbms\Felicia\felicia_tex01_bm.png
+
+newmtl Material__283
+	Ns 10.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.5880 0.5880 0.5880
+	Kd 0.5880 0.5880 0.5880
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Documents and Settings\user1\Desktop\quickbms\Felicia\felicia_tex01_bm.png
+	map_Kd C:\Documents and Settings\user1\Desktop\quickbms\Felicia\felicia_tex01_bm.png
+
+newmtl Material__266
+	Ns 10.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.5880 0.5880 0.5880
+	Kd 0.5880 0.5880 0.5880
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Documents and Settings\user1\Desktop\quickbms\Felicia\felicia_tex01_bm.png
+	map_Kd C:\Documents and Settings\user1\Desktop\quickbms\Felicia\felicia_tex01_bm.png
+
+newmtl Material__271
+	Ns 10.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.5880 0.5880 0.5880
+	Kd 0.5880 0.5880 0.5880
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Documents and Settings\user1\Desktop\quickbms\Felicia\felicia_tex01_bm.png
+	map_Kd C:\Documents and Settings\user1\Desktop\quickbms\Felicia\felicia_tex01_bm.png
+
+newmtl Material__269
+	Ns 10.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.5880 0.5880 0.5880
+	Kd 0.5880 0.5880 0.5880
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Documents and Settings\user1\Desktop\quickbms\Felicia\felicia_tex02_bm.png
+	map_Kd C:\Documents and Settings\user1\Desktop\quickbms\Felicia\felicia_tex02_bm.png
+
+newmtl Material__268
+	Ns 10.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.5880 0.5880 0.5880
+	Kd 0.5880 0.5880 0.5880
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Documents and Settings\user1\Desktop\quickbms\Felicia\felicia_tex02_bm.png
+	map_Kd C:\Documents and Settings\user1\Desktop\quickbms\Felicia\felicia_tex02_bm.png
+
+newmtl Material__284
+	Ns 10.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.5880 0.5880 0.5880
+	Kd 0.5880 0.5880 0.5880
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Documents and Settings\user1\Desktop\quickbms\Felicia\felicia_tex02_bm.png
+	map_Kd C:\Documents and Settings\user1\Desktop\quickbms\Felicia\felicia_tex02_bm.png
+
+newmtl Material__277
+	Ns 10.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.5880 0.5880 0.5880
+	Kd 0.5880 0.5880 0.5880
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka C:\Documents and Settings\user1\Desktop\quickbms\Felicia\felicia_tex02_bm.png
+	map_Kd C:\Documents and Settings\user1\Desktop\quickbms\Felicia\felicia_tex02_bm.png
