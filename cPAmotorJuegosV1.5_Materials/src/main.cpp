@@ -373,11 +373,19 @@ int main(int argc, char** argv){
  init();
 
 
-
+ /*  M A R I O   K A R T */
  ModeloMaterial* mariokart=new ModeloMaterial("mk_kart.obj");
- mariokart->setScale(3);
+ mariokart->setScale(2);
  e.add(mariokart);
  camaras[0].setSolido(mariokart);
+
+ /*  C I R C U I T O */
+ ModeloMaterial* circuit=new ModeloMaterial("mariocircuit.obj");
+ circuit->hazFija();
+ circuit->setPos(Vector3D(0,-4,0));
+ circuit->setScale(0.003);
+ //circuit->drawNormals();
+ e.add(circuit);
 
  ModeloMaterial* mm=new ModeloMaterial("M-FF_iOS_HERO_Natasha_Romanoff_Black_Widow_Age_Of_Ultron.obj");
  mm->setPos(Vector3D(4,0,0));
@@ -390,13 +398,6 @@ int main(int argc, char** argv){
  felicia->setScale(0.5);
  felicia->setVel(Vector3D(getRand(10,-10),0,getRand(10,-10)));
  e.add(felicia);
-
- ModeloMaterial* circuit=new ModeloMaterial("course_model.obj");
- circuit->hazFija();
- circuit->setPos(Vector3D(10,-6,-10));
- circuit->setScale(1);
- //circuit->drawNormals();
- e.add(circuit);
 
  ModeloMaterial* shrek=new ModeloMaterial("shrek.obj");
  shrek->setPos(Vector3D(-8,0,0));
