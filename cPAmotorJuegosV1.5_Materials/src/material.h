@@ -24,7 +24,9 @@ class Material{
 	Textura* map_Ka_tex;
 	string map_Kd;
 	Textura* map_Kd_tex;
+	string path;
 public:
+	Material(string path=""):path(path){}
 	void parseLine(string linea){
 		vector<string> vs=split(linea);
 		if(vs[0]=="Ns")
@@ -47,10 +49,18 @@ public:
 			Ks=Vector3D(stod(vs[1]),stod(vs[2]),stod(vs[3]));
 		if(vs[0]=="Ke")
 			Ke=Vector3D(stod(vs[1]),stod(vs[2]),stod(vs[3]));
-		if(vs[0]=="map_Ka")
+		if(vs[0]=="map_Ka"){
 			map_Ka=vs[1];
-		if(vs[0]=="map_Kd")
+			map_Ka_tex=new Textura();
+			map_Ka_tex->init();
+			map_Ka_tex->setImage(imread(path+map_Ka));
+		}
+		if(vs[0]=="map_Kd"){
 			map_Kd=vs[1];
+			map_Kd_tex=new Textura();
+			map_Kd_tex->init();
+			map_Kd_tex->setImage(imread(path+map_Kd));
+		}
 	}
 
 	double getD() const {
@@ -109,7 +119,7 @@ public:
 		map_Ka = mapKa;
 	}
 
-	const Textura* getMapKaTex() const {
+	Textura* getMapKaTex() const {
 		return map_Ka_tex;
 	}
 
@@ -125,7 +135,7 @@ public:
 		map_Kd = mapKd;
 	}
 
-	const Textura* getMapKdTex() const {
+	Textura* getMapKdTex() const {
 		return map_Kd_tex;
 	}
 

@@ -5,8 +5,7 @@
  *      Author: francisco
  */
 
-#ifndef MODELO_H_
-#define MODELO_H_
+#pragma once
 #include <stdio.h>
 #include <vector>
 #include <map>
@@ -28,13 +27,23 @@ class ModeloMaterial: public Solido {
 	vector<Vector3D *> normals;
 	vector<Triangulo *> triangulos;
 	map<string,Material> materiales;
+	string currentMaterial;
 	float maxX,maxY,maxZ;
 	float minX,minY,minZ;
 	Vector3D scale;
+	string name;
+	string path;
 public:
+	static string model_base_path;
 	ModeloMaterial(){}
 
-	ModeloMaterial(string s){cargar(s);scale=Vector3D(1,1,1);}
+	ModeloMaterial(string s,string folder=""){
+		if(folder=="")
+			folder=takeAwayExtension(s)+"/";
+		path=model_base_path+folder;
+		name=s;cargar();
+		scale=Vector3D(1,1,1);
+	}
 	ModeloMaterial(const ModeloMaterial &m);
 	ModeloMaterial *clone(){return nullptr;}
 
@@ -62,6 +71,8 @@ public:
 	inline void render(){
 		Vector3D p=this->getPos();
 		glPushMatrix();
+//		if(name=="mario_course.obj")
+//			cout << "maroi _course"<<endl;
 		glTranslatef(p.getX(),p.getY(),p.getZ());
 		glRotatef(getRot().getX(), 1, 0, 0);
 		glRotatef(getRot().getY(), 0, 1, 0);
@@ -79,8 +90,8 @@ public:
 		glPopMatrix();
 	}
 
-	void cargarMateriales(string &nombreFichero);
-	void cargar(string &nombreFichero);
+	void cargarMateriales(string nombreFichero);
+	void cargar();
 
  	Vector3D  *parseVector3D(string &linea);
  	Vector3D  *parseVector2D(string &linea);
@@ -91,5 +102,3 @@ public:
 	//inline Contorno *getContorno();
 
 };
-
-#endif /* MODELO_H_ */

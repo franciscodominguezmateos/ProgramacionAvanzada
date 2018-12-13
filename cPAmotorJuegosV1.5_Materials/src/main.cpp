@@ -22,6 +22,7 @@
 #include "proyeccion_perspectiva.h"
 #include "pose_estimation_chessboard.h"
 #include "material.h"
+#include "modelo_material.h"
 
 using namespace cv;
 
@@ -225,8 +226,7 @@ void init(void){
  texTv.init();
  texTablero.init();
  spiderTex.init();
- //spiderTex.setImage(imread("TheAmazingSpiderman1Tex.png"));
- spiderTex.setImage(imread("M-FF_iOS_HERO_Natasha_Romanoff_Black_Widow_Age_Of_Ultron_Body_D.png"));
+ spiderTex.setImage(imread("TheAmazingSpiderman1Tex.png"));
  marioKartTex.init();
  marioKartTex.setImage(imread("E_main.png"));
  minionTex.init();
@@ -259,10 +259,9 @@ int main(int argc, char** argv){
  e.add(new Luz(Vector3D( 50,50,15)));
  e.add(new Luz(Vector3D(-50,50,15)));
  //m=new Modelo("/home/francisco/git/ProgramacionAvanzada/cPAmotorJuevosV0.9/minion01.obj");
- //m=new Modelo("TheAmazingSpiderman.obj");
- m=new Modelo("M-FF_iOS_HERO_Natasha_Romanoff_Black_Widow_Age_Of_Ultron.obj");
+ m=new Modelo("TheAmazingSpiderman.obj");
  m->setTexture(&spiderTex);
- m->setScale(Vector3D(4,4,4));
+ //m->setScale(Vector3D(4,4,4));
  //m->setPos(Vector3D(0,-0.5,1));
  //m->setVel(Vector3D(getRand(10,-10),0,-1.1));
  e.add(m);
@@ -277,11 +276,7 @@ int main(int argc, char** argv){
  minion->setVel(Vector3D(getRand(10,-10),0,getRand(10,-10)));
  e.add(minion);
 
- Modelo* mariokart=new Modelo("mariokart.obj");
- mariokart->setTexture(&mariokartTex);
- mariokart->setScale(Vector3D(0.25,0.25,0.25));
- e.add(mariokart);
- camaras[0].setSolido(mariokart);
+
 
  Solido *pt1=new Solido();
  Solido *pt2=new Solido();
@@ -384,6 +379,23 @@ int main(int argc, char** argv){
  glutInitWindowPosition(300,300);
  glutCreateWindow("Hello wold :D");
  init();
+
+
+
+ ModeloMaterial* mariokart=new ModeloMaterial("mariokart.obj");
+ mariokart->setScale(Vector3D(0.25,0.25,0.25));
+ e.add(mariokart);
+ camaras[0].setSolido(mariokart);
+
+ ModeloMaterial* mm=new ModeloMaterial("M-FF_iOS_HERO_Natasha_Romanoff_Black_Widow_Age_Of_Ultron.obj");
+ mm->setPos(Vector3D(4,0,0));
+ mm->setScale(Vector3D(4,4,4));
+ e.add(mm);
+
+ ModeloMaterial* copcar=new ModeloMaterial("mario_course.obj");
+ copcar->setPos(Vector3D(0,-5000,0));
+ copcar->setScale(Vector3D(0.5,0.5,0.5));
+ e.add(copcar);
 
  Vector3D p0(-80,0,-80);
  Vector3D p1(-80,0, 80);

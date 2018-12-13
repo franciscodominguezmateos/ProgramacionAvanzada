@@ -7,6 +7,8 @@
 
 #include "modelo_material.h"
 
+//must fihish on slash '/'
+string ModeloMaterial::model_base_path="modelos/";
 
 ModeloMaterial::~ModeloMaterial() {
 	// TODO Auto-generated destructor stub
@@ -115,16 +117,20 @@ void ModeloMaterial::calculaExtremos(Vector3D *v){
 	minZ=fmin(minZ,z);
 }
 
-void ModeloMaterial::cargar(string &nombreFichero){
+// model as to be in a floder named 'name' in model_base_path
+// in that folder should be a model file with name 'name'.obj
+void ModeloMaterial::cargar(){
+	string nombreFichero=path+name;
 	maxX=maxY=maxZ=-1e40;
 	minX=minY=minZ= 1e40;
 
-	std::string linea;
+	std::string lineaUntrimmed;
 
 	ifstream ficheroModeloObj(nombreFichero.c_str());
 	if (ficheroModeloObj.is_open()){
-		while (getline (ficheroModeloObj,linea)){
+		while (getline (ficheroModeloObj,lineaUntrimmed)){
 			//left trim linea TODO
+			string linea=trim(lineaUntrimmed);
 			if(linea[0]=='#' || linea.size()==0)
 				continue;
 			if (linea[0] == 'v')	{
@@ -148,16 +154,19 @@ void ModeloMaterial::cargar(string &nombreFichero){
 					cout<<"vertice no detectado"<<endl;
 				}
 			}
-			//Vector3D centro(minX+getAncho()/2.0,minY+getAlto()/2.0,minZ+getProfundo()/2);
 			if (linea[0] == 'f'){
 				Triangulo *t=parseTriangulos(linea);
+				Textura* tex=materiales[currentMaterial].getMapKdTex();
+				t->setTextura(tex);
 				triangulos.push_back(t);
-				//triangulos.push_back(centrar(t));
-				//delete t;
 			}
 			if(linea.find("mtllib")!=string::npos){
 				vector<string> vs=split(linea);
 				cargarMateriales(vs[1]);
+			}
+			if(linea.find("usemtl")!=string::npos){
+				vector<string> vs=split(linea);
+				currentMaterial=vs[1];
 			}
 		}
 		ficheroModeloObj.close();
@@ -166,25 +175,25 @@ void ModeloMaterial::cargar(string &nombreFichero){
 		cout << "Fichero "+nombreFichero+" no existe."<<endl;
 	}
 }
-void ModeloMaterial::cargarMateriales(string &nombreFichero){
-	string linea;
+void ModeloMaterial::cargarMateriales(string nombre){
+	string lineaUntrimmed;
 	string matName;
+	string nombreFichero=path+nombre;
 
 	ifstream ficheroModeloObj(nombreFichero.c_str());
 	if (ficheroModeloObj.is_open()){
-		while (getline (ficheroModeloObj,linea)){
-			//left trim linea TODO
+		while (getline (ficheroModeloObj,lineaUntrimmed)){
+			string linea=trim(lineaUntrimmed);
 			if(linea[0]=='#' || linea.size()==0)
 				continue;
 			if(linea.find("newmtl")!=string::npos){
 				vector<string> vs=split(linea);
 				matName=vs[1];
-				materiales[matName]=Material();
+				materiales[matName]=Material(path);
 			}
 			else{
 				materiales[matName].parseLine(linea);
 			}
-
 		}
 		ficheroModeloObj.close();
 	}
