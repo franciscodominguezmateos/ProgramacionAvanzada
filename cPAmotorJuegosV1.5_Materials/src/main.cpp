@@ -383,19 +383,19 @@ int main(int argc, char** argv){
 
  /*  M A R I O   K A R T */
  mariokart=new ModeloMaterial("pk_kart.obj");
- mariokart->setScale(2);
+ mariokart->setScale(1);
  e.add(mariokart);
  camaras[0].setSolido(mariokart);
- mariokart->setPos(Vector3D(-38.7769,1.0001,46.9525));
+ //mariokart->setPos(Vector3D(-38.7769,1.0001,46.9525));
 
  /*  C I R C U I T O */
- circuit=new ModeloMaterial("test_WiFiTest1.obj");
+ circuit=new ModeloMaterial("course_model.obj");
  circuit->hazFija();
- circuit->setPos(Vector3D(0,-50,0));
- circuit->setScale(0.1);
+ circuit->setPos(Vector3D(50,-5,-50));
+ circuit->setScale(0.8);
  //circuit->drawNormals();
  e.add(circuit);
-
+/*
  m=new ModeloMaterial("TheAmazingSpiderman.obj");
  //m->setScale(Vector3D(4,4,4));
  //m->setPos(Vector3D(0,-0.5,1));
@@ -467,7 +467,7 @@ int main(int argc, char** argv){
  ce=new CuboElastico(2);
  ce->setTexture(tex);
  e.add(ce);
-
+*/
  initCamAR();
  fondo.setTextura(texTv);
  fondoTablero.setTextura(texTablero);

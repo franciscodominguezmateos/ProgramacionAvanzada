@@ -1,0 +1,132 @@
+# Blender MTL File: 'old_sky_gba.obj'
+# Material Count: 10
+
+newmtl agb_block
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.972549 0.972549 0.972549
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd agb_block.png
+map_Ka agb_block.png
+map_d agb_block.png
+
+newmtl sky_StartLine
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.972549 0.972549 0.972549
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd sky_StartLine.png
+map_Ka sky_StartLine.png
+map_d sky_StartLine.png
+
+newmtl sky_bridge1
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.972549 0.972549 0.972549
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd sky_bridge1.png
+map_Ka sky_bridge1.png
+map_d sky_bridge1.png
+
+newmtl sky_cloud1
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.972549 0.972549 0.972549
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd sky_cloud1.png
+map_Ka sky_cloud1.png
+map_d sky_cloud1.png
+
+newmtl sky_dashJ
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.972549 0.972549 0.972549
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd sky_dashJ.png
+map_Ka sky_dashJ.png
+map_d sky_dashJ.png
+
+newmtl sky_dirt1
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.972549 0.972549 0.972549
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd sky_dirt1.png
+map_Ka sky_dirt1.png
+map_d sky_dirt1.png
+
+newmtl sky_jump1
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.972549 0.972549 0.972549
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd sky_jump1.png
+map_Ka sky_jump1.png
+map_d sky_jump1.png
+
+newmtl sky_road1
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.972549 0.972549 0.972549
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd sky_road1.png
+map_Ka sky_road1.png
+map_d sky_road1.png
+
+newmtl sky_sky1
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.972549 0.972549 0.972549
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd sky_sky1.png
+map_Ka sky_sky1.png
+map_d sky_sky1.png
+
+newmtl sky_tuta1
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.972549 0.972549 0.972549
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd sky_tuta1.png
+map_Ka sky_tuta1.png
+map_d sky_tuta1.png
