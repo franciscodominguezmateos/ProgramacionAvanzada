@@ -38,7 +38,6 @@ double vel;
 
 ModeloMaterial* circuit;
 ModeloMaterial* mariokart;
-Triangulo* t1,*t2,*t3;
 
 Escena e;
 Cubo *pc;
@@ -124,7 +123,7 @@ void upKart(){
 		if(t->getNormal()*up>0.5){
 			if(t->isIn(p)){
 				double d=t->distancia(p);
-				if(fabs(d)<10)
+				if(fabs(d)<3)
 				if(d<min){
 					min=d;
 					nearest=t;
@@ -134,14 +133,10 @@ void upKart(){
 	}
 	if(nearest!=nullptr){
 		nearest->setDrawNormals(true);
-		//cout << nearest->isIn(p);
+//		cout << nearest->isIn(p);
+
 		/*
-		Vector3D p0=nearest->getP0();
-		Vector3D p1=nearest->getP1();
-		Vector3D p2=nearest->getP2();
-		p=nearest->project(p);
-		*/
-		/*
+		//Show kart track
 		Esfera* ef=new Esfera();
 		ef->setCol(Vector3D(1,1,0));
 		ef->setR(0.2);
@@ -149,29 +144,19 @@ void upKart(){
 		ef->setPos(p);
 		e.add(ef);
 		*/
-/*
-		if(t1!=nullptr)
-			*t1=Triangulo(p0,p1,p);
-		if(t2!=nullptr)
-			*t2=Triangulo(p1,p2,p);
-		if(t3!=nullptr)
-			*t3=Triangulo(p2,p0,p);
-		 t1->setDrawNormals(true);
-		 t2->setDrawNormals(true);
-		 t3->setDrawNormals(true);
-		 */
-		Vector3D f=Vector3D(0,1,0);
+
+		Vector3D f=nearest->getNormal();
 		double dist=nearest->distancia(p);
 		//up fast down slow
 		if(dist<0)
 			dist*=0.95;
 		else
-			dist*=0.1;
-		cout<<"dist="<<dist<<" p="<<p<<endl;
+			dist*=0.95;
+//		cout<<"dist="<<dist<<" p="<<p<<endl;
 		Vector3D newPos=p-f*dist;
 		mariokart->setPos(newPos);
-			//mariokart->aplicaFuerza(f*10);
-			//mariokart->update(dt);
+		//mariokart->aplicaFuerza(f*10);
+		//mariokart->update(dt);
 	}
 }
 void idle(){
@@ -194,19 +179,6 @@ void keyPressed(unsigned char key,int x,int y){
  case '.':{
 	 Vector3D p=mariokart->getPos();
 	 cout << "kart pos="<<p<<endl;
-
-	 double min=1e40;
-	 Triangulo* nearest=nullptr;
-	 for(Triangulo* &t:circuit->getTriangulos()){
-		 double d=t->getCenter().distancia(p);
-		 if(d<min){
-			 min=d;
-			 nearest=t;
-		 }
-	 }
-	 if(nearest!=nullptr){
-		 cout << nearest->isIn(p)<<endl;
-	 }
 	 break;
  }
  case 'o':
@@ -338,121 +310,76 @@ void initCamAR(){
 	 texTablero.setImage(tablero);
 }
 
+void loadCircuit(int i){
+	 /*  C I R C U I T O S */
+	 if(i==0){
+		 //Initial pose of mariokart in this circuit
+		 mariokart->setPos(Vector3D(4.71491,4,69.8178));
+		 circuit=new ModeloMaterial("mariocircuit.obj");
+		 circuit->hazFija();
+		 circuit->setDrawNormals(true);
+		 circuit->doScale(0.004);
+		 e.add(circuit);
+	 }
+	 if(i==1){
+		 //Initial pose of mariokart in this circuit
+		 mariokart->setPos(Vector3D(46,10,-45));
+		 mariokart->setRot(Vector3D(0,90,0));
+		 circuit=new ModeloMaterial("mario_course.obj");
+		 circuit->hazFija();
+		 //circuit->setDrawNormals(true);
+		 circuit->doScale(0.5);
+		 e.add(circuit);
+	 }
+	 if(i==2){
+		 //Initial pose of mariokart in this circuit
+		 mariokart->setPos(Vector3D(0,6,0));
+		 //mariokart->setRot(Vector3D(0,90,0));
+		 circuit=new ModeloMaterial("course_model.obj");
+		 circuit->hazFija();
+		 //circuit->setDrawNormals(true);
+		 //circuit->doScale(0.5);
+		 e.add(circuit);
+	 }
+	 if(i==3){
+		 //Initial pose of mariokart in this circuit
+		 mariokart->setPos(Vector3D(66,12,38));
+		 //mariokart->setRot(Vector3D(0,90,0));
+		 circuit=new ModeloMaterial("Kinoko.obj");
+		 circuit->hazFija();
+		 //circuit->setDrawNormals(true);
+		 circuit->doScale(0.5);
+		 e.add(circuit);
+	 }
+	 if(i==4){
+		 //Initial pose of mariokart in this circuit
+		 mariokart->setPos(Vector3D(0,0,0));
+		 //mariokart->setRot(Vector3D(0,90,0));
+		 circuit=new ModeloMaterial("KoopaTroopaBeach.obj");
+		 circuit->hazFija();
+		 //circuit->setDrawNormals(true);
+		 circuit->doScale(0.5);
+		 e.add(circuit);
+	 }
+}
 int main(int argc, char** argv){
  srand(10);
  vel=0;
- //Triangle isIn TEST work fine
- t1=new Triangulo(Vector3D(0,0,0),Vector3D(1,0,0),Vector3D(0,1,0));
- t2=new Triangulo(Vector3D(0,0,0),Vector3D(1,0,0),Vector3D(0,1,0));
- t3=new Triangulo(Vector3D(0,0,0),Vector3D(1,0,0),Vector3D(0,1,0));
- t1->setDrawNormals(true);
- t2->setDrawNormals(true);
- t3->setDrawNormals(true);
- e.add(t1);
- e.add(t2);
- e.add(t3);
  //cout << t.isIn(Vector3D(0.25,0.25,0))<<endl;
- for(Camara &c:camaras)
+ for(Camara &c:camaras){
 	 c.setPos(Vector3D(0,1.65,10));
+	 c.setRot(Vector3D(0,180,0));
+ }
  Luz* l1=new Luz(Vector3D( 50,50,15));
  l1->hazFija();
  e.add(l1);
  //e.add(new Luz(Vector3D(-50,50,15)));
 
- Solido *pt1=new Solido();
- Solido *pt2=new Solido();
- pt1->setPos(Vector3D(0,3.5,0));
- pt2->setPos(Vector3D(1,3,0));
- pt2->setF(Vector3D(0,-0.98,0));
- Pendulo *pdl=new Pendulo(pt1,pt2);
- e.add(pdl);
- Pared *p;
- p=new Pared(10);
- p->setPos(Vector3D(0,0,-2));
- //e.add(p);
- p=new Pared(10);
- p->setPos(Vector3D(0,0, 2));
- //e.add(p);
-/*
- p=new Pared(100);
- p->setPos(Vector3D(0,0,-50));
- e.add(p);
- p=new Pared(100);
- p->setPos(Vector3D(0,0, 50));
- e.add(p);
- p=new Pared(100);
- p->setPos(Vector3D(-50,0,0));
- p->setVertical(true);
- e.add(p);
- p=new Pared(100);
- p->setPos(Vector3D(50,0,0));
- p->setVertical(true);
- e.add(p);
+ /*  M E N U  */
+ int ci;
+ cout << "Please enter the circuit number from 0 to 4: ";
+ cin >>ci;
 
- Vector3D v;
- pc=new Cubo();
- pc->setPos(Vector3D(0.6,0,0));
- pc->setVel(Vector3D(-0.01,0,0));
- pc->setCol(Vector3D(1,0,0));
- pc->setS(0.4);
- //e.add(pc);
- cout <<"Cubo="<<*pc<<endl;
-
- Esfera *pf;
- pf=new Esfera();
- pf->setPos(Vector3D(-0.4,0,0));
- pf->setVel(Vector3D(-0.03,0,0.08));
- pf->setCol(Vector3D(1,0,1));
- pf->setR(0.4);
- //e.add(pf);
-
- Cilindro *pl;
- pl=new Cilindro();
- pl->setPos(Vector3D(0,0,-1));
- //e.add(pl);
-
- Rosco *pr;
- pr=new Rosco();
- pr->setPos(Vector3D(0,0,0.8));
- //e.add(pr);
- //cout <<"Rosco="<<*pr<<endl;
-
- //cout << e <<endl;
-
- Escena e0(e);
-
- Compuesto *arbol;
- arbol=new Compuesto();
- pf=new Esfera();
- pf->setR(3);
- pf->setPos(Vector3D(0,7.5,0));
- pf->setCol(Vector3D(0,1,0));
- arbol->add(pf);
- pl=new Cilindro(0.6,5);
- pl->setPos(Vector3D(0,5,0));
- pl->setCol(Vector3D(0.5,0.1,0));
- arbol->add(pl);
- Compuesto cp1=*arbol;
- //e.add(arbol);
- Compuesto *pa;
- for(int i=1;i<10;i++){
-	 pa=new Compuesto(*arbol);
-	 pa->setPos(Vector3D(getRand(50,-50),0,getRand(50,-50)));
-	 e.add(pa);
- }
- for(int i=1;i<100;i++){
-	 pf=new Esfera();
-	 pf->setPos(Vector3D(getRand(50,-50),getRand(2),-getRand(50,-50)));
-	 pf->setVel(Vector3D(getRand(1,-1),0,getRand(1,-1)));
-	 pf->setCol(Vector3D(getRand(1),getRand(1),getRand(1)));
-	 pf->setF(Vector3D(0,-9.8,0));
-	 pf->setR(getRand(3,0.25));
-	 e.add(pf);
- }
- cout<< pf->getPos() << endl;
- cout<<"Escena guardada"<<endl;
- //cout <<e0<<endl;
-*/
  glutInit(&argc,argv);
  //glutInitDisplayMode(GLUT_SINGLE);
  glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
@@ -462,6 +389,7 @@ int main(int argc, char** argv){
  init();
 
 
+ // In order to use textures fist init() as to be called
  /*  M A R I O   K A R T */
  mariokart=new ModeloMaterial("mk_kart.obj");
  mariokart->hazFija();
@@ -469,60 +397,12 @@ int main(int argc, char** argv){
  e.add(mariokart);
  camaras[0].setSolido(mariokart);
 
- /*  C I R C U I T O S */
- /*
- //Initial pose of mariokart in this circuit
- mariokart->setPos(Vector3D(4.71491,4,69.8178));
- circuit=new ModeloMaterial("mariocircuit.obj");
- circuit->hazFija();
- circuit->setDrawNormals(true);
- circuit->doScale(0.004);
- e.add(circuit);
-*/
- /*
- //Initial pose of mariokart in this circuit
- mariokart->setPos(Vector3D(46,10,-45));
- mariokart->setRot(Vector3D(0,90,0));
- circuit=new ModeloMaterial("mario_course.obj");
- circuit->hazFija();
- //circuit->setDrawNormals(true);
- circuit->doScale(0.5);
- e.add(circuit);
- */
- /*
- //Initial pose of mariokart in this circuit
- mariokart->setPos(Vector3D(0,6,0));
- //mariokart->setRot(Vector3D(0,90,0));
- circuit=new ModeloMaterial("course_model.obj");
- circuit->hazFija();
- //circuit->setDrawNormals(true);
- //circuit->doScale(0.5);
- e.add(circuit);
- */
- /*
- //Initial pose of mariokart in this circuit
- mariokart->setPos(Vector3D(66,12,38));
- //mariokart->setRot(Vector3D(0,90,0));
- circuit=new ModeloMaterial("Kinoko.obj");
- circuit->hazFija();
- //circuit->setDrawNormals(true);
- circuit->doScale(0.5);
- e.add(circuit);
- */
- //Initial pose of mariokart in this circuit
- mariokart->setPos(Vector3D(0,0,0));
- //mariokart->setRot(Vector3D(0,90,0));
- circuit=new ModeloMaterial("KoopaTroopaBeach.obj");
- circuit->hazFija();
- //circuit->setDrawNormals(true);
- circuit->doScale(0.5);
- e.add(circuit);
-
+ loadCircuit(ci);
 /*
  m=new ModeloMaterial("TheAmazingSpiderman.obj");
  //m->setScale(Vector3D(4,4,4));
  //m->setPos(Vector3D(0,-0.5,1));
- //m->setVel(Vector3D(getRand(10,-10),0,-1.1));
+ m->setVel(Vector3D(getRand(10,-10),0,-1.1));
  e.add(m);
 
  ModeloMaterial* mm=new ModeloMaterial("M-FF_iOS_HERO_Natasha_Romanoff_Black_Widow_Age_Of_Ultron.obj");

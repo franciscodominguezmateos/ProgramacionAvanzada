@@ -76,8 +76,8 @@ bool Triangulo::isIn(Vector3D pt){
 		return false;
 	double d0p=t01.getNormal()*vn;
 	//On the other hand  if p is out of triangle then dot product with plane normal should be negative
-	//if(d0p<0)
-	//	return false;
+	if(d0p<0)
+		return false;
 
 	// C H E C K I N G Triangle(p1,p2,p)
 	Triangulo t12=Triangulo(p1,p2,p);
@@ -87,8 +87,8 @@ bool Triangulo::isIn(Vector3D pt){
 		return false;
 	double d1p=t12.getNormal()*vn;
 	//On the other hand If p is out of triangle then dot product with plane normal should be negative
-	//if(d1p<0)
-	//	return false;
+	if(d1p<0)
+		return false;
 
 	// C H E C K I N G Triangle(p2,p0,p)
 	Triangulo t20=Triangulo(p2,p0,p);
@@ -98,8 +98,8 @@ bool Triangulo::isIn(Vector3D pt){
 		return false;
 	double d2p=t20.getNormal()*vn;
 	//On the other hand if p is out of triangle then dot product with plane normal should be negative
-	//if(d2p<0)
-	//	return false;
+	if(d2p<0)
+		return false;
 	//Here we have double check that p is in the triangle
 	return true;
 }

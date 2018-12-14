@@ -40,7 +40,7 @@ public:
 					double length=d.length();
 					FuerzaElastica *f1=new FuerzaElastica();
 					f1->setLongitudReposo(length);
-					f1->setKm(45);
+					f1->setKm(300);
 					f1->setParticula1(p1);
 					f1->setParticula2(p2);
 					fuerzasElasticas.push_back(f1);
