@@ -42,7 +42,22 @@ void Triangulo::render(){
 		  glVertex3f(center.getX(),center.getY(),center.getZ());
 		  glVertex3f(up.getX(),up.getY(),up.getZ());
 		glEnd();
+		glColor3f(0,0,1);
+		glBegin(GL_LINES);
+		  glVertex3f(p0.getX(),p0.getY(),p0.getZ());
+		  glVertex3f(p1.getX(),p1.getY(),p1.getZ());
+		  glVertex3f(p2.getX(),p1.getY(),p2.getZ());
+		  glVertex3f(p0.getX(),p0.getY(),p0.getZ());
+		glEnd();
     }
     if(textura!=nullptr) textura->desactivar();
 }
-
+// T O D O
+bool Triangulo::isIn(Vector3D p){
+	// p must be in the plane
+	if(distancia(p)>0.0001)
+		return false;
+	Vector3D v10=p1-p0;
+	Vector3D vp0=p-p0;
+	//Vector3D vx=v10.x(vp0);
+}

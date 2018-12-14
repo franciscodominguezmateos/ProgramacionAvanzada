@@ -26,10 +26,22 @@ public:
 	inline float getD() const {return d;}
 	inline void setD(float d) {this->d = d;}
 	//bool colision(Solido *s);
-	Vector3D getNormal(){
+	inline Vector3D getNormal(){
 		Vector3D v(a,b,c);
 		//v.normalize();
 		return v;
+	}
+	double distancia(Vector3D p){
+		double x=p.getX();
+		double y=p.getY();
+		double z=p.getZ();
+		return a*x+y*b+z*c+d;
+	}
+	Vector3D project(Vector3D p){
+		double d=distancia(p);
+		Vector3D vn=getNormal();
+		Vector3D vt=p-vn;
+		return vt;
 	}
 };
 

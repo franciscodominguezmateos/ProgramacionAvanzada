@@ -35,9 +35,13 @@ Mat tablero;
 
 double vel;
 
+
+ModeloMaterial* circuit;
+ModeloMaterial* mariokart;
+
 Escena e;
 Cubo *pc;
-Modelo *m;
+ModeloMaterial* m;
 Textura tex,ladrillos,paredTex,texTv,texTablero,spiderTex,marioKartTex,minionTex,mariokartTex;
 VideoCapture cap(0);
 CuboElastico *ce;
@@ -101,13 +105,27 @@ void setPoseCamAR(Mat &tablero){
 	 }
 	 texTablero.setImage(tablero);
 }
-
+void upKart(){
+	vector<Triangulo*> &triangulos=circuit->getTriangulos();
+	double min=1e40;
+	Triangulo* nearest=nullptr;
+	for(Triangulo* &t:triangulos){
+		double d=t->distancia(mariokart->getPos());
+		if(d<min){
+			min=d;
+			nearest=t;
+		}
+	}
+	Vector3D f=nearest->getNormal();
+	mariokart->aplicaFuerza(f);
+}
 void idle(){
-	t+=dt;
+ t+=dt;
  e.update(dt);
+ upKart();
  Mat i;
  cap>>i;
- tex.setImageFlipped(i);
+ tex.setImage(i);
  texTv.setImage(i);
  //setPoseCamAR(i);
  //tex.update();
@@ -118,6 +136,9 @@ void idle(){
 void keyPressed(unsigned char key,int x,int y){
 	Solido* s;
  switch(key){
+ case '.':
+	 cout << "kart pos="<<mariokart->getPos()<<endl;
+	 break;
  case 'o':
  case 'O':{
 	    CamaraTPS &cam=camaras[0];
@@ -256,19 +277,6 @@ int main(int argc, char** argv){
  l1->hazFija();
  e.add(l1);
  //e.add(new Luz(Vector3D(-50,50,15)));
- //m=new Modelo("/home/francisco/git/ProgramacionAvanzada/cPAmotorJuevosV0.9/minion01.obj");
- m=new Modelo("TheAmazingSpiderman.obj");
- m->setTexture(&spiderTex);
- //m->setScale(Vector3D(4,4,4));
- //m->setPos(Vector3D(0,-0.5,1));
- //m->setVel(Vector3D(getRand(10,-10),0,-1.1));
- e.add(m);
-
- //Modelo* marioKart=new Modelo("mk_kart.obj");
- //marioKart->setTexture(&marioKartTex);
- //e.add(marioKart);
-
-
 
  Solido *pt1=new Solido();
  Solido *pt2=new Solido();
@@ -374,18 +382,25 @@ int main(int argc, char** argv){
 
 
  /*  M A R I O   K A R T */
- ModeloMaterial* mariokart=new ModeloMaterial("mk_kart.obj");
+ mariokart=new ModeloMaterial("mk_kart.obj");
  mariokart->setScale(2);
  e.add(mariokart);
  camaras[0].setSolido(mariokart);
+ mariokart->setPos(Vector3D(-38.7769,1.0001,46.9525));
 
  /*  C I R C U I T O */
- ModeloMaterial* circuit=new ModeloMaterial("mariocircuit.obj");
+ circuit=new ModeloMaterial("test_WiFiTest1.obj");
  circuit->hazFija();
- circuit->setPos(Vector3D(0,-4,0));
- circuit->setScale(0.003);
+ circuit->setPos(Vector3D(0,-50,0));
+ circuit->setScale(0.1);
  //circuit->drawNormals();
  e.add(circuit);
+
+ m=new ModeloMaterial("TheAmazingSpiderman.obj");
+ //m->setScale(Vector3D(4,4,4));
+ //m->setPos(Vector3D(0,-0.5,1));
+ //m->setVel(Vector3D(getRand(10,-10),0,-1.1));
+ e.add(m);
 
  ModeloMaterial* mm=new ModeloMaterial("M-FF_iOS_HERO_Natasha_Romanoff_Black_Widow_Age_Of_Ultron.obj");
  mm->setPos(Vector3D(4,0,0));
@@ -445,12 +460,12 @@ int main(int argc, char** argv){
  tv->setCol(Vector3D(1,1,1));
  Mat i;
  cap>>i;
- texTv.setImage(i);
- tv->getTex()=texTv;
+ tex.setImage(i);
+ tv->getTex()=tex;
  e.add(tv);
 
  ce=new CuboElastico(2);
- ce->setTexture(texTv);
+ ce->setTexture(tex);
  e.add(ce);
 
  initCamAR();

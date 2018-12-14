@@ -64,6 +64,7 @@ public:
 	inline void setDrawNormals(bool b){drawNormals=b;}
 	virtual ~Triangulo();
 	void render();
+	bool isIn(Vector3D p);
 };
 
 #endif /* TRIANGULO_H_ */

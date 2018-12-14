@@ -79,13 +79,13 @@ public:
 		glRotatef(getRot().getY(), 0, 1, 0);
 		glRotatef(getRot().getZ(), 0, 0, 1);
 		glScalef(scale.getX(),scale.getY(),scale.getZ());
-		/*
+/*
 		glPushMatrix();
 		  glTranslatef(0,getAlto()/2.0,0);
-		  glColor3f(1,0,0);
+		  glColor3f(1,1,0);
 		  glutWireSphere(getAlto()/2.0,10,10);
 		glPopMatrix();
-		*/
+*/
 		for(Triangulo *t:triangulos)
 			t->render();
 		glPopMatrix();
@@ -101,5 +101,6 @@ public:
 	Triangulo *parseTriangulos(string &linea);
 	void calculaExtremos(Vector3D *v);
 	//inline Contorno *getContorno();
+	vector<Triangulo*> &getTriangulos(){return triangulos;}
 
 };
