@@ -37,3 +37,4 @@ string takeAwayExtension(string &s){
 	vector<string> vs=split(s,'.');
 	return vs[0];
 }
+

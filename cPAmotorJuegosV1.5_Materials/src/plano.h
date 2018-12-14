@@ -14,8 +14,14 @@ class Plano: public Solido {
 public:
 	Plano();
 	//vn must be normalized
-	Plano(Vector3D vn,Vector3D p):a(vn.getX()),b(vn.getY()),c(vn.getZ()),d(vn*p){}
+	Plano(Vector3D vn,Vector3D p):a(vn.getX()),b(vn.getY()),c(vn.getZ()),d(-(vn*p)){}
 	Plano(const Plano &p):Solido(p),a(p.a),b(p.b),c(p.c),d(p.d){}
+	Plano &operator=(const Plano &&p){
+		a=p.a;
+		b=p.b;
+		c=p.c;
+		d=p.d;
+	}
 	virtual ~Plano();
 	inline float getA() const {return a;}
 	inline void setA(float a) {this->a = a;}
@@ -35,12 +41,19 @@ public:
 		double x=p.getX();
 		double y=p.getY();
 		double z=p.getZ();
-		return a*x+y*b+z*c+d;
+		return a*x+b*y+c*z+d;
 	}
+	// Project the point p on this plane
 	Vector3D project(Vector3D p){
-		double d=distancia(p);
 		Vector3D vn=getNormal();
-		Vector3D vt=p-vn;
+		// distance vector perpendicular to plane and parallel to vn
+		double d=this->distancia(p);
+		Vector3D vp=vn*d;
+		// p=vt+vp then vt=p-vp
+		Vector3D vt=p-vp;
+		// the vt vector should be in the triangle plane
+		double dist=distancia(vt);
+		//assert(nearZero(dist));
 		return vt;
 	}
 };

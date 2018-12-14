@@ -63,7 +63,7 @@ public:
 			Solido *p2=fuerzasElasticas[i]->getParticula2();
 			Vector3D pos1=p1->getPos();
 			Vector3D pos2=p2->getPos();
-			Vector3D col=p1->getCol();
+			//Vector3D col=p1->getCol();
 			//glSetColor(col);
 			glColor3f(1.0,0,0);
 		    glBegin(GL_LINES);

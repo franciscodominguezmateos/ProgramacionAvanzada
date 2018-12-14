@@ -69,6 +69,16 @@ public:
 			t->setCol(c);
 		}
 	}
+	inline void setDrawNormals(bool b){
+		for(Triangulo* &t:triangulos){
+			t->setDrawNormals(b);
+		}
+	}
+	inline void doScale(double s){
+		for(Triangulo* &t:triangulos){
+			t->doScale(s);
+		}
+	}
 	inline void render(){
 		Vector3D p=this->getPos();
 		glPushMatrix();

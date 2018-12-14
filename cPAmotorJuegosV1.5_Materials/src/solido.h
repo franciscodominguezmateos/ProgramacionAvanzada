@@ -23,7 +23,18 @@ public:
 	 Solido(Vector3D p):pos(p),rot(0,0,0),vel(0,0,0),color(1,1,1),f(0,0,0),m(1.0),fija(false),edad(0){}
 	 Solido(double x,double y,double z):Solido(Vector3D(x,y,z)){}
 	 Solido():Solido(0,0,0) {}
-	 Solido(const Solido &s):pos(s.pos),vel(s.vel),color(s.color),f(s.f),m(s.m),fija(false){}
+	 Solido(const Solido &s):pos(s.pos),vel(s.vel),color(s.color),f(s.f),m(s.m),fija(s.fija){}
+	 Solido& operator=(const Solido &s){
+		 pos=s.pos;
+		 vel=s.vel;
+		 color=s.color;
+		 f=s.f;
+		 m=s.m;
+		 fija=s.fija;
+		 edad=s.edad;
+		 return *this;
+	 }
+	 virtual ~Solido(){}
 	 virtual Solido *clone (){return new Solido(*this);}
 	 inline Vector3D getPos(){return pos;}
 	 inline Vector3D getVel(){return vel;}

@@ -5,6 +5,7 @@
  *      Author: Francisco Dominguez
  */
 #include "vector3d.h"
+/*
 Vector3D Vector3D::operator+(Vector3D b){
  Vector3D ret;
  ret.x=x+b.x;
@@ -33,7 +34,7 @@ Vector3D Vector3D::operator/(double f){
  ret.z=z/f;
  return ret;
 }
-
+*/
 
 
 
