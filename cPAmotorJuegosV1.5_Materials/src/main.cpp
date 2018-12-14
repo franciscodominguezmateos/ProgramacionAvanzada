@@ -382,7 +382,7 @@ int main(int argc, char** argv){
 
 
  /*  M A R I O   K A R T */
- mariokart=new ModeloMaterial("mk_kart.obj");
+ mariokart=new ModeloMaterial("pk_kart.obj");
  mariokart->setScale(2);
  e.add(mariokart);
  camaras[0].setSolido(mariokart);
