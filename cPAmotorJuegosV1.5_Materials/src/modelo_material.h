@@ -41,7 +41,8 @@ public:
 		if(folder=="")
 			folder=takeAwayExtension(s)+"/";
 		path=model_base_path+folder;
-		name=s;cargar();
+		name=s;
+		cargar();
 		scale=Vector3D(1,1,1);
 	}
 	ModeloMaterial(const ModeloMaterial &m);
@@ -50,9 +51,10 @@ public:
 	virtual ~ModeloMaterial();
 
 	Triangulo *centrar(Triangulo *t);
-	inline float getAncho(){return maxX-minX;}
-	inline float getAlto() {return maxY-minY;}
-	inline float getProfundo(){return maxZ-minZ;}
+	inline float getAncho()    {return maxX-minX;}
+	inline float getAlto()     {return maxY-minY;}
+	inline float getProfundo() {return maxZ-minZ;}
+	inline Vector3D getCentro(){return Vector3D(minX+getAncho()/2.0,minY+getAlto()/2.0,minZ+getProfundo()/2);}
 	inline void setScale(Vector3D s){scale=s;}
 	inline void setScale(double d){scale=Vector3D(d,d,d);}
 	inline Vector3D getScale(){return scale;}
@@ -70,15 +72,30 @@ public:
 		}
 	}
 	inline void setDrawNormals(bool b){
-		for(Triangulo* &t:triangulos){
+		for(Triangulo* &t:triangulos)
 			t->setDrawNormals(b);
-		}
 	}
 	inline void doScale(double s){
-		for(Triangulo* &t:triangulos){
+		for(Triangulo* &t:triangulos)
 			t->doScale(s);
-		}
+		minX*=s;
+		minY*=s;
+		minZ*=s;
+		maxX*=s;
+		maxY*=s;
+		maxZ*=s;
 	}
+	inline void doTranslate(Vector3D v){
+		for(Triangulo* &t:triangulos)
+			t->doTranslate(v);
+		minX+=v.getX();
+		minY+=v.getY();
+		minZ+=v.getZ();
+		maxX+=v.getX();
+		maxY+=v.getY();
+		maxZ+=v.getZ();
+	}
+	inline void doCenter(){doTranslate(-getCentro());}
 	inline void render(){
 		Vector3D p=this->getPos();
 		glPushMatrix();

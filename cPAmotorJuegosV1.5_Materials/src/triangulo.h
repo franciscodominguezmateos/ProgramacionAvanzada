@@ -28,16 +28,17 @@ public:
 		Plano(),
 		p0(p0),p1(p1),p2(p2),
         v01(p1-p0),v12(p2-p1),v20(p0-p2),
-		textura(nullptr){
+		textura(nullptr),
+		drawNormals(false){
 		// VERY IMPORTANT triangles points order is uncounterclock
-		Vector3D vn=v01.crossProduct(v12);
-		//Area of a triangle is half the lenght of the cross product
+		Vector3D vn=v01.X(v12);
+		//Area of a triangle is half the length of the cross product
 		area=vn.length()/2;
 		try{
 			vn.normalize();
 		}
 		catch (exception &e){
-
+			//not normalize
 		}
 		//Initial homogeneous vertex normals
 		n0=n1=n2=vn;
@@ -48,7 +49,30 @@ public:
 		this->setD(-d);
 		//center of the triangle is pos field
 		this->setPos((p0+p1+p2)/3);
-		drawNormals=false;
+	}
+	// after changing p0, p1 or p2 this method should be called
+	void init(){
+        v01=p1-p0;
+        v12=p2-p1;
+        v20=p0-p2;
+
+		// VERY IMPORTANT triangles points order is uncounterclock
+		Vector3D vn=v01.X(v12);
+		//Area of a triangle is half the length of the cross product
+		area=vn.length()/2;
+		try{
+			vn.normalize();
+		}
+		catch (exception &e){
+			//not normalize
+		}
+		float d=vn*p2;
+		this->setA(vn.getX());
+		this->setB(vn.getY());
+		this->setC(vn.getZ());
+		this->setD(-d);
+		//center of the triangle is pos field
+		this->setPos((p0+p1+p2)/3);
 	}
 	Triangulo(const Triangulo &t):Plano(t),p0(t.p0),p1(t.p1),p2(t.p2),
 			v01(t.v01),v12(t.v12),v20(t.v20),
@@ -91,17 +115,13 @@ public:
 		p0*=s;
 		p1*=s;
 		p2*=s;
-		v01*=s;
-		v12*=s;
-		v20*=s;
-		Vector3D vn=v01.crossProduct(v12);
-		//Area of a triangle is half the lenght of the cross product
-		area=vn.length()/2;
-		float d=getNormal()*p2;
-		this->setD(-d);
-		//center of the triangle is pos field
-		this->setPos((p0+p1+p2)/3);
-
+		init();
+	}
+	inline void doTranslate(Vector3D &t){
+		p0+=t;
+		p1+=t;
+		p2+=t;
+		init();
 	}
 	virtual ~Triangulo();
 	void render();

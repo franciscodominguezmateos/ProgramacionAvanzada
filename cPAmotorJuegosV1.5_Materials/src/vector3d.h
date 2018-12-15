@@ -23,35 +23,14 @@ public:
 	Vector3Dx(const S &x, const S &y, const S &z) :x(x), y(y), z(z) {}
 	Vector3Dx(const Vector3Dx<S> &v) :x(v.x), y(v.y), z(v.z) {}
 	Vector3Dx<S> *clone() { return new Vector3Dx<S>(*this); }
-	Vector3Dx<S> operator+(const Vector3Dx<S> &b) {return	Vector3Dx<S>(x + b.x, y + b.y, z + b.z);}
-	Vector3Dx<S> operator-(const Vector3Dx<S> &b) {
-		Vector3Dx<S> ret(x-b.x,y-b.y,z-b.z);
-		return ret;
-	}
-	Vector3Dx<S> operator-() {
-		Vector3Dx<S> ret(-x,-y,-z);
-		return ret;
-	}
-	Vector3Dx<S> operator*(const S &d) {
-		Vector3Dx<S> ret;
-		ret.x = x * d;
-		ret.y = y * d;
-		ret.z = z * d;
-		return ret;
-	}
-	Vector3Dx<S> operator*=(const S &d){
-		x*=d;
-		y*=d;
-		z*=d;
-		return *this;
-	}
-	Vector3Dx<S> operator/(S d) {
-		Vector3Dx<S> ret;
-		ret.x = x / d;
-		ret.y = y / d;
-		ret.z = z / d;
-		return ret;
-	}
+	inline Vector3Dx<S> operator+(const Vector3Dx<S> &b) {return	Vector3Dx<S>(x + b.x, y + b.y, z + b.z);}
+	inline Vector3Dx<S> operator+=(const Vector3Dx<S> &v){x+=v.x;y+=v.y;z+=v.z;return *this;}
+	inline Vector3Dx<S> operator-() {return	Vector3Dx<S>(-x,-y,-z);}
+	inline Vector3Dx<S> operator-(const Vector3Dx<S> &b) {return Vector3Dx<S>(x-b.x,y-b.y,z-b.z);}
+	inline Vector3Dx<S> operator-=(const Vector3Dx<S> &v){x-=v.x;y-=v.y;z-=v.z;}
+	inline Vector3Dx<S> operator*(const S &d) {return Vector3Dx<S>(x * d, y * d, z * d);}
+	inline Vector3Dx<S> operator*=(const S &d){	x*=d; y*=d;	z*=d; return *this;	}
+	inline Vector3Dx<S> operator/(S d) {return 	Vector3Dx<S>(x / d, y / d, z / d);}
 	inline S getX() { return x; }
 	inline S getY() { return y; }
 	inline S getZ() { return z; }
@@ -64,24 +43,21 @@ public:
 	}
 	inline Vector3Dx<S> crossProduct(const Vector3Dx<S> &v2) {
 		Vector3Dx<S> &v1 = *this;
-		return Vector3Dx<S>(v1.y*v2.z - v1.z*v2.y,
-			v1.z*v2.x - v1.x*v2.z,
-			v1.x*v2.y - v1.y*v2.x);
+		return Vector3Dx<S>(
+				v1.y*v2.z - v1.z*v2.y,
+			    v1.z*v2.x - v1.x*v2.z,
+			    v1.x*v2.y - v1.y*v2.x);
 	}
 	//Sintactic version of crossProduct
 	inline Vector3Dx<S> X(const Vector3Dx<S> &v2) {
 		Vector3Dx<S> &v1 = *this;
-		return Vector3Dx<S>(v1.y*v2.z - v1.z*v2.y,
-			v1.z*v2.x - v1.x*v2.z,
-			v1.x*v2.y - v1.y*v2.x);
+		return Vector3Dx<S>(
+				v1.y*v2.z - v1.z*v2.y,
+			    v1.z*v2.x - v1.x*v2.z,
+			    v1.x*v2.y - v1.y*v2.x);
 	}
-	inline S lengthSquared() {
-		return x * x + y * y + z * z;
-	}
-
-	inline S length() {
-		return sqrt(lengthSquared());
-	}
+	inline S lengthSquared() {return x * x + y * y + z * z;}
+	inline S length() {return sqrt(lengthSquared());}
 	inline void normalize() {
 		S magnitude = length();
 		//assert(!equalsZero(magnitude));
@@ -92,7 +68,7 @@ public:
 		y *= magnitude;
 		z *= magnitude;
 	}
-	//Change the length of this vector but no the direction
+	//Change the length of this vector but not the direction
 	inline void setLength(S d){
 		Vector3Dx<S> &vn=*this;
 		vn.normalize();

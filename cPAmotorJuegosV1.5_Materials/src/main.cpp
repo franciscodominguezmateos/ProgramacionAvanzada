@@ -24,6 +24,7 @@
 #include "material.h"
 #include "modelo_material.h"
 #include "caja_elastica.h"
+#include "caja_modelo_elastico.h"
 
 using namespace cv;
 
@@ -47,6 +48,7 @@ Textura tex,ladrillos,paredTex,texTv,texTablero,spiderTex,marioKartTex,minionTex
 VideoCapture cap(0);
 CuboElastico *ce;
 CajaElastica* cje;
+CajaModeloElastico* cme;
 
 FondoTextura fondo,fondoTablero;
 
@@ -250,8 +252,10 @@ void keyPressed(unsigned char key,int x,int y){
  break;
  case 'a':
  case 'A':
-	 for(Solido *s:ce->getParticulas()){
-		 s->setVel(s->getVel()+Vector3D(getRand(7,-7),10,-10));
+	 //for(Solido *s:ce->getParticulas()){
+	//	 s->setVel(s->getVel()+Vector3D(getRand(7,-7),10,-10));
+	 for(Solido *s:cme->getParticulas()){
+		 s->setVel(s->getVel()+Vector3D(getRand(1,-1),1,-1));
 	 }
  break;
  case 27:
@@ -389,9 +393,9 @@ int main(int argc, char** argv){
  //e.add(new Luz(Vector3D(-50,50,15)));
 
  /*  M E N U  */
- int ci;
- cout << "Please enter the circuit number from 0 to 4: ";
- cin >>ci;
+ int ci=4;
+ //cout << "Please enter the circuit number from 0 to 4: ";
+ //cin >>ci;
 
  glutInit(&argc,argv);
  //glutInitDisplayMode(GLUT_SINGLE);
@@ -411,12 +415,12 @@ int main(int argc, char** argv){
  camaras[0].setSolido(mariokart);
 
  loadCircuit(ci);
-/*
+
  m=new ModeloMaterial("TheAmazingSpiderman.obj");
  //m->setScale(Vector3D(4,4,4));
  //m->setPos(Vector3D(0,-0.5,1));
- m->setVel(Vector3D(getRand(10,-10),0,-1.1));
- e.add(m);
+ //m->setVel(Vector3D(getRand(10,-10),0,-1.1));
+ //e.add(m);
 
  ModeloMaterial* mm=new ModeloMaterial("M-FF_iOS_HERO_Natasha_Romanoff_Black_Widow_Age_Of_Ultron.obj");
  mm->setPos(Vector3D(4,0,0));
@@ -432,16 +436,20 @@ int main(int argc, char** argv){
 
  ModeloMaterial* shrek=new ModeloMaterial("shrek.obj");
  shrek->setPos(Vector3D(-8,0,0));
- shrek->setScale(0.25);
+ shrek->doScale(0.25);
  shrek->setVel(Vector3D(getRand(10,-10),0,getRand(10,-10)));
- e.add(shrek);
+ //e.add(shrek);
 
  ModeloMaterial* minion_golf=new ModeloMaterial("mc_golf.obj");
  minion_golf->setPos(Vector3D(-4,0,0));
  minion_golf->setScale(4);
  minion_golf->setVel(Vector3D(getRand(10,-10),10,getRand(10,-10)));
- e.add(minion_golf);
-*/
+ //e.add(minion_golf);
+
+ m->doCenter();
+ cme=new CajaModeloElastico(m);
+ e.add(cme);
+
  Vector3D p0(-80,0,-80);
  Vector3D p1(-80,0, 80);
  Vector3D p2( 80,0, 80);
@@ -482,11 +490,11 @@ int main(int argc, char** argv){
  e.add(tv);
 
  cje=new CajaElastica(2,4,2);
- e.add(cje);
+ //e.add(cje);
 
  ce=new CuboElastico(2);
  ce->setTexture(tex);
- e.add(ce);
+ //e.add(ce);
 
  initCamAR();
  fondo.setTextura(texTv);

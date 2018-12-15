@@ -19,6 +19,7 @@ Triangulo *ModeloMaterial::centrar(Triangulo *t){
 	Vector3D p0=t->getP0();
 	Vector3D p1=t->getP1();
 	Vector3D p2=t->getP2();
+	/// NNOOOOOOOOO
 	return(new Triangulo(p0-centro,p1-centro,p2-centro));
 }
 
@@ -154,12 +155,12 @@ void ModeloMaterial::cargar(){
 					vertices.push_back(v);
 				}
 				else{
-					cout<<"vertice no detectado"<<endl;
+					runtime_error("Tipo de vertice no reconocido en ModeloMaterial::cargar()");
 				}
 			}
 			if (linea[0] == 'f'){
 				Triangulo *t=parseTriangulos(linea);
-				if(t){
+				if(t){//t!=nullptr
 					Textura* tex=materiales[currentMaterial].getMapKdTex();
 					t->setTextura(tex);
 					triangulos.push_back(t);

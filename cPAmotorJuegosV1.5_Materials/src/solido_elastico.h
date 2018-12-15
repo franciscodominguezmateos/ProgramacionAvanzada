@@ -25,7 +25,7 @@ public:
 	SolidoElastico(double maxX,double Y,double Z);
 	virtual ~SolidoElastico();
 	void filaX(double maxX,double Y,double Z);
-	inline vector<Solido *> getParticulas(){return particulas;}
+	inline const vector<Solido *> &getParticulas(){return particulas;}
 	inline Solido *getParticula(unsigned i){
 		assert(i<particulas.size());
 		return particulas[i];}
@@ -37,6 +37,12 @@ public:
 	inline Solido *getUltimaParticula(){
 		int ultimaPos=particulas.size()-1;
 		return particulas[ultimaPos];
+	}
+	inline Vector3D getCenter(){
+		Vector3D v;
+		for(Solido* &s:particulas)
+			v+=s->getPos();
+		return v/particulas.size();
 	}
 	inline void glSetColor(Vector3D &col){
 		double r=col.getX();

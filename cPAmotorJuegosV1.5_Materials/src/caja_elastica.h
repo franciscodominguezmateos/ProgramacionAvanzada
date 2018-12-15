@@ -13,16 +13,31 @@ class CajaElastica: public SolidoElastico {
 	Textura tex;
 	double w,h,d;
 public:
-	CajaElastica(double w,double h,double d):w(w),h(h),d(d){
+	CajaElastica(double w2,double h2,double d2):w(w),h(h),d(d){
 			Solido *p;
+			double w=w2/2;
+			double h=h2/2;
+			double d=d2/2;
+			//     5---1
+			//    /   /|
+			//   4---0 |
+			//   |   | 2
+			//   |   |/
+			//   7---3
+			//square of the right
+			//right/up/front point
 			p=new Solido( w, h, d);
 			particulas.push_back(p);
+			//right/up/back point
 			p=new Solido( w, h,-d);
 			particulas.push_back(p);
+			//right/bottom/back point
 			p=new Solido( w,-h,-d);
 			particulas.push_back(p);
+			//right/bottom/front point
 			p=new Solido( w,-h, d);
 			particulas.push_back(p);
+			//squre of the left
 			p=new Solido(-w, h, d);
 			particulas.push_back(p);
 			p=new Solido(-w, h,-d);
@@ -47,7 +62,7 @@ public:
 				}
 			}
 			for(Solido *p:this->getParticulas()){
-				Vector3D iy(0,h,0);
+				Vector3D iy(0,h+1,0);
 				//p->setM(1);
 				p->setPos(p->getPos()+iy);
 			}
