@@ -23,6 +23,7 @@
 #include "pose_estimation_chessboard.h"
 #include "material.h"
 #include "modelo_material.h"
+#include "caja_elastica.h"
 
 using namespace cv;
 
@@ -45,6 +46,7 @@ ModeloMaterial* m;
 Textura tex,ladrillos,paredTex,texTv,texTablero,spiderTex,marioKartTex,minionTex,mariokartTex;
 VideoCapture cap(0);
 CuboElastico *ce;
+CajaElastica* cje;
 
 FondoTextura fondo,fondoTablero;
 
@@ -478,6 +480,9 @@ int main(int argc, char** argv){
  tex.setImage(i);
  tv->getTex()=tex;
  e.add(tv);
+
+ cje=new CajaElastica(2,4,2);
+ e.add(cje);
 
  ce=new CuboElastico(2);
  ce->setTexture(tex);
