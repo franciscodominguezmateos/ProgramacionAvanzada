@@ -12,10 +12,9 @@
 #include "opencv2/opencv.hpp"
 #include "vector3d.h"
 #include "solido.h"
+#include "util.h"
 
 using namespace cv;
-
-inline double rot2rad(double  a){return a/180*M_PI;}
 
 class Camara:public Solido {
 public:
@@ -33,7 +32,7 @@ class CamaraFPS: public Camara {
 public:
 	CamaraFPS(double x=0,double y=1.65,double z=0):Camara(x,y,z){}
 	void update(double dt){
-		double ry=rot2rad(getRot().getY());
+		double ry=deg2rad(getRot().getY());
 		Vector3D vel={-sin(ry),0,cos(ry)};
 		setPos(getPos()-vel*dt);
 	}
@@ -51,14 +50,14 @@ public:
 	void setSolido(Solido *s) { this->s = s; }
 	Solido *getSolido() { return s; }
 	void update(double dt) {
-		double ry = rot2rad(s->getRot().getY());
+		double ry = deg2rad(s->getRot().getY());
 		Vector3D vel = { sin(ry),0,cos(ry) };
 		//cout << "vel=" << vel << endl;
 		//s->setVel(vel);
 		s->setPos(s->getPos() + vel * dt);
 	}
 	void updateLateral(double dt) {
-		double ry = rot2rad(s->getRot().getY());
+		double ry = deg2rad(s->getRot().getY());
 		Vector3D newV = { -cos(ry),0,sin(ry) };
 		s->setPos(s->getPos() + newV * dt);
 	}
@@ -78,8 +77,8 @@ class CamaraFly: public Camara {
 public:
 	CamaraFly(double x=0,double y=1.65,double z=0):Camara(x,y,z){}
 	void update(double dt){
-		double ry=rot2rad(getRot().getY());
-		double rx=rot2rad(getRot().getX());
+		double ry=deg2rad(getRot().getY());
+		double rx=deg2rad(getRot().getX());
 		Vector3D vel={-cos(rx)*sin(ry),sin(rx),cos(rx)*cos(ry)};
 		setPos(getPos()-vel*dt);
 	}

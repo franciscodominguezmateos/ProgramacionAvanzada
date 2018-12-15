@@ -22,5 +22,7 @@ std::string& rtrim(std::string& str, const std::string& chars = "\t\n\v\f\r ");
 std::string& trim(std::string& str, const std::string& chars = "\t\n\v\f\r ");
 string takeAwayExtension(string &s);
 inline bool nearZero(double d){return fabs(d)<0.01;}
+inline double deg2rad(double  a){return a/180*M_PI;}
+inline double rad2deg(double r){return r/M_PI*180;}
 
 #endif /* UTIL_H_ */

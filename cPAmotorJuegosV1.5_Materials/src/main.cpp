@@ -146,6 +146,17 @@ void upKart(){
 		*/
 
 		Vector3D f=nearest->getNormal();
+		//adapt kart orientation to road
+		double ry=deg2rad(nearest->getRot().getY());
+		Vector3D vel={-sin(ry),0,cos(ry)};
+		Vector3D vr=vel.X(f); vr.normalize();
+		Vector3D vu=vr.X(vel);
+		double cosv=f*vel;
+		double cosr=f*vr;
+		double dv=rad2deg(M_PI/2-acos(cosv));
+		double dr=rad2deg(M_PI/2-acos(cosr));
+		cout << "dv="<<dv<<" cosv="<<cosv<< "dr="<<dr<<" cosr="<<cosr<<endl;
+		mariokart->setRot(Vector3D(dv,mariokart->getRot().getY(),dr));
 		double dist=nearest->distancia(p);
 		//up fast down slow
 		if(dist<0)
