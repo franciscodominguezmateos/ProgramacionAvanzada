@@ -71,7 +71,7 @@ public:
 			Vector3D pos2=p2->getPos();
 			//Vector3D col=p1->getCol();
 			//glSetColor(col);
-			glColor3f(1.0,0,0);
+			glColor3f(0,1,1);
 		    glBegin(GL_LINES);
 		      glVertex3f(pos1.getX(),pos1.getY(),pos1.getZ());
 		      glVertex3f(pos2.getX(),pos2.getY(),pos2.getZ());

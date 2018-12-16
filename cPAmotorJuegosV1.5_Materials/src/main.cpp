@@ -159,7 +159,7 @@ void upKart(){
 		double cosr=f*vr;
 		double dv=rad2deg(M_PI/2-acos(cosv));
 		double dr=rad2deg(M_PI/2-acos(cosr));
-		cout << "dv="<<dv<<" cosv="<<cosv<< "dr="<<dr<<" cosr="<<cosr<<endl;
+		//cout << "dv="<<dv<<" cosv="<<cosv<< "dr="<<dr<<" cosr="<<cosr<<endl;
 		mariokart->setRot(Vector3D(dv,mariokart->getRot().getY(),dr));
 		double dist=nearest->distancia(p);
 		//up fast down slow

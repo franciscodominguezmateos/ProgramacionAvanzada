@@ -10,10 +10,11 @@
 #include "rectangulo.h"
 
 class CajaElastica: public SolidoElastico {
+protected:
 	Textura tex;
 	double w,h,d;
 public:
-	CajaElastica(double w2,double h2,double d2):w(w),h(h),d(d){
+	CajaElastica(double w2,double h2,double d2):w(w2),h(h2),d(d2){
 			Solido *p;
 			double w=w2/2;
 			double h=h2/2;
@@ -55,7 +56,7 @@ public:
 					double length=d.length();
 					FuerzaElastica *f1=new FuerzaElastica();
 					f1->setLongitudReposo(length);
-					f1->setKm(300);
+					f1->setKm(30);
 					f1->setParticula1(p1);
 					f1->setParticula2(p2);
 					fuerzasElasticas.push_back(f1);
