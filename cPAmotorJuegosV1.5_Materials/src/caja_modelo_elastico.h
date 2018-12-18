@@ -94,6 +94,7 @@ public:
 		axis+=p[1]->getPos()-p[5]->getPos();
 		axis+=p[2]->getPos()-p[6]->getPos();
 		axis+=p[3]->getPos()-p[7]->getPos();
+		//axis.normalize();
 		return axis/4;
 	}
 	Vector3D getAxisY(){
@@ -103,6 +104,7 @@ public:
 		axis+=p[0]->getPos()-p[3]->getPos();
 		axis+=p[1]->getPos()-p[2]->getPos();
 		axis+=p[5]->getPos()-p[6]->getPos();
+		//axis.normalize();
 		return axis/4;
 	}
 	Vector3D getAxisZ(){
@@ -112,6 +114,7 @@ public:
 		axis+=p[6]->getPos()-p[7]->getPos();
 		axis+=p[5]->getPos()-p[4]->getPos();
 		axis+=p[1]->getPos()-p[0]->getPos();
+		//axis.normalize();
 		return axis/4;
 	}
 	// work out scale estimate

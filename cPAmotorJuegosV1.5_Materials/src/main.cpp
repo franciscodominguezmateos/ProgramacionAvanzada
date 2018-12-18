@@ -376,6 +376,7 @@ void loadCircuit(int i){
 		 circuit->hazFija();
 		 //circuit->setDrawNormals(true);
 		 circuit->doScale(0.5);
+		 circuit->doTranslate(Vector3D(20,0,-100));
 		 e.add(circuit);
 	 }
 }
@@ -394,8 +395,8 @@ int main(int argc, char** argv){
 
  /*  M E N U  */
  int ci=4;
- //cout << "Please enter the circuit number from 0 to 4: ";
- //cin >>ci;
+ cout << "Please enter the circuit number from 0 to 4: ";
+ cin >>ci;
 
  glutInit(&argc,argv);
  //glutInitDisplayMode(GLUT_SINGLE);
