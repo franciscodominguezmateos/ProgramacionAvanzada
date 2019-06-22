@@ -8,7 +8,11 @@ En esta asignatura de construye un motor de video juegos desde cero a la vez que
 * Camaras: Rotacion esferica, primera persona, voladora, tercera persona, realidad aumentada.
 * Manipula texturas con OpenCV, de cualquier formato, url o camara en directo.
 * Motor fisico de particulas.
-* Lee formatos .obj con una textura.
+* Lee formatos .obj con texturas. Faltan transparencias.
 * Permite varias vistas
 
 En la captura de pantalla se muestra dos objetos obj, spiderman y mariokart, una vista en tercera persona y una en realidad aumentada sobre el suelo de mi despacho. Un cubo animado con el motor fisico, con una textura de camara en directo.
+
+Simulacion del juego MarioKart.
+
+![Screenshot](MarioCarPA.png)
