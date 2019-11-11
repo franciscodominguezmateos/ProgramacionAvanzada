@@ -63,7 +63,8 @@ ProyeccionCamara pCam(K);
 PoseEstimationChessBoard peChessBoard(K,dist);
 
 ProyeccionPerspectiva proyeccion;
-vector<Vista> vistas={{0.0,0.0,0.5,1,&proyeccion},{0.5,0.0,0.5,1,&pCam}};//,{0.0,0.5,0.5,0.5},{0.5,0.5,0.5,0.5}};
+//vector<Vista> vistas={{0.0,0.0,0.5,1,&proyeccion},{0.5,0.0,0.5,1,&pCam}};//,{0.0,0.5,0.5,0.5},{0.5,0.5,0.5,0.5}};
+vector<Vista> vistas={{0.0,0.0,0.5,1,&proyeccion},{0.5,0.0,0.5,1,&proyeccion}};//,{0.0,0.5,0.5,0.5},{0.5,0.5,0.5,0.5}};
 vector<CamaraTPS> camaras(vistas.size());
 
 float getRand(float max,float min=0){
@@ -74,18 +75,22 @@ float getRand(float max,float min=0){
 
 void displayMe(void){
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+	//glPushMatrix();
 	vistas[0].render();
 	fondo.render();
     glLoadIdentity();
     camaras[0].render();
     e.render();
+    //glPopMatrix();
 
+    //glPushMatrix();
 	vistas[1].render();
 	fondoTablero.render();
     glLoadIdentity();
-    camAR->render();
-    //camaras[1].render();
+    //camAR->render();
+    camaras[0].render();
     e.render();
+    //glPopMatrix();
 /*
  tex.activar();
  glPushMatrix();
@@ -507,6 +512,7 @@ int main(int argc, char** argv){
  glutKeyboardFunc(keyPressed);
  glutMotionFunc(&mouseMoved);
  glutMouseFunc(&mousePress);
+ glutFullScreen();
  glutMainLoop();
  return 0;
 }

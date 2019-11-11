@@ -218,8 +218,8 @@ void initCamAR(){
 	 solvePnP(model_points,corners,K,dist,rvec,tvec);
 	 camAR=new CamaraAR(rvec,tvec);
 	 texTablero.setImage(tablero);
-	 imshow("tablero",tablero);
-	 waitKey(1);
+	 //imshow("tablero",tablero);
+	 //waitKey(1);
 }
 int main(int argc, char** argv){
  srand(10);
