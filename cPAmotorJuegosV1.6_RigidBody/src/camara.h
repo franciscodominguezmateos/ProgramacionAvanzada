@@ -44,8 +44,23 @@ public:
 	void render(){
 		 glRotatef(getRot().getX(), 1,0,0);
 		 glRotatef(getRot().getY(), 0,1,0);
-		 glRotatef(getRot().getZ(), 1,0,1);
+		 glRotatef(getRot().getZ(), 0,0,1);
 		 glTranslatef(-getPos().getX(),-getPos().getY(),-getPos().getZ());
+	}
+};
+class CamaraFPSAR: public CamaraFPS {
+	double baseline;
+public:
+	CamaraFPSAR(double x=0,double y=1.65,double z=0):CamaraFPS(x,y,z),baseline(0.1){}
+	inline double getBaseline(){return baseline;}
+	inline void setBaseline(double b){baseline=b;}
+	void renderLeft(){
+		glTranslatef(-baseline,0,0);
+		render();
+	}
+	void renderRight(){
+		glTranslatef(baseline,0,0);
+		render();
 	}
 };
 class CamaraTPS : public Camara {

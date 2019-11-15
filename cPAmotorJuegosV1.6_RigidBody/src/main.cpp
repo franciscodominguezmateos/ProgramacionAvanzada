@@ -28,6 +28,10 @@
 #include "walking_inverted_pendulum.h"
 #include "solido_rigido.h"
 
+//Declaration needed in next .h
+Mat global_img;
+#include "socket_TCP_server.h"
+
 using namespace cv;
 
 double t=0.0;
@@ -69,8 +73,10 @@ ProyeccionCamara pCam(K);
 PoseEstimationChessBoard peChessBoard(K,dist);
 
 ProyeccionPerspectiva proyeccion;
-vector<Vista> vistas={{0.0,0.0,0.5,1,&proyeccion},{0.5,0.0,0.5,1,&pCam}};//,{0.0,0.5,0.5,0.5},{0.5,0.5,0.5,0.5}};
+///vector<Vista> vistas={{0.0,0.0,0.5,1,&proyeccion},{0.5,0.0,0.5,1,&pCam}};//,{0.0,0.5,0.5,0.5},{0.5,0.5,0.5,0.5}};
+vector<Vista> vistas={{0.0,0.0,0.5,1,&proyeccion},{0.5,0.0,0.5,1,&proyeccion}};
 vector<CamaraTPS> camaras(vistas.size());
+CamaraFPSAR camVR;
 
 float getRand(float max,float min=0){
 	float n=max-min;
@@ -78,31 +84,35 @@ float getRand(float max,float min=0){
 	return min+n*(float)ir/1000;
 }
 
+Mat opengl_default_frame_to_opencv() {
+	//cv::Mat img(480, 640*2, CV_8UC3);
+    cv::Mat img(1080, 1920, CV_8UC3);
+    glPixelStorei(GL_PACK_ALIGNMENT, (img.step & 3)?1:4);
+    glPixelStorei(GL_PACK_ROW_LENGTH, img.step/img.elemSize());
+    glReadPixels(0, 0, img.cols, img.rows, GL_BGR_EXT, GL_UNSIGNED_BYTE, img.data);
+    cv::Mat flipped(img);
+    cv::flip(img, flipped, 0);
+    return img;
+}
 void displayMe(void){
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 	vistas[0].render();
 	fondo.render();
     glLoadIdentity();
-    camaras[0].render();
+    //camaras[0].render();
+    camVR.renderLeft();
     e.render();
 
 	vistas[1].render();
-	fondoTablero.render();
+	//fondoTablero.render();
+	fondo.render();
     glLoadIdentity();
-    camAR->render();
+    //camAR->render();
+    camVR.renderRight();
     //camaras[1].render();
     e.render();
-/*
- tex.activar();
- glPushMatrix();
-  glTranslatef(0,1,-2);
-  glRotatef(t*10.0,0,1,0);
-  glColor3f(1,1,1);
-  glutSolidTeapot(5);
- glPopMatrix();
- tex.desactivar();
-*/
- glutSwapBuffers();
+    glutSwapBuffers();
+    global_img=opengl_default_frame_to_opencv();
 }
 void setPoseCamAR(Mat &tablero){
 	 if(peChessBoard.estimatePose(tablero)){
@@ -228,10 +238,9 @@ void keyPressed(unsigned char key,int x,int y){
  case 'o':
  case 'O':{
 	    //CamaraTPS &cam=camaras[0];
-		//s = cam.getSolido();
-		//s->setRot(s->getRot() + Vector3D(0, 2, 0));
+		camVR.setRot(camVR.getRot() - Vector3D(0, 2, 0));
 		//cam.update(dt);
-	 axisZ=cme->getAxisZ();
+	 /*axisZ=cme->getAxisZ();
 	 for(Solido *s:cme->getParticulas()){
 		 s->setVel(axisZ*5);
 	 }
@@ -243,7 +252,7 @@ void keyPressed(unsigned char key,int x,int y){
 				s->setVel(s->getVel()+axisX);
 			//else
 				//s->setVel(s->getVel()-axisX);
-		}
+		}*/
 		break;
  }
  case 'p':
@@ -252,7 +261,8 @@ void keyPressed(unsigned char key,int x,int y){
 		//s = cam.getSolido();
 		//s->setRot(s->getRot() - Vector3D(0, 2, 0));
 		//cam.update(dt);
-	 axisZ=cme->getAxisZ();
+		camVR.setRot(camVR.getRot() + Vector3D(0, 2, 0));
+	 /*axisZ=cme->getAxisZ();
 	 for(Solido *s:cme->getParticulas()){
 		 s->setVel(axisZ*5);
 	 }
@@ -264,18 +274,26 @@ void keyPressed(unsigned char key,int x,int y){
 				s->setVel(s->getVel()-axisX);
 			//else
 				//s->setVel(s->getVel()-axisX);
-		}
+		}*/
 		break;
  }
  break;
  case 'q':
- case 'Q':
-	 m->setPos(m->getPos()+Vector3D(0.25,0,0));
- break;
- case 'w':
- case 'W':
-	 m->setPos(m->getPos()-Vector3D(0.25,0,0));
- break;
+  case 'Q':
+ 	 m->setPos(m->getPos()+Vector3D(0.25,0,0));
+  break;
+  case 'w':
+  case 'W':
+ 	 m->setPos(m->getPos()-Vector3D(0.25,0,0));
+  break;
+  case 'v':
+   case 'V':
+  	 camVR.setBaseline(camVR.getBaseline()-0.1);
+   break;
+   case 'B':
+   case 'b':
+  	 camVR.setBaseline(camVR.getBaseline()+0.1);
+   break;
  case ' ':
 	 Esfera *pf;
 	 pf=new Esfera();
@@ -287,6 +305,7 @@ void keyPressed(unsigned char key,int x,int y){
  break;
  case 't':
  case 'T':
+	 /*
  	for(unsigned int i=0;i<vistas.size();i++){
  		if(vistas[i].contain(x,y)){
  			Vector3D r;
@@ -294,10 +313,12 @@ void keyPressed(unsigned char key,int x,int y){
  			cam.update(dt*2);
  		}
  	}
- 	vel++;
+ 	vel++;*/
+	 camVR.update(dt);
  break;
  case 'g':
  case 'G':
+	 /*
 	 	for(unsigned int i=0;i<vistas.size();i++){
 	 		if(vistas[i].contain(x,y)){
 	 			Vector3D r;
@@ -305,7 +326,8 @@ void keyPressed(unsigned char key,int x,int y){
 	 			cam.update(-dt*2);
 	 		}
 	 	}
-	 vel--;
+	 vel--;*/
+	 camVR.update(-dt);
  break;
  case 'a':
  case 'A':
@@ -319,12 +341,9 @@ void keyPressed(unsigned char key,int x,int y){
  break;
  case 's':
  case 'S':{
-	    cv::Mat img(480, 640*2, CV_8UC3);
-	    glPixelStorei(GL_PACK_ALIGNMENT, (img.step & 3)?1:4);
-	    glPixelStorei(GL_PACK_ROW_LENGTH, img.step/img.elemSize());
-	    glReadPixels(0, 0, img.cols, img.rows, GL_BGR_EXT, GL_UNSIGNED_BYTE, img.data);
-	    cv::Mat flipped(img);
-	    cv::flip(img, flipped, 0);
+	    Mat img;
+        img=opengl_default_frame_to_opencv();
+        //img=global_img;
 	    cv::imwrite("snapshot.png", img);
  }
  break;
@@ -333,6 +352,7 @@ void keyPressed(unsigned char key,int x,int y){
  break;
  }
 }
+
 void mouseMoved(int x, int y)
 {
     if (mx>=0 && my>=0) {
@@ -452,6 +472,10 @@ void loadCircuit(int i){
 	 }
 }
 int main(int argc, char** argv){
+ //this thread stream the rendered game
+ bool stop=false;
+ thread server_th(video_jpeg_stream_server,&stop);
+
  srand(10);
  vel=0;
  //cout << t.isIn(Vector3D(0.25,0.25,0))<<endl;
@@ -472,9 +496,11 @@ int main(int argc, char** argv){
  glutInit(&argc,argv);
  //glutInitDisplayMode(GLUT_SINGLE);
  glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
- glutInitWindowSize(640*2,480);
- glutInitWindowPosition(300,300);
+ //glutInitWindowSize(640*2,480);
+ //glutInitWindowSize(1920,1080);
+ //glutInitWindowPosition(0,0);
  glutCreateWindow("Hello wold :D");
+ glutFullScreen();
  init();
 
 
@@ -490,7 +516,7 @@ int main(int argc, char** argv){
 
  SolidoRigido *sr=new SolidoRigido(1,0.5,2);
  sr->setPos(Vector3D(0,2,0));
- e.add(sr);
+ //e.add(sr);
 
  m=new ModeloMaterial("TheAmazingSpiderman.obj");
  //m->setScale(Vector3D(4,4,4));
