@@ -27,6 +27,7 @@
 #include "caja_modelo_elastico.h"
 #include "walking_inverted_pendulum.h"
 #include "solido_rigido.h"
+#include "quaternion.h"
 
 //Declaration needed in next .h
 Mat global_img;
@@ -520,26 +521,26 @@ int main(int argc, char** argv){
 
  m=new ModeloMaterial("TheAmazingSpiderman.obj");
  //m->setScale(Vector3D(4,4,4));
- //m->setPos(Vector3D(0,-0.5,1));
+ m->setPos(Vector3D(3,0,-40));
  //m->setVel(Vector3D(getRand(10,-10),0,-1.1));
- //e.add(m);
+ e.add(m);
 
  ModeloMaterial* mm=new ModeloMaterial("M-FF_iOS_HERO_Natasha_Romanoff_Black_Widow_Age_Of_Ultron.obj");
- mm->setPos(Vector3D(4,0,0));
- mm->setScale(Vector3D(4,4,4));
- mm->setVel(Vector3D(getRand(10,-10),0,getRand(10,-10)));
+ mm->setPos(Vector3D(0,0,-40));
+ mm->setScale(3.5);
+ //mm->setVel(Vector3D(getRand(10,-10),0,getRand(10,-10)));
  e.add(mm);
 
  ModeloMaterial* felicia=new ModeloMaterial("Felicia.obj");
- felicia->setPos(Vector3D(4,0,0));
+ felicia->setPos(Vector3D(4,0,-20));
  felicia->setScale(0.5);
- felicia->setVel(Vector3D(getRand(10,-10),0,getRand(10,-10)));
+ //felicia->setVel(Vector3D(getRand(10,-10),0,getRand(10,-10)));
  e.add(felicia);
 
  ModeloMaterial* shrek=new ModeloMaterial("shrek.obj");
- shrek->setPos(Vector3D(-8,0,0));
+ shrek->setPos(Vector3D(-4,0,-45));
  shrek->doScale(0.25);
- shrek->setVel(Vector3D(getRand(10,-10),0,getRand(10,-10)));
+ //shrek->setVel(Vector3D(getRand(10,-10),0,getRand(10,-10)));
  e.add(shrek);
 
  ModeloMaterial* minion_golf=new ModeloMaterial("mc_golf.obj");

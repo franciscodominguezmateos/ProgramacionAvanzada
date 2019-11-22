@@ -33,7 +33,8 @@ public:
 	inline Vector3Dx<S> operator-=(const Vector3Dx<S> &v){x-=v.x;y-=v.y;z-=v.z;}
 	inline Vector3Dx<S> operator*(const S &d) {return Vector3Dx<S>(x * d, y * d, z * d);}
 	inline Vector3Dx<S> operator*=(const S &d){	x*=d; y*=d;	z*=d; return *this;	}
-	inline Vector3Dx<S> operator/(S d) {return 	Vector3Dx<S>(x / d, y / d, z / d);}
+	inline Vector3Dx<S> operator/=(const S &d){	x/=d; y/=d;	z/=d; return *this;	}
+		inline Vector3Dx<S> operator/(S d) {return 	Vector3Dx<S>(x / d, y / d, z / d);}
 	inline S getX() { return x; }
 	inline S getY() { return y; }
 	inline S getZ() { return z; }
@@ -47,6 +48,17 @@ public:
 		if (i==2) return z;
 		return 0;
 	}
+	// outer product
+	inline Mat O(Vector3Dx<S> v){
+		S &x0=x,&y0=y,&z0=z;
+		S &x1=v.x,&y1=v.y,&z1=v.z;
+	    Mat s = (Mat_<S>(3,3) <<
+	               x0*x1,       x0*y1,     x0*z1,
+	               y0*x1,       y0*y1,     y0*z1,
+	               z0*x1,       z0*y1,     z0*z1 );
+		return s;
+	}
+	// scalar product
 	inline S operator * (const Vector3Dx<S> &v2) {
 		Vector3Dx &v1 = *this;
 		return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
@@ -132,6 +144,16 @@ inline ostream &operator<<(ostream &os, const Vector3Di &v) {
 // column vector
 inline Mat asMat(Vector3D v){
 	return (Mat_<double>(3,1)<< v.getX(),v.getY(),v.getZ());
+}
+inline Mat S(Vector3D v){
+	double x=v.getX();
+	double y=v.getY();
+	double z=v.getZ();
+    Mat s = (Mat_<double>(3,3) <<
+               0,       -z,     y,
+               z,        0,    -x,
+              -y,        x,     0 );
+	return s;
 }
 inline Vector3D asVector3D(Mat m){return Vector3D(m.at<double>(0,0),m.at<double>(0,1),m.at<double>(0,2));}
 

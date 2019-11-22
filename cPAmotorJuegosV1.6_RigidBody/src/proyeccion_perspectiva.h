@@ -20,18 +20,19 @@ protected:
 	double relacionDeAspecto;
 	double zNear;
 	double zFar;
+	double fov;
 public:
-	ProyeccionPerspectiva(double fov=45.0,double width=640,double height=480,double zNear=0.1,double zFar=2000):
+	ProyeccionPerspectiva(double fov=30.0,double width=640,double height=480,double zNear=0.1,double zFar=2000):
 		campoDeVision(fov),
 		width(width),height(height),
 		relacionDeAspecto(width/height),
-		zNear(zNear),zFar(zFar){
+		zNear(zNear),zFar(zFar),fov(fov){
 	}
 	virtual ~ProyeccionPerspectiva(){}
 	virtual void render(){
 		 glMatrixMode(GL_PROJECTION);
 		 glLoadIdentity();
-		 gluPerspective(45.0f,relacionDeAspecto,zNear,zFar);
+		 gluPerspective(fov,relacionDeAspecto,zNear,zFar);
 		 glMatrixMode(GL_MODELVIEW);
 	}
 	inline double getHeight() const {return height;	}
