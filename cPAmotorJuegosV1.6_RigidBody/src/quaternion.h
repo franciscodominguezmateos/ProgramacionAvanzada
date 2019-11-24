@@ -25,6 +25,7 @@ public:
 	Quaternion(Vector3D v,double w=0):v(v),w(w){}
 	virtual ~Quaternion();
 	Quaternion(const Quaternion &q):v(q.v),w(q.w){}
+	// better implementation from Kaes icra15 Grassia ref
 	inline static Quaternion exp(Vector3D v){
 		double angle=v.length();
 		v.normalize();
@@ -49,17 +50,19 @@ public:
 	inline Vector3D getAngleAxisVector(){
 		return getAxis()*getAngle();
 	}
-	// Conjugated
+	// Conjugate
 	inline Quaternion operator!(){
 		return Quaternion(-v,w);
 	}
+	// quaternion multiplication
 	inline Quaternion operator*(Quaternion q2){
-		double &w1=w, &w2=q2.w;
+		double   &w1=w, &w2=q2.w;
 		Vector3D &v1=v, &v2=q2.v;
 		double w3=w1*w2-v1*v2;
 		Vector3D v3=v2*w1+v1*w2-v1.X(v2);
 		return Quaternion(v3,w3);
 	}
+	// quaternion vector application
 	inline Vector3D operator*(Vector3D v){
 		Quaternion &q=*this;
 		Quaternion qv(v);
