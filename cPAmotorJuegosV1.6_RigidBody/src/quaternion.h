@@ -23,7 +23,7 @@ public:
 	}
 	// from other vector and scalar
 	Quaternion(Vector3D v,double w=0):v(v),w(w){}
-	virtual ~Quaternion();
+	virtual ~Quaternion(){}
 	Quaternion(const Quaternion &q):v(q.v),w(q.w){}
 	// better implementation from Kaes icra15 Grassia ref
 	inline static Quaternion exp(Vector3D v){

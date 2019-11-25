@@ -473,6 +473,10 @@ void loadCircuit(int i){
 	 }
 }
 int main(int argc, char** argv){
+ //Quaternion test
+ Quaternion q1(M_PI/2,Vector3D(0,0,1));
+ Vector3D v1=q1*Vector3D(1,0,0);
+ cout << "v1="<<v1<<endl;
  //this thread stream the rendered game
  bool stop=false;
  thread server_th(video_jpeg_stream_server,&stop);
