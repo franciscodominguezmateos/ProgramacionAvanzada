@@ -59,7 +59,7 @@ public:
 		double   &w1=w, &w2=q2.w;
 		Vector3D &v1=v, &v2=q2.v;
 		double w3=w1*w2-v1*v2;
-		Vector3D v3=v2*w1+v1*w2-v1.X(v2);
+		Vector3D v3=v2*w1+v1*w2+v1.X(v2);
 		return Quaternion(v3,w3);
 	}
 	// quaternion vector application
@@ -94,8 +94,14 @@ public:
 		return I;
 	}
 	// TODO: Aprox almost Rotation Matrix m as Quaternion
-	inline static Quaternion Aprox(Mat m){
+	inline static Quaternion aprox(Mat m){
 		return Quaternion();
+	}
+	// TODO: Interpolation
+	// https://en.wikipedia.org/wiki/Slerp
+	// q1=d*q0 => q1*!q0=d
+	inline Quaternion slerp(Quaternion q1,double t){
+		return q1;
 	}
 };
 
