@@ -15,6 +15,7 @@
 
 using namespace std;
 
+float getRand(float max,float min=0);
 vector<string> split(string s,char delimiter=' ');
 vector<string> split_first(string s,char delimiter);
 std::string& ltrim(std::string& str, const std::string& chars = "\t\n\v\f\r ");
