@@ -28,7 +28,7 @@ class Material{
 public:
 	Material(string path=""):path(path){}
 	void parseLine(string linea){
-		vector<string> vs=split(linea);
+		vector<string> vs=split(linea,' ');
 		if(vs[0]=="Ns")
 			Ns=stod(vs[1]);
 		if(vs[0]=="Ni")

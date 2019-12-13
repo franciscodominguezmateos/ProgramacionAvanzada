@@ -88,6 +88,7 @@ public:
 		textura=t.textura;
 		area=t.area;
 		drawNormals=t.drawNormals;
+		return *this;
 	}
 	inline Vector3D &getP0(){return p0;}
 	inline Vector3D &getP1(){return p1;}

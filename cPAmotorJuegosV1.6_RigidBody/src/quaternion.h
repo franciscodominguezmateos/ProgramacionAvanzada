@@ -82,6 +82,7 @@ public:
 		Quaternion q=*this;
 		// it should be norm squared?
 		Quaternion r=!q.normalize();
+		return q;
 	}
 	inline Mat asMat(){
 		Mat I=Mat::eye(3,3,CV_64F);
