@@ -7,7 +7,8 @@
 // From: https://gist.github.com/Tryptich/2a15909e384b582c51b5
 // 10/11/2019 modified to send jpeg compressed images
 //============================================================================
-#pragma once
+#ifndef SOCKET_TCP_SERVER_H_
+#define SOCKET_TCP_SERVER_H_
 #include <vector>
 #include <chrono>
 #include <thread>
@@ -243,3 +244,4 @@ void string_server(bool* pstop,StringProcessor* sp){
     }
     close(localSocket);
 }
+#endif /* SOCKET_TCP_SERVER_H_ */

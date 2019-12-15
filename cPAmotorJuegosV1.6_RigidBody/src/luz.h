@@ -27,15 +27,19 @@ class Luz:public Solido {
 	static unsigned char idCount;
 	unsigned char idLight;
 public:
+	static void init(){
+		idCount=0;
+	}
 	Luz(Vector3D p):Solido(p),idLight(idCount++){
 		assert(idCount<=NLIGHTS);
 	}
 	Luz():Luz(Vector3D(5,10,5)){}
-	virtual ~Luz();
 	void render(){
 	    GLfloat lightpos[]={getPos().getX(),getPos().getY(),getPos().getZ(),0.0};
 	    glLightfv(ids[idLight],GL_POSITION,lightpos);
 	}
 };
-
+//Private static initialization
+unsigned char Luz::idCount=0;
+constexpr GLenum Luz::ids[];
 #endif /* LUZ_H_ */

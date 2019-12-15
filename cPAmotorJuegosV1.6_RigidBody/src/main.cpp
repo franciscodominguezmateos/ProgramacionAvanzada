@@ -8,7 +8,6 @@
 #include "cilindro.h"
 #include "rosco.h"
 #include "compuesto.h"
-#include "modelo.h"
 #include "escena.h"
 #include "pared.h"
 #include "camara.h"
@@ -34,6 +33,35 @@ Mat global_img;
 #include "socket_TCP_server.h"
 
 using namespace cv;
+
+CamaraFPSAR camVR;
+/* SENSOR */
+vector<CGI> sensorEvents;
+class StringCGIProcessor:public StringProcessor{
+public:
+	string process(string &si){
+		CGI event(si);
+		cout << si << endl;
+		sensorEvents.clear();
+		sensorEvents.push_back(si);
+	    return "OK";
+	}
+};
+void updateSensors(){
+	if(!sensorEvents.empty()){
+		vector<CGI>::iterator pos=sensorEvents.begin();
+		CGI e=sensorEvents.front();
+		//sensorEvents.clear();
+		//sensorEvents.erase(pos);
+		if(e.size()==4){
+			cout << "e=" << e << endl;
+			double x=stod(e["y"]);
+			double y=stod(e["x"]);
+			double z=stod(e["z"]);
+			camVR.setRot(Vector3D(x, y, z));
+		}
+	}
+}
 
 double t=0.0;
 double dt=1.0/30;
@@ -77,13 +105,6 @@ ProyeccionPerspectiva proyeccion;
 ///vector<Vista> vistas={{0.0,0.0,0.5,1,&proyeccion},{0.5,0.0,0.5,1,&pCam}};//,{0.0,0.5,0.5,0.5},{0.5,0.5,0.5,0.5}};
 vector<Vista> vistas={{0.0,0.0,0.5,1,&proyeccion},{0.5,0.0,0.5,1,&proyeccion}};
 vector<CamaraTPS> camaras(vistas.size());
-CamaraFPSAR camVR;
-
-float getRand(float max,float min=0){
-	float n=max-min;
-	int ir=rand()%1000;
-	return min+n*(float)ir/1000;
-}
 
 Mat opengl_default_frame_to_opencv() {
 	//cv::Mat img(480, 640*2, CV_8UC3);
@@ -211,6 +232,7 @@ void upKart(){
 		//mariokart->update(dt);
 	}
 }
+
 void idle(){
  t+=dt;
  e.limpiaFuerzas();
@@ -224,6 +246,7 @@ void idle(){
  CamaraTPS &cam=camaras[0];
  cam.update(dt*vel);
  e.update(dt);
+ updateSensors();
  displayMe();
 }
 void keyPressed(unsigned char key,int x,int y){
@@ -480,6 +503,8 @@ int main(int argc, char** argv){
  //this thread stream the rendered game
  bool stop=false;
  thread server_th(video_jpeg_stream_server,&stop);
+ StringCGIProcessor scp;
+ thread string_th(string_server,&stop,&scp);
 
  srand(10);
  vel=0;
@@ -494,7 +519,7 @@ int main(int argc, char** argv){
  //e.add(new Luz(Vector3D(-50,50,15)));
 
  /*  M E N U  */
- int ci=2;
+ //int ci=2;
  //cout << "Please enter the circuit number from 0 to 4: ";
  //cin >>ci;
 
@@ -523,6 +548,10 @@ int main(int argc, char** argv){
  sr->setPos(Vector3D(0,2,0));
  //e.add(sr);
 
+ //m=new ModeloMaterial("leia.obj");
+ //m->setPos(Vector3D(0,0,-20));
+ //m->setScale(0.1);
+ //e.add(m);
  m=new ModeloMaterial("TheAmazingSpiderman.obj");
  //m->setScale(Vector3D(4,4,4));
  m->setPos(Vector3D(3,0,-40));
