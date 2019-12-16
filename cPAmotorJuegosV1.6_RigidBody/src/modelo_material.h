@@ -147,7 +147,7 @@ public:
 			ficheroModeloObj.close();
 		}
 		else{
-			cout << "Fichero "+nombreFichero+" no existe."<<endl;
+			cout << "Fichero de material: "+nombreFichero+" no existe."<<endl;
 		}
 	}
 	// model as to be in a floder named 'name' in model_base_path

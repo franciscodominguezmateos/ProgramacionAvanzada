@@ -50,12 +50,18 @@ public:
 		if(vs[0]=="Ke")
 			Ke=Vector3D(stod(vs[1]),stod(vs[2]),stod(vs[3]));
 		if(vs[0]=="map_Ka"){
+			//string &su=vs[1];
+			//transform(su.begin(), su.end(), su.begin(), ::tolower);
 			map_Ka=vs[1];
 			map_Ka_tex=new Textura();
 			map_Ka_tex->init();
 			map_Ka_tex->setImage(imread(path+map_Ka));
 		}
 		if(vs[0]=="map_Kd"){
+			//string &su=vs[1];
+			//transform(su.begin(), su.end(), su.begin(), ::tolower);
+			//vs[1]=toLower(vs[1]);
+			//cout <<"kkk="<< vs[1] << endl;
 			map_Kd=vs[1];
 			map_Kd_tex=new Textura();
 			map_Kd_tex->init();

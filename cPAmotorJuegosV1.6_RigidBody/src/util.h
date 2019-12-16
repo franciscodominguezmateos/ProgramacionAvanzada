@@ -40,6 +40,7 @@ inline vector<string> split_first(string s,char delimiter){
 	   return tokens;
 	}
 
+/* STRING TOOLS: */
 /* TRIMMING */
 inline string& ltrim(std::string& str, const std::string& chars = "\t\n\v\f\r "){
 	    str.erase(0, str.find_first_not_of(chars));return str;}
@@ -47,6 +48,13 @@ inline string& rtrim(std::string& str, const std::string& chars = "\t\n\v\f\r ")
     str.erase(str.find_last_not_of(chars) + 1);return str;}
 inline string& trim(std::string& str, const std::string& chars = "\t\n\v\f\r "){
 	return ltrim(rtrim(str, chars), chars);}
+inline string toLower(string s){
+	//string &su=vs[1];
+	//transform(su.begin(), su.end(), su.begin(), ::tolower);
+	string r;
+	for(char c:s) r+=tolower(c);
+	return r;
+}
 
 /* EXTENSIONS */
 inline string takeAwayExtension(string &s){
@@ -54,8 +62,18 @@ inline string takeAwayExtension(string &s){
 inline string getExtension(string &s){
 	vector<string> vs=split(s,'.');	return vs[0];}
 
-/* NEAR ZERO */
+/* NUMBERS TOOLS */
 inline bool nearZero(double d){return fabs(d)<0.001;}
+inline double linearMap(double x,double i0,double i1,double o0,double o1){
+	double difi=i1-i0;
+	double difo=o1-o0;
+	double v=(x-i0)/difi;
+	double r=o0+difo*v;
+	// Clamp values
+	if(r>o1) r=o1;
+	if(r<o0) r=o0;
+	return r;
+}
 
 /* ANGULAR CONVERSION */
 inline double deg2rad(double  a){return a/180*M_PI;}

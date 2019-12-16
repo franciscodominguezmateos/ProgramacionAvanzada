@@ -1,6 +1,7 @@
 #include <GL/glut.h>
 #include <stdlib.h>
 #include <iostream>
+#include <mutex>
 #include "opencv2/opencv.hpp"
 #include "vector3d.h"
 #include "esfera.h"
@@ -37,20 +38,25 @@ using namespace cv;
 CamaraFPSAR camVR;
 /* SENSOR */
 vector<CGI> sensorEvents;
+mutex mtxSensorEvents;
 class StringCGIProcessor:public StringProcessor{
 public:
 	string process(string &si){
 		CGI event(si);
 		cout << si << endl;
+		mtxSensorEvents.lock();
 		sensorEvents.clear();
 		sensorEvents.push_back(si);
+		mtxSensorEvents.unlock();
 	    return "OK";
 	}
 };
 void updateSensors(){
 	if(!sensorEvents.empty()){
 		vector<CGI>::iterator pos=sensorEvents.begin();
+		mtxSensorEvents.lock();
 		CGI e=sensorEvents.front();
+		mtxSensorEvents.unlock();
 		//sensorEvents.clear();
 		//sensorEvents.erase(pos);
 		if(e.size()==4){
@@ -496,17 +502,20 @@ void loadCircuit(int i){
 	 }
 }
 int main(int argc, char** argv){
- //Quaternion test
- Quaternion q1(M_PI/2,Vector3D(0,0,1));
- Vector3D v1=q1*Vector3D(1,0,0);
- cout << "v1="<<v1<<endl;
- //this thread stream the rendered game
- bool stop=false;
- thread server_th(video_jpeg_stream_server,&stop);
- StringCGIProcessor scp;
- thread string_th(string_server,&stop,&scp);
+	srand(10);
+	//Quaternion test
+	Quaternion q1(M_PI/2,Vector3D(0,0,1));
+	Vector3D v1=q1*Vector3D(1,0,0);
+	cout << "v1="<<v1<<endl;
+	/* THREADS */
+	//this thread stream the rendered game
+	bool stop=false;
+	thread server_th(video_jpeg_stream_server,&stop);
+	// Launch input sensor server thread
+	StringCGIProcessor scp;
+	thread string_th(string_server,&stop,&scp);
 
- srand(10);
+	/*        PAGameVRLinusTrinusTest  */
  vel=0;
  //cout << t.isIn(Vector3D(0.25,0.25,0))<<endl;
  for(Camara &c:camaras){
