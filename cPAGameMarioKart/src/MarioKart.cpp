@@ -1,6 +1,8 @@
 #include <GL/glut.h>
 #include <stdlib.h>
 #include <iostream>
+#include <thread>
+#include <mutex>
 #include "opencv2/opencv.hpp"
 #include "vector3d.h"
 #include "esfera.h"
@@ -24,6 +26,10 @@
 #include "modelo_material.h"
 #include "caja_elastica.h"
 #include "caja_modelo_elastico.h"
+
+//Declaration needed in next .h
+Mat global_img;
+#include "socket_TCP_server.h"
 
 using namespace cv;
 
@@ -66,34 +72,61 @@ ProyeccionPerspectiva proyeccion;
 vector<Vista> vistas={{0.0,0.0,0.5,1,&proyeccion},{0.5,0.0,0.5,1,&proyeccion}};//,{0.0,0.5,0.5,0.5},{0.5,0.5,0.5,0.5}};
 vector<CamaraTPS> camaras(vistas.size());
 
+/* SENSOR */
+vector<CGI> sensorEvents;
+mutex mtxSensorEvents;
+class StringCGIProcessor:public StringProcessor{
+public:
+	string process(string &si){
+		CGI event(si);
+		//cout << si << endl;
+		mtxSensorEvents.lock();
+		sensorEvents.clear();
+		sensorEvents.push_back(si);
+		mtxSensorEvents.unlock();
+	    return "OK";
+	}
+};
+void updateSensors(){
+	if(!sensorEvents.empty()){
+		vector<CGI>::iterator pos=sensorEvents.begin();
+		mtxSensorEvents.lock();
+		CGI e=sensorEvents.front();
+		mtxSensorEvents.unlock();
+		//sensorEvents.clear();
+		//sensorEvents.erase(pos);
+		if(e.size()==4){
+		    CamaraTPS &cam=camaras[0];
+			Solido* mario = cam.getSolido();
+			cout << "e=" << e << endl;
+			double x=stod(e["x"]);
+			double y=stod(e["y"]);
+			double z=stod(e["z"]);
+			double b=stod(e["buttons"]);
+			y=linearMap(y,94,140,-2,2);
+			z=linearMap(z,94,140,-0.01,0.01);
+			mario->setRot(mario->getRot() + Vector3D(0, y, 0));
+			vel+=z;
+			//cam.update(dt);
+		}
+	}
+}
+
 void displayMe(void){
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-	//glPushMatrix();
+
 	vistas[0].render();
 	fondo.render();
     glLoadIdentity();
     camaras[0].render();
     e.render();
-    //glPopMatrix();
 
-    //glPushMatrix();
 	vistas[1].render();
 	fondoTablero.render();
     glLoadIdentity();
     camAR->render();
-    //camaras[0].render();
     e.render();
-    //glPopMatrix();
-/*
- tex.activar();
- glPushMatrix();
-  glTranslatef(0,1,-2);
-  glRotatef(t*10.0,0,1,0);
-  glColor3f(1,1,1);
-  glutSolidTeapot(5);
- glPopMatrix();
- tex.desactivar();
-*/
+
  glutSwapBuffers();
 }
 void setPoseCamAR(Mat &tablero){
@@ -176,15 +209,16 @@ void idle(){
  t+=dt;
  e.update(dt);
  upKart();
- Mat i;
- cap>>i;
- tex.setImage(i);
- texTv.setImage(i);
+// Mat i;
+// cap>>i;
+// tex.setImage(i);
+// texTv.setImage(i);
  //setPoseCamAR(i);
  //tex.update();
  CamaraTPS &cam=camaras[0];
  cam.update(dt*vel);
  displayMe();
+ updateSensors();
 }
 void keyPressed(unsigned char key,int x,int y){
 	Solido* s;
@@ -295,18 +329,8 @@ void init(void){
  glEnable(GL_LIGHT1);
  glEnable(GL_COLOR_MATERIAL);
  //glShadeModel(GL_FLAT);
- //glShadeModel(GL_SMOOTH);
- tex.init();
- ladrillos.init();
- paredTex.init();
- texTv.init();
+ glShadeModel(GL_SMOOTH);
  texTablero.init();
- spiderTex.init();
- spiderTex.setImage(imread("TheAmazingSpiderman1Tex.png"));
- marioKartTex.init();
- marioKartTex.setImage(imread("E_main.png"));
- mariokartTex.init();
- mariokartTex.setImage(imread("tex_0301.png"));
 }
 void reshape(int width,int height){
 	for(Vista &v:vistas)
@@ -377,9 +401,26 @@ void loadCircuit(int i){
 		 circuit->doTranslate(Vector3D(20,0,-100));
 		 e.add(circuit);
 	 }
+	 if(i==5){
+		 //Initial pose of mariokart in this circuit
+		 mariokart->setPos(Vector3D(0,0,0));
+		 //mariokart->setRot(Vector3D(0,90,0));
+		 circuit=new ModeloMaterial("AnimalCrossingSummer.obj");
+		 circuit->hazFija();
+		 //circuit->setDrawNormals(true);
+		 circuit->doScale(0.5);
+		 circuit->doTranslate(Vector3D(20,0,-100));
+		 e.add(circuit);
+	 }
 }
+
 int main(int argc, char** argv){
  srand(10);
+ // Launch server thread
+ bool stop=false;
+ StringCGIProcessor scp;
+ thread string_th(string_server,&stop,&scp);
+
  vel=0;
  //cout << t.isIn(Vector3D(0.25,0.25,0))<<endl;
  for(Camara &c:camaras){
@@ -393,7 +434,7 @@ int main(int argc, char** argv){
 
  /*  M E N U  */
  int ci=4;
- cout << "Please enter the circuit number from 0 to 4: ";
+ cout << "Please enter the circuit number from 0 to 5: ";
  cin >>ci;
 
  glutInit(&argc,argv);
@@ -407,96 +448,15 @@ int main(int argc, char** argv){
 
  // In order to use textures fist init() as to be called
  /*  M A R I O   K A R T */
- mariokart=new ModeloMaterial("mk_kart.obj");
+ mariokart=new ModeloMaterial("pk_kart.obj");
  mariokart->hazFija();
- //mariokart->doScale(10);
+ //mariokart->doScale(0.10);
  e.add(mariokart);
  camaras[0].setSolido(mariokart);
 
  loadCircuit(ci);
 
- m=new ModeloMaterial("TheAmazingSpiderman.obj");
- //m->setScale(Vector3D(4,4,4));
- //m->setPos(Vector3D(0,-0.5,1));
- //m->setVel(Vector3D(getRand(10,-10),0,-1.1));
- //e.add(m);
-
- ModeloMaterial* mm=new ModeloMaterial("M-FF_iOS_HERO_Natasha_Romanoff_Black_Widow_Age_Of_Ultron.obj");
- mm->setPos(Vector3D(4,0,0));
- mm->setScale(Vector3D(4,4,4));
- mm->setVel(Vector3D(getRand(10,-10),0,getRand(10,-10)));
- e.add(mm);
-
- ModeloMaterial* felicia=new ModeloMaterial("Felicia.obj");
- felicia->setPos(Vector3D(4,0,0));
- felicia->setScale(0.5);
- felicia->setVel(Vector3D(getRand(10,-10),0,getRand(10,-10)));
- e.add(felicia);
-
- ModeloMaterial* shrek=new ModeloMaterial("shrek.obj");
- shrek->setPos(Vector3D(-8,0,0));
- shrek->doScale(0.25);
- shrek->setVel(Vector3D(getRand(10,-10),0,getRand(10,-10)));
- //e.add(shrek);
-
- ModeloMaterial* minion_golf=new ModeloMaterial("mc_golf.obj");
- minion_golf->setPos(Vector3D(-4,0,0));
- minion_golf->setScale(4);
- minion_golf->setVel(Vector3D(getRand(10,-10),10,getRand(10,-10)));
- //e.add(minion_golf);
-
- m->doCenter();
- cme=new CajaModeloElastico(m);
- e.add(cme);
-
- Vector3D p0(-80,0,-80);
- Vector3D p1(-80,0, 80);
- Vector3D p2( 80,0, 80);
- Vector3D p3( 80,0,-80);
- Rectangulo *ret;
- ret=new Rectangulo(p0,p1,p2,p3);
- ret->setCol(Vector3D(1,1,1));
- ladrillos.setImage(imread("mario_kart_circuit.jpg"));
- ret->getTex()=ladrillos;
- ret->setNU(1);
- ret->setNV(1);
- //e.add(ret);
-
- p0=Vector3D(  0, 0,-10);
- p1=Vector3D( 20, 0,-10);
- p2=Vector3D( 20,10,-10);
- p3=Vector3D(  0,10,-10);
- Rectangulo *pared;
- pared=new Rectangulo(p0,p1,p2,p3);
- ret->setCol(Vector3D(1,1,1));
- paredTex.setImage(imread("brown_brick_texture_map.jpg"));
- pared->getTex()=paredTex;
- pared->setNU(1);
- pared->setNV(1);
- e.add(pared);
-
- p0=Vector3D(  9, 2,-9.9);
- p1=Vector3D( 11, 2,-9.9);
- p2=Vector3D( 11, 3,-9.9);
- p3=Vector3D(  9, 3,-9.9);
- Rectangulo *tv;
- tv=new Rectangulo(p0,p1,p2,p3);
- tv->setCol(Vector3D(1,1,1));
- Mat i;
- cap>>i;
- tex.setImage(i);
- tv->getTex()=tex;
- e.add(tv);
-
- cje=new CajaElastica(2,4,2);
- //e.add(cje);
-
- ce=new CuboElastico(2);
- ce->setTexture(tex);
- //e.add(ce);
-
  initCamAR();
- fondo.setTextura(texTv);
  fondoTablero.setTextura(texTablero);
 
  glutDisplayFunc(displayMe);
