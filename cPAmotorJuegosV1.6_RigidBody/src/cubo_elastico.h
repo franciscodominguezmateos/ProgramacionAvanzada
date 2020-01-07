@@ -32,7 +32,7 @@ public:
 			p=new Solido(-l,-l, l);
 			particulas.push_back(p);
 			Solido *p1,*p2;
-			for(int i=0;i<this->getParticulas().size();i++){
+			for(unsigned int i=0;i<this->getParticulas().size();i++){
 				for(unsigned int j=i+1;j<this->getParticulas().size();j++){
 					p1=getParticulas()[i];
 					p2=getParticulas()[j];

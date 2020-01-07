@@ -21,6 +21,7 @@ public:
 		b=p.b;
 		c=p.c;
 		d=p.d;
+		return *this;
 	}
 	virtual ~Plano(){}
 	inline float getA() const {return a;}
@@ -52,7 +53,7 @@ public:
 		// p=vt+vp then vt=p-vp
 		Vector3D vt=p-vp;
 		// the vt vector should be in the triangle plane
-		double dist=distancia(vt);
+		//double dist=distancia(vt);
 		//assert(nearZero(dist));
 		return vt;
 	}

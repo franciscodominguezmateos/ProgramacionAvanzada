@@ -22,7 +22,7 @@ public:
 		 Vector3D deltaP=pt2->getPos()-pt1->getPos();
 		 double pX=deltaP*right;
 		 if(abs(pX)>0.55){
-			 Vector3D newPos=pt1->getPos()+right*pX;
+			 //Vector3D newPos=pt1->getPos()+right*pX;
 			 pt1->setPos(pt1->getPos()+Vector3D(pX*1.8,0,0));
 		 }
 	}

@@ -35,7 +35,7 @@ Mat global_img;
 
 using namespace cv;
 
-CamaraFPSAR camVR;
+CamaraFPSVR camVR;
 /* SENSOR */
 vector<CGI> sensorEvents;
 mutex mtxSensorEvents;
@@ -43,7 +43,6 @@ class StringCGIProcessor:public StringProcessor{
 public:
 	string process(string &si){
 		CGI event(si);
-		cout << si << endl;
 		mtxSensorEvents.lock();
 		sensorEvents.clear();
 		sensorEvents.push_back(si);
@@ -60,7 +59,7 @@ void updateSensors(){
 		//sensorEvents.clear();
 		//sensorEvents.erase(pos);
 		if(e.size()==4){
-			cout << "e=" << e << endl;
+			//cout << "e=" << e << endl;
 			double x=stod(e["y"]);
 			double y=stod(e["x"]);
 			double z=stod(e["z"]);
@@ -218,7 +217,7 @@ void upKart(){
 		double ry=deg2rad(nearest->getRot().getY());
 		Vector3D vel={-sin(ry),0,cos(ry)};
 		Vector3D vr=vel.X(f); vr.normalize();
-		Vector3D vu=vr.X(vel);
+		//Vector3D vu=vr.X(vel);
 		double cosv=f*vel;
 		double cosr=f*vr;
 		double dv=rad2deg(M_PI/2-acos(cosv));
@@ -256,7 +255,7 @@ void idle(){
  displayMe();
 }
 void keyPressed(unsigned char key,int x,int y){
-	Solido* s;
+	//Solido* s;
 	Vector3D axisZ;
 	Vector3D axisX;
  switch(key){
@@ -365,9 +364,9 @@ void keyPressed(unsigned char key,int x,int y){
 	 for(Solido *s:cme->getParticulas()){
 		 s->setVel(axisZ*5);
 	 }
-	 for(Solido *s:cme->getParticulas()){
+	 //for(Solido *s:cme->getParticulas()){
 		 //s->setVel(s->getVel()+Vector3D(getRand(1,-1),1,-1));
-	 }
+	 //}
  break;
  case 's':
  case 'S':{
@@ -510,10 +509,14 @@ int main(int argc, char** argv){
 	/* THREADS */
 	//this thread stream the rendered game
 	bool stop=false;
-	thread server_th(video_jpeg_stream_server,&stop);
+	thread server_th(video_jpeg_stream_server,&stop,4097);
+	// wait a minute
+	this_thread::sleep_for(chrono::milliseconds(100));
 	// Launch input sensor server thread
 	StringCGIProcessor scp;
-	thread string_th(string_server,&stop,&scp);
+	thread string_th(string_server,&stop,&scp,8881);
+	// wait a minute
+	this_thread::sleep_for(chrono::milliseconds(100));
 
 	/*        PAGameVRLinusTrinusTest  */
  vel=0;

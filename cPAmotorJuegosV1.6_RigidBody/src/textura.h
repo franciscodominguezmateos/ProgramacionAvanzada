@@ -2,7 +2,7 @@
  * textura.h
  *
  *  Created on: Oct 15, 2017
- *      Author: francisco
+ *      Author: Francisco Dominguez
  */
 
 #ifndef TEXTURA_H_

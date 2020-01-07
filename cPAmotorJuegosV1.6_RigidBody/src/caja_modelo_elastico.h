@@ -199,10 +199,10 @@ public:
 	}
 	void update(double dt){
 		//acumulaFuerzasElasticas();
-		Vector3D ax=getAxisX();
-		Vector3D ay=getAxisX();
-		Vector3D az=getAxisX();
-		const vector<Solido *> &particulas=getParticulas();
+		//Vector3D ax=getAxisX();
+		//Vector3D ay=getAxisX();
+		//Vector3D az=getAxisX();
+		//const vector<Solido *> &particulas=getParticulas();
 		CajaModeloElastico::update(dt);
 	}
 

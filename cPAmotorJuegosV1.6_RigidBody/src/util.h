@@ -10,7 +10,10 @@
 #include <cassert>
 #include <vector>
 #include <string>
+#include <iostream>
+#include <fstream>
 #include <sstream>
+#include <stdexcept>
 
 using namespace std;
 
@@ -54,6 +57,31 @@ inline string toLower(string s){
 	string r;
 	for(char c:s) r+=tolower(c);
 	return r;
+}
+string toString(ifstream &f){
+	string s;
+	if(f.is_open()){
+		std::stringstream sstr;
+		sstr << f.rdbuf();
+		s = sstr.str();
+		f.close();
+	}else{
+		throw runtime_error("File not opened in util.h::toString");
+	}
+	return s;
+}
+void operator>>(ifstream &f,string &s){
+	s=toString(f);
+}
+void operator>>(ifstream &f,vector<string> &v){
+	if(f.is_open()){
+		string s;
+		while(getline(f,s))
+			v.push_back(s);
+		f.close();
+	}else{
+		throw runtime_error("File not opened in util.h::operator>> to vector<string>");
+	}
 }
 
 /* EXTENSIONS */

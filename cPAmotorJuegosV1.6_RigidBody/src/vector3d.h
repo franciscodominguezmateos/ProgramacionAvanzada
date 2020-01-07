@@ -117,6 +117,7 @@ public:
 		S d=vn*v;
 		return Vector3Dx<S>(vn*d);
 	}
+	//template <class S>  //this doesn't work
 	friend ostream &operator<<(ostream &os, const Vector3Dx<S> &v);
 };
 /*

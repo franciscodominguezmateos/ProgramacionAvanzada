@@ -32,10 +32,11 @@ public:
 	}
 	Luz(Vector3D p):Solido(p),idLight(idCount++){
 		assert(idCount<=NLIGHTS);
+		glEnable(ids[idLight]);
 	}
 	Luz():Luz(Vector3D(5,10,5)){}
 	void render(){
-	    GLfloat lightpos[]={getPos().getX(),getPos().getY(),getPos().getZ(),0.0};
+	    GLfloat lightpos[]={(GLfloat)getPos().getX(),(GLfloat)getPos().getY(),(GLfloat)getPos().getZ(),0.0};
 	    glLightfv(ids[idLight],GL_POSITION,lightpos);
 	}
 };

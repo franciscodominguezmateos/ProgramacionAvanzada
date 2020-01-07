@@ -150,8 +150,8 @@ public:
 			cout << "Fichero de material: "+nombreFichero+" no existe."<<endl;
 		}
 	}
-	// model as to be in a floder named 'name' in model_base_path
-	// in that folder should be a model file with name 'name'.obj
+	// model has to be in a folder named 'name' in model_base_path
+	// in that folder should have a model file with name 'name.obj'
 	void cargar(){
 		string nombreFichero=path+name;
 		maxX=maxY=maxZ=-1e40;
@@ -253,7 +253,7 @@ public:
 			return nullptr;
 		}
 		if (vs[0]!="f")
-			throw runtime_error("Not face line in parseTriangulos from model.cpp");
+			throw runtime_error("Not face line in parseTriangulos from model_material.cpp");
 		vector<string> vs0=split(vs[1],'/');
 		vector<int> vid0;
 		for(string s:vs0){

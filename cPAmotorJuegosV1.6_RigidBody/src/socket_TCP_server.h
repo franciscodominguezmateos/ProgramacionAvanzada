@@ -87,15 +87,10 @@ bool send_uncompressed_image(int socket,Mat& img){
     return true;
 }
 bool send_jpeg_image(int socket,Mat& img){
-    // send the uncompressed img frame over the network
-    //int imgSize = img.total() * img.elemSize();
-    //std::cout << "Image Size:" << imgSize << std::endl;
-	//if ((bytes = send(socket, img.data, imgSize, 0)) < 0){
-    //    std::cerr << "bytes = " << bytes << std::endl;
-    //    break;
-    //}
 	int bytes=0;
     vector<uchar> buf;
+    // if the image is empty return
+    if(img.empty()) return true;
     // compress as jpeg from matrix img to bytes vector buf
     imencode(".jpg",img,buf);
     uint l=buf.size();
@@ -120,17 +115,9 @@ void send_image_thread(bool* stop,void *ptr){
     int socket = *(int *)ptr;
     //OpenCV Code
     //----------------------------------------------------------
-
     Mat img, flippedFrame;
-
     while(!(*stop)){
-        // get a frame from the camera
-        //cap >> img;
-        //screen >> img;
-    	// from video_capture_thread
-    	// this allow multithread
     	img=global_img;
-
         // flip the frame
         //flip(img, flippedFrame, 0);
         //resize(img,img,Size(),0.5,0.5);
@@ -141,7 +128,7 @@ void send_image_thread(bool* stop,void *ptr){
     }
     close(socket);
 }
-void video_jpeg_stream_server(bool* pstop){
+void video_jpeg_stream_server(bool* pstop,int port=4097){
 	bool &stop=*pstop;
     //--------------------------------------------------------
     //networking stuff: socket, bind, listen
@@ -181,7 +168,7 @@ void video_jpeg_stream_server(bool* pstop){
     }
     close(localSocket);
 }
-void http_server(bool* pstop,HttpProcessor* hp){
+void http_server(bool* pstop,HttpProcessor* hp,int port=8881){
     //--------------------------------------------------------
     //networking stuff: socket, bind, listen
     //--------------------------------------------------------
@@ -192,7 +179,7 @@ void http_server(bool* pstop,HttpProcessor* hp){
     int addrLen = sizeof(struct sockaddr_in);
 
     // Start this TCP server
-    localSocket=socket_TCP_server_bind(8881);
+    localSocket=socket_TCP_server_bind(port);
     if(localSocket<0) exit(0);
 
     //accept connection from incoming clients
@@ -213,7 +200,14 @@ void http_server(bool* pstop,HttpProcessor* hp){
     }
     close(localSocket);
 }
-void string_server(bool* pstop,StringProcessor* sp){
+//This doesn't work
+void string_server_dispatch_thread(int remoteSocket,StringProcessor* sp){
+	string si=receive_string(remoteSocket);
+	string so=sp->process(si);
+	send_string(remoteSocket,so);
+	close(remoteSocket);
+}
+void string_server(bool* pstop,StringProcessor* sp,int port=8881){
     //--------------------------------------------------------
     //networking stuff: socket, bind, listen
     //--------------------------------------------------------
@@ -224,7 +218,7 @@ void string_server(bool* pstop,StringProcessor* sp){
     int addrLen = sizeof(struct sockaddr_in);
 
     // Start this TCP server
-    localSocket=socket_TCP_server_bind(8881);
+    localSocket=socket_TCP_server_bind(port);
     if(localSocket<0) exit(0);
 
     //accept connection from incoming clients
@@ -236,11 +230,11 @@ void string_server(bool* pstop,StringProcessor* sp){
             perror("accept failed!");
             break;
         }
-        //std::cout << "Connection accepted" << std::endl;
-		string si=receive_string(remoteSocket);
-		string so=sp->process(si);
-		send_string(remoteSocket,so);
-		close(remoteSocket);
+        //thread string_dispatch_th(string_server_dispatch_thread,remoteSocket,sp);
+    	string si=receive_string(remoteSocket);
+    	string so=sp->process(si);
+    	send_string(remoteSocket,so);
+    	close(remoteSocket);
     }
     close(localSocket);
 }

@@ -25,7 +25,7 @@ public:
 		 glTranslatef(-getPos().getX(),-getPos().getY(),-getPos().getZ());
 		 glRotatef(getRot().getX(), 1,0,0);
 		 glRotatef(getRot().getY(), 0,1,0);
-		 glRotatef(getRot().getZ(), 1,0,1);
+		 glRotatef(getRot().getZ(), 0,0,1);
 	}
 };
 class CamaraFPS: public Camara {
@@ -48,10 +48,10 @@ public:
 		 glTranslatef(-getPos().getX(),-getPos().getY(),-getPos().getZ());
 	}
 };
-class CamaraFPSAR: public CamaraFPS {
+class CamaraFPSVR: public CamaraFPS {
 	double baseline;
 public:
-	CamaraFPSAR(double x=0,double y=1.65,double z=0):CamaraFPS(x,y,z),baseline(0.1){}
+	CamaraFPSVR(double x=0,double y=1.65,double z=0):CamaraFPS(x,y,z),baseline(0.25){}
 	inline double getBaseline(){return baseline;}
 	inline void setBaseline(double b){baseline=b;}
 	void renderLeft(){
@@ -65,8 +65,9 @@ public:
 };
 class CamaraTPS : public Camara {
 	Solido *s;
+	bool lookSolido;
 public:
-	CamaraTPS(double x = 0, double y = 1.65, double z = 0) :Camara(x, y, z) {}
+	CamaraTPS(double x = 0, double y = 1.65, double z = 0) :Camara(x, y, z),s(nullptr),lookSolido(true) {}
 	void setSolido(Solido *s) { this->s = s; }
 	Solido *getSolido() { return s; }
 	void update(double dt) {
@@ -82,15 +83,33 @@ public:
 		s->setPos(s->getPos() + newV * dt);
 	}
 	void render() {
-		glTranslatef(-this->getPos().getX(), -this->getPos().getY(), -this->getPos().getZ());
+		if (lookSolido)  glTranslatef(-this->getPos().getX(), -this->getPos().getY(), -this->getPos().getZ());
 		glRotatef(getRot().getX(), 1, 0, 0);
 		glRotatef(getRot().getY(), 0, 1, 0);
 		glRotatef(getRot().getZ(), 0, 0, 1);
+		if (!lookSolido) glTranslatef(this->getPos().getX(), -this->getPos().getY(), this->getPos().getZ());
 
 		glRotatef(-s->getRot().getX(), 1, 0, 0);
 		glRotatef(-s->getRot().getY(), 0, 1, 0);
-		glRotatef(-s->getRot().getZ(), 1, 0, 1);
+		glRotatef(-s->getRot().getZ(), 0, 0, 1);
 		glTranslatef(-s->getPos().getX(), -s->getPos().getY(), -s->getPos().getZ());
+	}
+	bool isLookSolido() const {return lookSolido;}
+	void setLookSolido(bool lookSolido) {this->lookSolido = lookSolido;}
+};
+class CamaraTPSVR: public CamaraTPS {
+	double baseline;
+public:
+	CamaraTPSVR(double x=0,double y=1.65,double z=0):CamaraTPS(x,y,z),baseline(0.25){}
+	inline double getBaseline(){return baseline;}
+	inline void setBaseline(double b){baseline=b;}
+	void renderLeft(){
+		glTranslatef(-baseline,0,0);
+		render();
+	}
+	void renderRight(){
+		glTranslatef(baseline,0,0);
+		render();
 	}
 };
 class CamaraFly: public Camara {
