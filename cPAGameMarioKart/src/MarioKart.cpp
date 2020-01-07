@@ -42,14 +42,13 @@ Mat tablero;
 
 double vel;
 
-
 ModeloMaterial* circuit;
 ModeloMaterial* mariokart;
 
 Escena e;
 Cubo *pc;
 ModeloMaterial* m;
-Textura tex,ladrillos,paredTex,texTv,texTablero,spiderTex,marioKartTex,minionTex,mariokartTex;
+Textura tex,ladrillos,paredTex,texTv,spiderTex,marioKartTex,minionTex,mariokartTex;
 VideoCapture cap(0);
 CuboElastico *ce;
 CajaElastica* cje;
@@ -57,19 +56,38 @@ CajaModeloElastico* cme;
 
 FondoTextura fondo,fondoTablero;
 
+// Augmented Reality
 Mat K=(Mat_<double>(3,3) <<
 		 1053.755323784897,                 0, 317.160420774003,
 		                 0, 1067.981896308737, 203.4946241428054,
 						 0,                 0,                 1);
 
 Mat dist=Mat::zeros(4,1,cv::DataType<double>::type); // Assuming no lens distortion
-CamaraAR *camAR;
+CamaraAR *camAR=nullptr;
 ProyeccionCamara pCam(K);
 PoseEstimationChessBoard peChessBoard(K,dist);
-
+Textura texTablero;
+void setPoseCamAR(Mat &tablero){
+	 if(peChessBoard.estimatePose(tablero)){
+		 if(camAR)
+			 camAR->setPose(peChessBoard.getRvec(),peChessBoard.getTvec());
+		 else
+			 camAR=new CamaraAR(peChessBoard.getRvec(),peChessBoard.getTvec());
+	 }
+	 else{
+		 cout << "Tablero no detectado!!!"<< endl;
+		 camAR->setPose(Mat::zeros(3,1,cv::DataType<double>::type),
+				        Mat::zeros(3,1,cv::DataType<double>::type));
+	 }
+	 texTablero.setImage(tablero);
+}
+void initCamAR(){
+	 tablero=imread("2017-11-03-091218.jpg");
+	 setPoseCamAR(tablero);
+}
 ProyeccionPerspectiva proyeccion;
-//vector<Vista> vistas={{0.0,0.0,0.5,1,&proyeccion},{0.5,0.0,0.5,1,&pCam}};//,{0.0,0.5,0.5,0.5},{0.5,0.5,0.5,0.5}};
-vector<Vista> vistas={{0.0,0.0,0.5,1,&proyeccion},{0.5,0.0,0.5,1,&proyeccion}};//,{0.0,0.5,0.5,0.5},{0.5,0.5,0.5,0.5}};
+vector<Vista> vistas={{0.0,0.0,0.5,1,&proyeccion},{0.5,0.0,0.5,1,&pCam}};//,{0.0,0.5,0.5,0.5},{0.5,0.5,0.5,0.5}};
+//vector<Vista> vistas={{0.0,0.0,0.5,1,&proyeccion},{0.5,0.0,0.5,1,&proyeccion}};//,{0.0,0.5,0.5,0.5},{0.5,0.5,0.5,0.5}};
 vector<CamaraTPS> camaras(vistas.size());
 
 /* SENSOR */
@@ -93,21 +111,18 @@ void updateSensors(){
 		mtxSensorEvents.lock();
 		CGI e=sensorEvents.front();
 		mtxSensorEvents.unlock();
-		//sensorEvents.clear();
-		//sensorEvents.erase(pos);
 		if(e.size()==4){
 		    CamaraTPS &cam=camaras[0];
 			Solido* mario = cam.getSolido();
 			cout << "e=" << e << endl;
-			double x=stod(e["x"]);
+			//double x=stod(e["x"]);
 			double y=stod(e["y"]);
 			double z=stod(e["z"]);
-			double b=stod(e["buttons"]);
+			//double b=stod(e["buttons"]);
 			y=linearMap(y,94,140,-2,2);
 			z=linearMap(z,94,140,-0.01,0.01);
 			mario->setRot(mario->getRot() + Vector3D(0, y, 0));
 			vel+=z;
-			//cam.update(dt);
 		}
 	}
 }
@@ -127,18 +142,7 @@ void displayMe(void){
     camAR->render();
     e.render();
 
- glutSwapBuffers();
-}
-void setPoseCamAR(Mat &tablero){
-	 if(peChessBoard.estimatePose(tablero)){
-		 camAR->setPose(peChessBoard.getRvec(),peChessBoard.getTvec());
-	 }
-	 else{
-		 cout << "Tablero no detectado!!!"<< endl;
-		 camAR->setPose(Mat::zeros(3,1,cv::DataType<double>::type),
-				        Mat::zeros(3,1,cv::DataType<double>::type));
-	 }
-	 texTablero.setImage(tablero);
+    glutSwapBuffers();
 }
 void upKart(){
 	Vector3D up(0,1,0);
@@ -322,31 +326,10 @@ void mousePress(int button, int state, int x, int y)
         my = -1;
     }
 }
-void init(void){
- glEnable(GL_DEPTH_TEST);
- glEnable(GL_LIGHTING);
- glEnable(GL_LIGHT0);
- glEnable(GL_LIGHT1);
- glEnable(GL_COLOR_MATERIAL);
- //glShadeModel(GL_FLAT);
- glShadeModel(GL_SMOOTH);
- texTablero.init();
-}
+
 void reshape(int width,int height){
 	for(Vista &v:vistas)
 		v.reshape(width,height);
-}
-void initCamAR(){
-	 tablero=imread("2017-11-03-091218.jpg");
-	 if(peChessBoard.estimatePose(tablero)){
-		 camAR=new CamaraAR(peChessBoard.getRvec(),peChessBoard.getTvec());
-	 }
-	 else{
-		 cout << "Tablero no detectado!!!"<< endl;
-		 camAR= new CamaraAR(Mat::zeros(3,1,cv::DataType<double>::type),
-				             Mat::zeros(3,1,cv::DataType<double>::type));
-	 }
-	 texTablero.setImage(tablero);
 }
 
 void loadCircuit(int i){
@@ -413,18 +396,51 @@ void loadCircuit(int i){
 		 e.add(circuit);
 	 }
 }
+void init(void){
+ glEnable(GL_DEPTH_TEST);
+ glEnable(GL_LIGHTING);
+ glEnable(GL_LIGHT0);
+ glEnable(GL_LIGHT1);
+ glEnable(GL_COLOR_MATERIAL);
+ //glShadeModel(GL_FLAT);
+ glShadeModel(GL_SMOOTH);
+ texTablero.init();
+}
+void gameInit(int argc, char** argv){
+	 glutInit(&argc,argv);
+	 //glutInitDisplayMode(GLUT_SINGLE);
+	 glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
+	 glutInitWindowSize(640*2,480);
+	 glutInitWindowPosition(300,300);
+	 glutCreateWindow("Mario Kart Augmented Reality Third Person :D");
+	 init();
+}
+void gameMainLoop(){
+	 glutDisplayFunc(displayMe);
+	 glutIdleFunc(idle);
+	 glutReshapeFunc(reshape);
+	 glutKeyboardFunc(keyPressed);
+	 glutMotionFunc(&mouseMoved);
+	 glutMouseFunc(&mousePress);
+	 //glutFullScreen();
+	 glutMainLoop();
+}
 
 int main(int argc, char** argv){
  srand(10);
- // Launch server thread
+ // Launch input sensor server thread
  bool stop=false;
  StringCGIProcessor scp;
- thread string_th(string_server,&stop,&scp);
+ thread string_th(string_server,&stop,&scp,8881);
+ // wait a minute
+ this_thread::sleep_for(chrono::milliseconds(100));
 
  vel=0;
  //cout << t.isIn(Vector3D(0.25,0.25,0))<<endl;
+ //camaras[0].setLookSolido(false);
  for(Camara &c:camaras){
-	 c.setPos(Vector3D(0,1.65,10));
+	 c.setPos(Vector3D(0,2.50,10));
+	 //c.setPos(Vector3D(0,1.50,0));
 	 c.setRot(Vector3D(0,180,0));
  }
  Luz* l1=new Luz(Vector3D( 50,50,15));
@@ -437,16 +453,10 @@ int main(int argc, char** argv){
  cout << "Please enter the circuit number from 0 to 5: ";
  cin >>ci;
 
- glutInit(&argc,argv);
- //glutInitDisplayMode(GLUT_SINGLE);
- glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
- glutInitWindowSize(640*2,480);
- glutInitWindowPosition(300,300);
- glutCreateWindow("Hello wold :D");
- init();
+ gameInit(argc,argv);
 
 
- // In order to use textures fist init() as to be called
+ // In order to use textures fist gameInit() as to be called
  /*  M A R I O   K A R T */
  mariokart=new ModeloMaterial("pk_kart.obj");
  mariokart->hazFija();
@@ -459,14 +469,7 @@ int main(int argc, char** argv){
  initCamAR();
  fondoTablero.setTextura(texTablero);
 
- glutDisplayFunc(displayMe);
- glutIdleFunc(idle);
- glutReshapeFunc(reshape);
- glutKeyboardFunc(keyPressed);
- glutMotionFunc(&mouseMoved);
- glutMouseFunc(&mousePress);
- //glutFullScreen();
- glutMainLoop();
+ gameMainLoop();
  return 0;
 }
 
