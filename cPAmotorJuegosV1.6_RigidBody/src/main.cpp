@@ -500,7 +500,7 @@ void loadCircuit(int i){
 		 e.add(circuit);
 	 }
 }
-int main(int argc, char** argv){
+ºint main(int argc, char** argv){
 	srand(10);
 	//Quaternion test
 	Quaternion q1(M_PI/2,Vector3D(0,0,1));

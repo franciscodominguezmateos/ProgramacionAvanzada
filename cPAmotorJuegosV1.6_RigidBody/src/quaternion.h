@@ -65,9 +65,17 @@ public:
 	// quaternion vector application
 	inline Vector3D operator*(Vector3D v){
 		Quaternion &q=*this;
+		// put in quaternion form it is not a unit quaternion
 		Quaternion qv(v);
 		Quaternion r=q*qv*!q;
 		return r.v;
+	}
+	// doesn't have to be a unit quaternion
+	// scale quaternion needed in tiem derivative function
+	inline Quaternion operator*(double d){
+		Quaternion &q=*this;
+		Quaternion r(q.v*d,q.w*d);
+		return r;
 	}
 	inline Quaternion normalize(){
 		double vl2=v.lengthSquared();
@@ -89,10 +97,32 @@ public:
 	    Mat A = I*(w*w-v*v)+v.O(v)*2+S(v)*w*2;
 		return A;
 	}
-	// TODO: Jacobian
+	// Time derivative of this quaternion given w as angular velocity
+	Quaternion d(Vector3D w){
+		Quaternion &q=*this;
+		// put in quaternion form it is not a unit quaternion
+		Quaternion qw(w);
+		Quaternion r=q*qw*0.5;
+		return r;
+	}
+	// Time integration of a angular velocity w a time dt considering dw=0<->no angular acceleration
+	Quaternion I(Vector3D w,double dt){
+		Quaternion &q=*this;
+		Quaternion dq(exp(w*dt));
+		Quaternion r=q*dq;
+		return r;
+	}
+	// Parameter derivative aka Jacobian
 	inline Mat J(){
 		Mat I=Mat::eye(3,3,CV_64F);
 		return I;
+	}
+	// Parameter derivateve of quaterion action on p aka Jacobian of action/application
+	Mat Ja(Vector3D a){
+		Mat I=Mat::eye(3,3,CV_64F);
+		Vector3D v0=a*w+v.X(a);
+		Mat m=a*v*I+v.O(a)-a.O(v)-w*S(a);
+		Mat r=Mat::zeros(3,4,CV_64F);
 	}
 	// TODO: Aprox almost Rotation Matrix m as Quaternion
 	inline static Quaternion aprox(Mat m){
