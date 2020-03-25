@@ -127,8 +127,6 @@ os << v.x << "," << v.y << "," << v.z;
 return os;
 }
 */
-//template ostream &operator<< (ostream &os, const Vector3Dx<double> &v);
-
 
 inline ostream &operator<<(ostream &os, const Vector3Dd &v) {
 	os << v.x << "," << v.y << "," << v.z;

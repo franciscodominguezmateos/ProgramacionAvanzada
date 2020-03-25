@@ -28,6 +28,7 @@ class XMLNode{
 public:
 	XMLNode(XMLNodeType t=UNKNOW,string name="root"):type(t),name(name){}
 	/*     CHILDREN      */
+	inline int size() {return children.size();}
 	void addchild(XMLNode n){
 		string name=n.getName();
 		// name it isn't on the map
@@ -44,6 +45,7 @@ public:
 			throw runtime_error("Error in XMLNode::getchildren(): not children named "+name+" in node "+getName());
 	}
 	inline XMLNode &getChild(string name){return getChildren(name)[0];}
+	//friendly access
 	inline XMLNode &operator[](string name){return getChild(name);}
 	inline bool hasChild(string name){return children.count(name)>0;}
 	inline const int getChildrenSize() const {return children.size();}
@@ -72,13 +74,16 @@ public:
 			}
 		}
 	}
-	const map<string, string>& getAttributes() const {return attributes;}
-	string &getAttibute(string &name){
+	inline const map<string, string>& getAttributes() const {return attributes;}
+	inline string &getAttibute(string name){
 		if(attributes.count(name)>0)
 			return attributes[name];
 		else
 			throw runtime_error("Error in XMLNode::getAttibute(): not children named "+name+" in node "+getName());
 	}
+	//friendly access
+	inline string &operator()(string name){return getAttibute(name);}
+	friend ofstream &operator<<(ofstream &ofxml,const XMLNode &n);
 };
 //this class has a limitation on the length of token
 class XMLScanner{
@@ -263,5 +268,38 @@ public:
 		return parent;
 	}
 };
+/*         STREAM I/O         */
+ostream &operator<<(ostream &ofxml,const XMLNode &n){
+	ofxml << "<" << n.getName() << " " ;
+	// send attributes
+	for(auto &pair:n.getAttributes()){
+		ofxml << pair.first << "=\"" << pair.second << "\" ";
+	}
+	// ELEMENT_CONTAINER
+	const map<string,vector<XMLNode>> &children=n.getChildren();
+	if(children.size()>0){
+		//end with >
+		ofxml << ">" << endl;
+		if(n.getText()!="") ofxml << n.getText() << endl;
+		for(auto &pair:children){
+			for(const XMLNode &nh:pair.second)
+				ofxml << nh;
+		}
+		ofxml << "</" << n.getName() << ">" << endl;
+	}
+	// ELEMENT LEAF
+	else{
+		// end with />
+		ofxml <<"/>" << endl;
+	}
+	return ofxml;
+}
+ifstream &operator>>(ifstream &ifxml,XMLNode &n){
+	string s;
+	ifxml >> s;
+	XMLParser p;
+	n=XMLNode(p.parse(s));
+	return ifxml;
+}
 
 #endif /* XML_PARSER_H_ */
