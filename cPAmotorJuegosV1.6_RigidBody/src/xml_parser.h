@@ -26,28 +26,49 @@ class XMLNode{
 	map<string,string> attributes;
 	map<string,vector<XMLNode>> children;
 public:
-	XMLNode():type(UNKNOW){}
+	XMLNode(XMLNodeType t=UNKNOW,string name="root"):type(t),name(name){}
 	void setAttributes(string key_value_pairs){
+		string key,value;
 		//take away any space at beginning or end
 		trim(key_value_pairs);
 		vector<string> pairs=split(key_value_pairs);
 		for(string pair:pairs){
 			vector<string> keyvalue=split(pair,'=');
-			string key=keyvalue[0];
-			string value=keyvalue[1];
-			attributes[key]=value;
+			if(keyvalue.size()>0){
+				key=keyvalue[0];
+				if(keyvalue.size()==2){
+					value=removeQuotes(keyvalue[1]);
+				}else value="";
+				attributes[key]=value;
+			}
 		}
+	}
+	XMLNode &getElement(string name){
+		if(this->name==name)
+			return *this;
+		else
+		for(auto &pair:children)
+			for(XMLNode &n:pair.second) try{
+				return pair.second.getElement(name);
+			}
+		}
+		catch(exception e){}
+		throw runtime_error("Element "+name+" not found in "+this->name);
 	}
 	void addchild(XMLNode n){
 		string name=n.getName();
 		// name it isn't on the map
-		if(children.find(name) == children.end()){
+		if(children.count(name)==0){
 			children[name]=vector<XMLNode>();
 		}
 		children[name].push_back(n);
 	}
 	const map<string, string>& getAttributes() const {return attributes;}
 	const map<string, vector<XMLNode> >& getChildren() const {return children;	}
+	const vector<XMLNode> &getChildren(string name) const{return children[name];}
+	XMLNode &getChild(string name){return children[name][0];}
+	const bool hasChild(string name){return children.count(name);}
+	const int getChildrenSize() const {return children.size();}
 	void setChildren(const map<string, vector<XMLNode> > &children) {this->children = children;}
 	const string& getName() const {return name;	}
 	void setName(const string &name) {this->name = name;}
@@ -62,16 +83,20 @@ class XMLscanner{
 	smatch m;
 	regex e;
 public:
-	XMLscanner(string s):s(s),e("<(/*)(\\S+?)\\b(.*?)(/*)>|([^<]+)"){}
-	string getNextString(){
+	XMLscanner(string s=""):s(s),e("<(/*)(\\S+?)\\b(.*?)(/*)>|([^<]+)"){}
+	inline void setString(string &rs){s=rs;}
+	string getNextString() try{
 		bool ok=true;
 		while(regex_search (s,m,e, regex_constants::match_any)){
-			string r= m[0].str();
-			s = m.suffix().str();
+			string r= m[0];
+			s = m.suffix();
 			ok=trim(r)!="";
 			if(ok) return r;
 		}
 		return "";
+	}
+	catch (exception &e){
+		cout <<"Error in XMLscanner::getNextString():" <<e.what() << endl;
 	}
 	//detect type of Node from smatch data
 	bool isElementContainer(smatch &m){
@@ -147,8 +172,13 @@ public:
 class XMLparser{
 	XMLscanner scanner;
 public:
-	XMLparser(string s):scanner(s){}
-	XMLNode parse(XMLNode &parent){
+	XMLparser(string s=""):scanner(s){}
+	XMLNode parse(string &s){
+		scanner.setString(s);
+		XMLNode n(ELEMENT_CONTAINER);
+		return parseStep(n);
+	}
+	XMLNode &parseStep(XMLNode &parent){
 		XMLNode n=scanner.getNextNode();
 		while(n.getType()!=EON){
 			if(n.getType()==ELEMENT_END){
@@ -164,8 +194,8 @@ public:
 				parent.addchild(n);
 			}
 			if(n.getType()==ELEMENT_CONTAINER){
-				n=parse(n);
-				parent.addchild(n);
+				XMLNode np=parseStep(n);
+				parent.addchild(np);
 			}
 			n=scanner.getNextNode();
 		}

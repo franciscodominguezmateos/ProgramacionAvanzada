@@ -58,6 +58,9 @@ inline string toLower(string s){
 	for(char c:s) r+=tolower(c);
 	return r;
 }
+inline string& removeQuotes(string &s){
+	return trim(s,"\t\"\n\v\f\r ");
+}
 string toString(ifstream &f){
 	string s;
 	if(f.is_open()){
