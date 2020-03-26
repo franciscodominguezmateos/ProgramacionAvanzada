@@ -30,16 +30,24 @@ inline vector<string> split(string s,char delimiter=' '){
 		  tokens.push_back(token);
 	   return tokens;
 	}
-inline vector<string> split_first(string s,char delimiter){
+inline vector<float> split_numbers(string s,char delimiter=' '){
+	   vector<float> tokens;
+	   string token;
+	   istringstream iss(s);
+	   while (getline(iss, token, delimiter))
+		  tokens.push_back(stof(token));
+	   return tokens;
+	}
+inline vector<string> split_first(string s,char delimiter=' '){
 	   vector<string> tokens;
-	   if(s.size()<=3)
-		   return tokens;
+	   if(s.size()==0) return tokens;
+	   if(s.size()==1){tokens.push_back(s);return tokens;}
 	   string token;
 	   istringstream iss(s);
 	   getline(iss, token, delimiter);
 	   tokens.push_back(token);
-	   getline(iss, token,'\r');
-	   tokens.push_back(token);
+	   if(getline(iss, token,'\r'))
+		   tokens.push_back(token);
 	   return tokens;
 	}
 
