@@ -1,8 +1,8 @@
 /*
- * modelo_material.h
+ * loader_obj.h
  *
- *  Created on: Nov 12, 2015
- *      Author: francisco
+ *  Created on: March 27, 2020
+ *      Author: Francisco Dominguez
  */
 
 #pragma once
@@ -18,15 +18,12 @@
 #include "util.h"
 #include "material.h"
 #include "triangle.h"
+#include "model_mesh.h"
 
 using namespace std;
 
-class ModeloMaterial: public Solido {
-	vector<Vector3D *> vertices;
-	vector<Vector3D *> textures;
-	vector<Vector3D *> normals;
-	vector<Triangle *> triangulos;
-	map<string,Material> materiales;
+class LoaderOBJ: public Solido {
+	ModelMesh m;
 	string currentMaterial;
 	float maxX,maxY,maxZ;
 	float minX,minY,minZ;
@@ -35,9 +32,8 @@ class ModeloMaterial: public Solido {
 	string path;
 public:
 	static string model_base_path;
-	ModeloMaterial(){}
 
-	ModeloMaterial(string s,string folder=""){
+	LoaderOBJ(string s,string folder=""){
 		if(folder=="")
 			folder=takeAwayExtension(s)+"/";
 		path=model_base_path+folder;
@@ -45,8 +41,8 @@ public:
 		cargar();
 		scale=Vector3D(1,1,1);
 	}
-	ModeloMaterial(const ModeloMaterial &m);
-	ModeloMaterial *clone(){return nullptr;}
+	LoaderOBJ(const LoaderOBJ &m);
+	LoaderOBJ *clone(){return nullptr;}
 
 	Triangle *centrar(Triangle *t){
 		Vector3D centro(minX+getAncho()/2.0,minY+getAlto()/2.0,minZ+getProfundo()/2);
@@ -56,6 +52,19 @@ public:
 		/// NNOOOOOOOOO
 		return(new Triangle(p0-centro,p1-centro,p2-centro));
 	}
+	inline ModelMesh &getMesh(){return m;}
+	inline vector<Triangle>& getTriangles(){return m.getTriangles();}
+	inline map<string, Material>& getMaterials() {return m.getMaterials();}
+	inline vector<Vector3D>& getVertices() {return m.getVertices();}
+	inline vector<Vector3D>& getTextures() {return m.getTextures();}
+	inline vector<Vector3D>& getNormals()  {return m.getNormals();}
+	inline void addVTNindex(unsigned int iv,unsigned int it,unsigned int in){m.addVTNindex(iv,it,in);}
+	inline void addVertex (Vector3D &v){m.addVertex(v);}
+	inline void addTexture(Vector3D &v){m.addTexture(v);}
+	inline void addNormal (Vector3D &v){m.addNormal(v);}
+	inline void addMaterial(string name,Material &mat){m.addMaterial(name,mat);}
+	inline void addTriangle(Triangle &t){m.addTriangle(t);}
+
 	inline float getAncho()    {return maxX-minX;}
 	inline float getAlto()     {return maxY-minY;}
 	inline float getProfundo() {return maxZ-minZ;}
@@ -64,26 +73,14 @@ public:
 	inline void setScale(double d){scale=Vector3D(d,d,d);}
 	inline Vector3D getScale(){return scale;}
 	inline float getMinY(){return minY;}
-	void setTexture(Textura* tex){
-		for(Triangle* t:triangulos)
-			t->setTextura(tex);
-	}
-	inline void addTriangulo(Triangle *t){
-		triangulos.push_back(t);
-	}
 
-	inline void setColor(Vector3D c){
-		for(Triangle *t:triangulos){
-			t->setCol(c);
-		}
-	}
 	inline void setDrawNormals(bool b){
-		for(Triangle* &t:triangulos)
-			t->setDrawNormals(b);
+		for(Triangle &t:getTriangles())
+			t.setDrawNormals(b);
 	}
 	inline void doScale(double s){
-		for(Triangle* &t:triangulos)
-			t->doScale(s);
+		for(Triangle &t:getTriangles())
+			t.doScale(s);
 		minX*=s;
 		minY*=s;
 		minZ*=s;
@@ -92,8 +89,8 @@ public:
 		maxZ*=s;
 	}
 	inline void doTranslate(Vector3D v){
-		for(Triangle* &t:triangulos)
-			t->doTranslate(v);
+		for(Triangle &t:getTriangles())
+			t.doTranslate(v);
 		minX+=v.getX();
 		minY+=v.getY();
 		minZ+=v.getZ();
@@ -119,12 +116,12 @@ public:
 		  glutWireSphere(getAlto()/2.0,10,10);
 		glPopMatrix();
 */
-		for(Triangle *t:triangulos)
-			t->render();
+		for(Triangle t:getTriangles())
+			t.render();
 		glPopMatrix();
 	}
 
-	void cargarMateriales(string nombre){
+	void loadMaterial(string nombre){
 		string lineaUntrimmed;
 		string matName;
 		string nombreFichero=path+nombre;
@@ -138,10 +135,10 @@ public:
 				if(linea.find("newmtl")!=string::npos){
 					vector<string> vs=split(linea);
 					matName=vs[1];
-					materiales[matName]=Material(path);
+					getMaterials()[matName]=Material(path);
 				}
 				else{
-					materiales[matName].parseLine(linea);
+					getMaterials()[matName].parseLine(linea);
 				}
 			}
 			ficheroModeloObj.close();
@@ -169,19 +166,19 @@ public:
 				if (linea[0] == 'v')	{
 					if(linea[1]=='t'){
 						//Texture detected
-						Vector3D *v=parseVector2D(linea);
-						textures.push_back(v);
+						Vector3D v=parseVector2D(linea);
+						addTexture(v);
 					}
 					else if(linea[1]=='n'){
 						//Normal detected
-						Vector3D *v=parseVector3D(linea);
-						normals.push_back(v);
+						Vector3D v=parseVector3D(linea);
+						addNormal(v);
 					}
 					else if(linea[1]==' '){
 						//Vertex detected
-						Vector3D *v=parseVector3D(linea);
+						Vector3D v=parseVector3D(linea);
 						calculaExtremos(v);
-						vertices.push_back(v);
+						addVertex(v);
 					}
 					else{
 						runtime_error("Tipo de vertice no reconocido en ModeloMaterial::cargar()");
@@ -190,14 +187,14 @@ public:
 				if (linea[0] == 'f'){
 					Triangle *t=parseTriangulos(linea);
 					if(t){//t!=nullptr
-						Textura* tex=materiales[currentMaterial].getMapKdTex();
+						Textura* tex=getMaterials()[currentMaterial].getMapKdTex();
 						t->setTextura(tex);
-						triangulos.push_back(t);
+						addTriangle(*t);
 					}
 				}
 				if(linea.find("mtllib")!=string::npos){
 					vector<string> vs=split(linea);
-					cargarMateriales(vs[1]);
+					loadMaterial(vs[1]);
 				}
 				if(linea.find("usemtl")!=string::npos){
 					vector<string> vs=split(linea);
@@ -207,11 +204,11 @@ public:
 			ficheroModeloObj.close();
 		}
 		else{
-			cout << "Fichero "+nombreFichero+" no existe."<<endl;
+			throw runtime_error("File named: "+nombreFichero+" doesn't exist.");
 		}
-		cout<< "El modelo "<< name << " tiene "<< triangulos.size() << " triangulos."<<endl;
+		cout<< "Model="<< name << " has "<< getTriangles().size() << " triangles."<<endl;
 	}
- 	Vector3D  *parseVector3D(string &linea){
+ 	Vector3D  parseVector3D(string &linea){
  		float x,y,z;
  		istringstream ss(linea);
  		string s;
@@ -219,18 +216,18 @@ public:
  		ss>>x;
  		ss>>y;
  		ss>>z;
- 		return new Vector3D(x,y,z);
+ 		return Vector3D(x,y,z);
  	}
- 	Vector3D  *parseVector2D(string &linea){
+ 	Vector3D parseVector2D(string &linea){
  		float x,y;
  		istringstream ss(linea);
  		string s;
  	    ss>>s;//line type
  		ss>>x;
  		ss>>y;
- 		return new Vector3D(x,y,0);
+ 		return Vector3D(x,y,0);
  	}
-	Triangle *parseTriangulo(string &linea){
+	Triangle parseTriangulo(string &linea){
 		istringstream ss(linea);
 		int iv0,iv1,iv2;
 		ss>>iv0;
@@ -239,10 +236,10 @@ public:
 		iv0--;
 		iv1--;
 		iv2--;
-		Vector3D p0=*vertices[iv0];
-		Vector3D p1=*vertices[iv1];
-		Vector3D p2=*vertices[iv2];
-		Triangle *t=new Triangle(p0,p1,p2);
+		Vector3D &p0=getVertices()[iv0];
+		Vector3D &p1=getVertices()[iv1];
+		Vector3D &p2=getVertices()[iv2];
+		Triangle t=Triangle(p0,p1,p2);
 		return t;
 	}
 	Triangle *parseTriangulos(string &linea){
@@ -253,7 +250,7 @@ public:
 			return nullptr;
 		}
 		if (vs[0]!="f")
-			throw runtime_error("Not face line in parseTriangulos from model_material.cpp");
+			throw runtime_error("Not face line in parseTriangulos from LoaderOBJ::parseTriangulos()");
 		vector<string> vs0=split(vs[1],'/');
 		vector<int> vid0;
 		for(string s:vs0){
@@ -278,34 +275,37 @@ public:
 				i=stoi(s);
 			vid2.push_back(i-1);
 		}
-		Vector3D p0=*vertices[vid0[0]];
-		Vector3D p1=*vertices[vid1[0]];
-		Vector3D p2=*vertices[vid2[0]];
+		Vector3D &p0=getVertices()[vid0[0]];
+		Vector3D &p1=getVertices()[vid1[0]];
+		Vector3D &p2=getVertices()[vid2[0]];
 		Triangle *t=new Triangle(p0,p1,p2);
 		if(vid0.size()>1){
 			if(vid0[1]!=-1){
-				Vector3D t0=*textures[vid0[1]];
-				Vector3D t1=*textures[vid1[1]];
-				Vector3D t2=*textures[vid2[1]];
+				Vector3D &t0=getTextures()[vid0[1]];
+				Vector3D &t1=getTextures()[vid1[1]];
+				Vector3D &t2=getTextures()[vid2[1]];
 				t->setT0(t0);
 				t->setT1(t1);
 				t->setT2(t2);
 			}
 		}
 		if(vid0.size()==3){
-			Vector3D n0=*normals[vid0[2]];
-			Vector3D n1=*normals[vid1[2]];
-			Vector3D n2=*normals[vid2[2]];
+			Vector3D &n0=getNormals()[vid0[2]];
+			Vector3D &n1=getNormals()[vid1[2]];
+			Vector3D &n2=getNormals()[vid2[2]];
 			t->setN0(n0);
 			t->setN1(n1);
 			t->setN2(n2);
 		}
+		addVTNindex(vid0[0],vid0[1],vid0[2]);
+		addVTNindex(vid1[0],vid1[1],vid1[2]);
+		addVTNindex(vid2[0],vid2[1],vid2[2]);
 	return t;
 	}
-	void calculaExtremos(Vector3D *v){
-		float x=v->getX();
-		float y=v->getY();
-		float z=v->getZ();
+	void calculaExtremos(Vector3D &v){
+		float x=v.getX();
+		float y=v.getY();
+		float z=v.getZ();
 		maxX=fmax(maxX,x);
 		maxY=fmax(maxY,y);
 		maxZ=fmax(maxZ,z);
@@ -313,8 +313,6 @@ public:
 		minY=fmin(minY,y);
 		minZ=fmin(minZ,z);
 	}
-	//inline Contorno *getContorno();
-	vector<Triangle*> &getTriangulos(){return triangulos;}
 };
 //must finish on slash '/'
-string ModeloMaterial::model_base_path="modelos/";
+string LoaderOBJ::model_base_path="modelos/";

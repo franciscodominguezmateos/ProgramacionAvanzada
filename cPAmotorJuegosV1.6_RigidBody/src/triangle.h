@@ -4,17 +4,17 @@
  *  Created on: Nov 12, 2015
  *      Author: Francisco Dominguez
  */
-#ifndef TRIANGULO_H_
-#define TRIANGULO_H_
+#ifndef TRIANGLE_H_
+#define TRIANGLE_H_
 #include <iostream>
 #include <GL/glut.h>
-#include "plano.h"
+#include "plane.h"
 #include "vector3d.h"
 #include "textura.h"
 
 using namespace std;
 
-class Triangulo: public Plano {
+class Triangle: public Plane {
 protected:
 	Vector3D p0,p1,p2;
 	Vector3D n0,n1,n2;
@@ -24,8 +24,8 @@ protected:
 	double area;
 	bool drawNormals;
 public:
-	Triangulo(Vector3D p0,Vector3D p1,Vector3D p2):
-		Plano(),
+	Triangle(Vector3D p0,Vector3D p1,Vector3D p2):
+		Plane(),
 		p0(p0),p1(p1),p2(p2),
         v01(p1-p0),v12(p2-p1),v20(p0-p2),
 		textura(nullptr),
@@ -74,11 +74,11 @@ public:
 		//center of the triangle is pos field
 		this->setPos((p0+p1+p2)/3);
 	}
-	Triangulo(const Triangulo &t):Plano(t),p0(t.p0),p1(t.p1),p2(t.p2),
+	Triangle(const Triangle &t):Plane(t),p0(t.p0),p1(t.p1),p2(t.p2),
 			v01(t.v01),v12(t.v12),v20(t.v20),
 			textura(t.textura),area(t.area),drawNormals(t.drawNormals){}
-	virtual Triangulo *clone(){return new Triangulo(*this);}
-	Triangulo& operator=(const Triangulo &t){
+	virtual Triangle *clone(){return new Triangle(*this);}
+	Triangle& operator=(const Triangle &t){
 		p0=t.p0;
 		p1=t.p1;
 		p2=t.p2;
@@ -124,7 +124,7 @@ public:
 		p2+=t;
 		init();
 	}
-	virtual ~Triangulo(){}
+	virtual ~Triangle(){}
 	void render(){
 		Vector3D c=this->getCol();
 		glColor3f(c.getX(),c.getY(),c.getZ());
@@ -183,7 +183,7 @@ public:
 		Vector3D vn=getNormal();
 
 		// C H E C K I N G Triangle(p0,p1,p)
-		Triangulo t01=Triangulo(p0,p1,p);
+		Triangle t01=Triangle(p0,p1,p);
 		//t01.area should be minor than triangle area
 		a=t01.getArea();
 		if(a>area)
@@ -194,7 +194,7 @@ public:
 			return false;
 
 		// C H E C K I N G Triangle(p1,p2,p)
-		Triangulo t12=Triangulo(p1,p2,p);
+		Triangle t12=Triangle(p1,p2,p);
 		//t01.area+t12.area should be minor than triangle area
 		a+=t12.getArea();
 		if(a>area)
@@ -205,7 +205,7 @@ public:
 			return false;
 
 		// C H E C K I N G Triangle(p2,p0,p)
-		Triangulo t20=Triangulo(p2,p0,p);
+		Triangle t20=Triangle(p2,p0,p);
 		//t01.area+t12.area+t20.area should be EQUAL than triangle area
 		a+=t20.getArea();
 		if(!nearZero(a-area))
@@ -219,4 +219,4 @@ public:
 	}
 };
 
-#endif /* TRIANGULO_H_ */
+#endif /* TRIANGLE_H_ */

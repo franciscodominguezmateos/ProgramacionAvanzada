@@ -152,11 +152,11 @@ void setPoseCamAR(Mat &tablero){
 	 }
 	 texTablero.setImage(tablero);
 }
-Triangulo* nearestTriangle(vector<Triangulo*> &triangles,Vector3D p){
+Triangle* nearestTriangle(vector<Triangle*> &triangles,Vector3D p){
 	Vector3D up(0,1,0);
 	double min=1e40;
-	Triangulo* nearest=nullptr;
-	for(Triangulo* &t:triangles){
+	Triangle* nearest=nullptr;
+	for(Triangle* &t:triangles){
 		/* if triangle is up */
 		if(t->getNormal()*up>0.5){
 			if(t->isIn(p)){
@@ -174,11 +174,11 @@ Triangulo* nearestTriangle(vector<Triangulo*> &triangles,Vector3D p){
 void upKart(){
 	Vector3D up(0,1,0);
 	circuit->setDrawNormals(false);
-	vector<Triangulo*> &triangulos=circuit->getTriangulos();
+	vector<Triangle*> &triangulos=circuit->getTriangulos();
 	Vector3D p=mariokart->getPos();
 	double min=1e40;
-	Triangulo* nearest=nullptr;
-	for(Triangulo* &t:triangulos){
+	Triangle* nearest=nullptr;
+	for(Triangle* &t:triangulos){
 /*
 		 double d=t->getCenter().distancia(p);
 		 if(d<min){
@@ -500,7 +500,7 @@ void loadCircuit(int i){
 		 e.add(circuit);
 	 }
 }
-ºint main(int argc, char** argv){
+int main(int argc, char** argv){
 	srand(10);
 	//Quaternion test
 	Quaternion q1(M_PI/2,Vector3D(0,0,1));

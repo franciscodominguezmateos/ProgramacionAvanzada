@@ -74,7 +74,7 @@ public:
 		  glutWireSphere(getAlto()/2.0,10,10);
 		glPopMatrix();
 		*/
-		for(Triangulo *t:modelo->getTriangulos())
+		for(Triangle *t:modelo->getTriangulos())
 			t->render();
 		// Draw local object axis
 		glPopMatrix();

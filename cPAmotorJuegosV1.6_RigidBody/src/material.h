@@ -2,7 +2,7 @@
  * material.h
  *
  *  Created on: Dic 11, 2018
- *      Author: Francisco
+ *      Author: Francisco Dominguez
  */
 #pragma once
 #include "util.h"

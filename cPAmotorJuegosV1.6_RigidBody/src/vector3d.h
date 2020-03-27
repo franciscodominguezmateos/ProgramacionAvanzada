@@ -24,6 +24,7 @@ public:
 	Vector3Dx() :Vector3Dx(0, 0, 0) {}
 	//Vector3Dx(S x, S y, S z) :x(x), y(y), z(z) {}
 	Vector3Dx(const S &x, const S &y, const S &z) :x(x), y(y), z(z) {}
+	Vector3Dx(const vector<S> &v){x=v[0];y=v[1];if(v.size()==3)z=v[2];}
 	Vector3Dx(const Vector3Dx<S> &v) :x(v.x), y(v.y), z(v.z) {}
 	Vector3Dx<S> *clone() { return new Vector3Dx<S>(*this); }
 	inline Vector3Dx<S> operator+(const Vector3Dx<S> &b) {return	Vector3Dx<S>(x + b.x, y + b.y, z + b.z);}
@@ -111,8 +112,8 @@ public:
 		return Vector3Dx<S>(vn*d);
 	}
 	inline Vector3D projectOn(Vector3Dx<S> vn){
-		//project *thish on vn
-		//It is suppose vn is unit legth vector
+		//project *this on vn
+		//It is suppose vn is unit length vector
 		Vector3Dx<S> &v=*this;
 		S d=vn*v;
 		return Vector3Dx<S>(vn*d);

@@ -30,12 +30,13 @@ inline vector<string> split(string s,char delimiter=' '){
 		  tokens.push_back(token);
 	   return tokens;
 	}
-inline vector<float> split_numbers(string s,char delimiter=' '){
-	   vector<float> tokens;
+template<class T=double>
+inline vector<T> split_numbers(string s,char delimiter=' '){
+	   vector<T> tokens;
 	   string token;
 	   istringstream iss(s);
 	   while (getline(iss, token, delimiter))
-		  tokens.push_back(stof(token));
+		  tokens.push_back((T)stod(token));
 	   return tokens;
 	}
 inline vector<string> split_first(string s,char delimiter=' '){

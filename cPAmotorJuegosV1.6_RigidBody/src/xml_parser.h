@@ -89,8 +89,10 @@ public:
 		if(attributes.count(name)>0)
 			return attributes[name];
 		else
-			throw runtime_error("Error in XMLNode::getAttibute(): not children named "+name+" in node "+getName());
+			throw runtime_error("Error in XMLNode::getAttibute(): not children named '"+name+"' in node "+getName());
 	}
+	inline int getAttributeInt(string name){return stoi(getAttribute(name));}
+	inline float getAttributeFloat(string name){return stof(getAttribute(name));}
 	friend ofstream &operator<<(ofstream &ofxml,XMLNode &n);
 };
 class XMLScanner{
@@ -99,8 +101,9 @@ class XMLScanner{
 	string s;
 	unsigned int state;
 	unsigned int idx;
+	bool verbose;
 public:
-	XMLScanner(string s=""):s(s),state(0),idx(0){}
+	XMLScanner(string s=""):s(s),state(0),idx(0),verbose(false){}
 	inline void setString(string &rs){s=rs;}
 	inline string &getString(){return s;}
 	char getChar(){
@@ -154,7 +157,7 @@ public:
 	XMLNode getNextNode(){
 		XMLNode r;
 		string ns=getNextString();
-		cout << ns << endl;
+		if(verbose) cout << ns << endl;
 		if(ns==""){ //End Of Nodes
 			r.setType(EON);
 		}

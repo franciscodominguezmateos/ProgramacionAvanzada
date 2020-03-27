@@ -8,18 +8,18 @@
 #ifndef RECTANGULO_H_
 #define RECTANGULO_H_
 
-#include "triangulo.h"
 #include "textura.h"
+#include "triangle.h"
 
-class Rectangulo: public Triangulo {
+class Rectangulo: public Triangle {
 	Vector3D p3;
 	Textura tex;
 	unsigned int nu;
 	unsigned int nv;
 public:
-	Rectangulo(Vector3D p0,Vector3D p1,Vector3D p2,Vector3D p3):Triangulo(p0,p1,p2),p3(p3),nu(1),nv(1){}
+	Rectangulo(Vector3D p0,Vector3D p1,Vector3D p2,Vector3D p3):Triangle(p0,p1,p2),p3(p3),nu(1),nv(1){}
 	virtual ~Rectangulo(){}
-	Rectangulo(const Rectangulo &r):Triangulo(r.p0,r.p1,r.p2),p3(r.p3),nu(1),nv(1){}
+	Rectangulo(const Rectangulo &r):Triangle(r.p0,r.p1,r.p2),p3(r.p3),nu(1),nv(1){}
 	virtual Rectangulo *clone(){return new Rectangulo(*this);}
 	inline Vector3D getP3(){return p3;}
 	inline Textura &getTex(){return tex;}

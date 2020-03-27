@@ -9,21 +9,21 @@
 #define PLANO_H_
 #include "solido.h"
 
-class Plano: public Solido {
+class Plane: public Solido {
 	float a,b,c,d;
 public:
-	Plano(){a=b=c=d=0;}
+	Plane(){a=b=c=d=0;}
 	//vn must be normalized
-	Plano(Vector3D vn,Vector3D p):a(vn.getX()),b(vn.getY()),c(vn.getZ()),d(-(vn*p)){}
-	Plano(const Plano &p):Solido(p),a(p.a),b(p.b),c(p.c),d(p.d){}
-	Plano &operator=(const Plano &&p){
+	Plane(Vector3D vn,Vector3D p):a(vn.getX()),b(vn.getY()),c(vn.getZ()),d(-(vn*p)){}
+	Plane(const Plane &p):Solido(p),a(p.a),b(p.b),c(p.c),d(p.d){}
+	Plane &operator=(const Plane &&p){
 		a=p.a;
 		b=p.b;
 		c=p.c;
 		d=p.d;
 		return *this;
 	}
-	virtual ~Plano(){}
+	virtual ~Plane(){}
 	inline float getA() const {return a;}
 	inline void setA(float a) {this->a = a;}
 	inline float getB() const {return b;}
