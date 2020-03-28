@@ -74,22 +74,7 @@ public:
 		//center of the triangle is pos field
 		this->setPos((p0+p1+p2)/3);
 	}
-	Triangle(const Triangle &t):Plane(t),p0(t.p0),p1(t.p1),p2(t.p2),
-			v01(t.v01),v12(t.v12),v20(t.v20),
-			textura(t.textura),area(t.area),drawNormals(t.drawNormals){}
 	virtual Triangle *clone(){return new Triangle(*this);}
-	Triangle& operator=(const Triangle &t){
-		p0=t.p0;
-		p1=t.p1;
-		p2=t.p2;
-		v01=t.v01;
-		v12=t.v12;
-		v20=t.v20;
-		textura=t.textura;
-		area=t.area;
-		drawNormals=t.drawNormals;
-		return *this;
-	}
 	inline Vector3D &getP0(){return p0;}
 	inline Vector3D &getP1(){return p1;}
 	inline Vector3D &getP2(){return p2;}

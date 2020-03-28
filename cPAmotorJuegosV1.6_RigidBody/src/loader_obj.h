@@ -38,7 +38,7 @@ public:
 			folder=takeAwayExtension(s)+"/";
 		path=model_base_path+folder;
 		name=s;
-		cargar();
+		load();
 		scale=Vector3D(1,1,1);
 	}
 	LoaderOBJ(const LoaderOBJ &m);
@@ -124,9 +124,9 @@ public:
 	void loadMaterial(string nombre){
 		string lineaUntrimmed;
 		string matName;
-		string nombreFichero=path+nombre;
+		string fileName=path+nombre;
 
-		ifstream ficheroModeloObj(nombreFichero.c_str());
+		ifstream ficheroModeloObj(fileName.c_str());
 		if (ficheroModeloObj.is_open()){
 			while (getline (ficheroModeloObj,lineaUntrimmed)){
 				string linea=trim(lineaUntrimmed);
@@ -144,23 +144,23 @@ public:
 			ficheroModeloObj.close();
 		}
 		else{
-			cout << "Fichero de material: "+nombreFichero+" no existe."<<endl;
+			throw runtime_error("File named: "+fileName+" doesn't exist.");
 		}
 	}
 	// model has to be in a folder named 'name' in model_base_path
 	// in that folder should have a model file with name 'name.obj'
-	void cargar(){
-		string nombreFichero=path+name;
+	void load(){
+		string fileName=path+name;
 		maxX=maxY=maxZ=-1e40;
 		minX=minY=minZ= 1e40;
 
-		std::string lineaUntrimmed;
+		string lineUntrimmed,linea;
 
-		ifstream ficheroModeloObj(nombreFichero.c_str());
+		ifstream ficheroModeloObj(fileName.c_str());
 		if (ficheroModeloObj.is_open()){
-			while (getline (ficheroModeloObj,lineaUntrimmed)){
+			while (getline (ficheroModeloObj,lineUntrimmed)){
 				//left trim linea TODO
-				string linea=trim(lineaUntrimmed);
+				linea=trim(lineUntrimmed);
 				if(linea[0]=='#' || linea.size()==0)
 					continue;
 				if (linea[0] == 'v')	{
@@ -189,7 +189,8 @@ public:
 					if(t){//t!=nullptr
 						Textura* tex=getMaterials()[currentMaterial].getMapKdTex();
 						t->setTextura(tex);
-						addTriangle(*t);
+						Triangle &tr=*t;
+						addTriangle(tr);
 					}
 				}
 				if(linea.find("mtllib")!=string::npos){
@@ -204,9 +205,9 @@ public:
 			ficheroModeloObj.close();
 		}
 		else{
-			throw runtime_error("File named: "+nombreFichero+" doesn't exist.");
+			throw runtime_error("File named: "+fileName+" doesn't exist.");
 		}
-		cout<< "Model="<< name << " has "<< getTriangles().size() << " triangles."<<endl;
+		cout<< "Model '"<< name << "' has "<< getTriangles().size() << " triangles."<<endl;
 	}
  	Vector3D  parseVector3D(string &linea){
  		float x,y,z;
