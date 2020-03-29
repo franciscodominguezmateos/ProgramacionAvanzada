@@ -41,9 +41,6 @@ public:
 		load();
 		scale=Vector3D(1,1,1);
 	}
-	LoaderOBJ(const LoaderOBJ &m);
-	LoaderOBJ *clone(){return nullptr;}
-
 	Triangle *centrar(Triangle *t){
 		Vector3D centro(minX+getAncho()/2.0,minY+getAlto()/2.0,minZ+getProfundo()/2);
 		Vector3D p0=t->getP0();
@@ -52,7 +49,7 @@ public:
 		/// NNOOOOOOOOO
 		return(new Triangle(p0-centro,p1-centro,p2-centro));
 	}
-	inline ModelMesh &getMesh(){return m;}
+	inline ModelMesh &getModel(){return m;}
 	inline vector<Triangle>& getTriangles(){return m.getTriangles();}
 	inline map<string, Material>& getMaterials() {return m.getMaterials();}
 	inline vector<Vector3D>& getVertices() {return m.getVertices();}
@@ -187,7 +184,7 @@ public:
 				if (linea[0] == 'f'){
 					Triangle *t=parseTriangulos(linea);
 					if(t){//t!=nullptr
-						Textura* tex=getMaterials()[currentMaterial].getMapKdTex();
+						Texture* tex=getMaterials()[currentMaterial].getMapKdTex();
 						t->setTextura(tex);
 						Triangle &tr=*t;
 						addTriangle(tr);
@@ -301,7 +298,7 @@ public:
 		addVTNindex(vid0[0],vid0[1],vid0[2]);
 		addVTNindex(vid1[0],vid1[1],vid1[2]);
 		addVTNindex(vid2[0],vid2[1],vid2[2]);
-	return t;
+		return t;
 	}
 	void calculaExtremos(Vector3D &v){
 		float x=v.getX();
@@ -314,6 +311,7 @@ public:
 		minY=fmin(minY,y);
 		minZ=fmin(minZ,z);
 	}
-};
+};	static string model_base_path;
+
 //must finish on slash '/'
 string LoaderOBJ::model_base_path="modelos/";

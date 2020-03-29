@@ -64,7 +64,7 @@ public:
 	inline void setScale(double d){scale=Vector3D(d,d,d);}
 	inline Vector3D getScale(){return scale;}
 	inline float getMinY(){return minY;}
-	void setTexture(Textura* tex){
+	void setTexture(Texture* tex){
 		for(Triangle* t:triangulos)
 			t->setTextura(tex);
 	}
@@ -190,7 +190,7 @@ public:
 				if (linea[0] == 'f'){
 					Triangle *t=parseTriangulos(linea);
 					if(t){//t!=nullptr
-						Textura* tex=materiales[currentMaterial].getMapKdTex();
+						Texture* tex=materiales[currentMaterial].getMapKdTex();
 						t->setTextura(tex);
 						triangulos.push_back(t);
 					}

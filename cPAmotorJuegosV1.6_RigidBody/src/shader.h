@@ -25,7 +25,7 @@ class Uniform{
 	string name;
 	GLint location;
 public:
-	Uniform(string n):name(n){}
+	Uniform(string n):name(n),location(NOT_FOUND){}
 	void setLocation(GLuint programID){
 		location=glGetUniformLocation(programID,name.c_str());
 		if(location == GL_INVALID_VALUE)
@@ -38,31 +38,50 @@ public:
 			throw runtime_error("Error in Uniform::storeUniformLocation() uniform name="+name+" not found in programID");
 	}
 	inline GLint getLocation(){return location;}
+
 	inline void load(GLfloat v){glUniform1f(location,v);}
 	inline Uniform &operator=(GLfloat f){load(f);return *this;}
+
 	inline void load(GLint   v){glUniform1i(location,v);}
 	inline Uniform &operator=(GLint f){load(f);return *this;}
+
 	inline void load(bool v){glUniform1f(location,v?1:0);}
 	inline Uniform &operator=(bool f){load(f);return *this;}
+
 	inline void load(GLfloat x,GLfloat y){glUniform2f(location,x,y);}
 	inline void load(Vec2 v){load(v.x,v.y);}
 	inline Uniform &operator=(Vec2 f){load(f);return *this;}
+
 	inline void load(GLfloat x,GLfloat y,GLfloat z){glUniform3f(location,x,y,z);}
 	inline void load(Vec3 v){load(v.x,v.y,v.z);}
 	inline Uniform &operator=(Vec3 f){load(f);return *this;}
+	inline void load(Vector3D v){load((GLfloat)v.getX(),(GLfloat)v.getY(),(GLfloat)v.getZ());}
+	inline Uniform &operator=(Vector3D f){load(f);return *this;}
+
 	inline void load(GLfloat x,GLfloat y,GLfloat z,GLfloat w){glUniform4f(location,x,y,z,w);}
 	inline void load(Vec4 v){load(v.x,v.y,v.z,v.w);}
 	inline Uniform &operator=(Vec4 f){load(f);return *this;}
-	inline void load(Vector3D v){load((GLfloat)v.getX(),(GLfloat)v.getY(),(GLfloat)v.getZ());}
-	inline Uniform &operator=(Vector3D f){load(f);return *this;}
+
+	inline void load(vector<GLfloat> v){
+		GLfloat* d=v.data();
+		if(v.size()== 2) glUniform2fv(location,1,d);
+		if(v.size()== 3) glUniform3fv(location,1,d);
+		if(v.size()== 4) glUniform4fv(location,1,d);
+		//if(v.size()== 4) glUniformMatrix2fv(location,1,true,d);
+		if(v.size()== 9) glUniformMatrix3fv(location,1,true,d);
+		if(v.size()==16) glUniformMatrix4fv(location,1,false,d);
+	}
+	inline Uniform &operator=(vector<GLfloat> v){load(v);return *this;}
+
 	inline void load(Mat &m0){
 		Mat_<GLfloat> m(m0);
 		GLfloat* d=(GLfloat*)m.data;
-		if(m.cols==2 && m.rows==2) glUniformMatrix2fv(location,1,false,d);
-		if(m.cols==3 && m.rows==3) glUniformMatrix3fv(location,1,false,d);
-		if(m.cols==4 && m.rows==4) glUniformMatrix4fv(location,1,false,d);
+		if(m.cols==2 && m.rows==2) glUniformMatrix2fv(location,1,true,d);
+		if(m.cols==3 && m.rows==3) glUniformMatrix3fv(location,1,true,d);
+		if(m.cols==4 && m.rows==4) glUniformMatrix4fv(location,1,true,d);
 	}
 	inline Uniform &operator=(Mat f){load(f);return *this;}
+
 	inline void load(vector<Mat> &v){
 		if(!v.empty()){
 			//take as granted that all Mat are same dimension
@@ -109,8 +128,8 @@ public:
 	inline void unbind(){glBindBuffer(type,0);}
 	inline void storeData(vector<GLfloat> &data){
 		glBufferData(type,data.size()*BYTES_PER_FLOAT,data.data(),GL_STATIC_DRAW);}
-	inline void storeData(vector<GLuint>  &data){
-		glBufferData(type,data.size()*BYTES_PER_INT,data.data(),GL_STATIC_DRAW);}
+	inline void storeData(vector<GLint>  &data){
+		glBufferData(type,data.size()*BYTES_PER_INT  ,data.data(),GL_STATIC_DRAW);}
 	inline void deleleteBuffer(){
 		glDeleteBuffers(1,&id);}
 };
@@ -153,7 +172,7 @@ public:
 		for(GLuint i=0;i<VBOs.size();i++) glDisableVertexAttribArray(i);
 		unbind();
 	}
-	void createIndexBuffer(vector<GLuint> &indices){
+	void createIndexBuffer(vector<GLint> &indices){
 		//This is already done in the constructor
 		indexVBO=GLSLVBO(GL_ELEMENT_ARRAY_BUFFER);
 		indexVBO.bind();
@@ -169,7 +188,7 @@ public:
 		vbo.unbind();
 		VBOs.push_back(vbo);
 	}
-	void createAttribute(GLuint attribute,vector<GLuint> &data,GLuint attrSize){
+	void createAttribute(GLuint attribute,vector<GLint> &data,GLuint attrSize){
 		GLSLVBO vbo(GL_ARRAY_BUFFER);
 		vbo.bind();
 		vbo.storeData(data);
@@ -266,6 +285,7 @@ public:
 	}
 	void start(){glUseProgram(programID);}
 	void stop(){glUseProgram(0);}
+	inline GLuint id(){return programID;}
 };
 
 #endif /* SHADER_H_ */

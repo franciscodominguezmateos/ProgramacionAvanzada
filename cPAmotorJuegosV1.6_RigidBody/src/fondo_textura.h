@@ -20,7 +20,7 @@ public:
 		Vector3D(ancho,alto,0),
 		Vector3D(  0,alto,0)){}
 	virtual ~FondoTextura(){}
-	inline void setTextura(Textura t){fondo.setTextura(t);}
+	inline void setTextura(Texture t){fondo.setTextura(t);}
 	void render(){
 		int w=fondo.getTex().getImage().cols;
 		int h=fondo.getTex().getImage().rows;

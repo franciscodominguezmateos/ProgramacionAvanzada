@@ -12,12 +12,11 @@
 #include "escena.h"
 #include "pared.h"
 #include "camara.h"
-#include "textura.h"
+#include "texture.h"
 #include "rectangulo.h"
 #include "pendulo.h"
 #include "cubo_elastico.h"
 #include "fondo_textura.h"
-#include "vista.h"
 #include "luz.h"
 #include "proyeccion_perspectiva.h"
 #include "pose_estimation_chessboard.h"
@@ -29,6 +28,7 @@
 #include "solido_rigido.h"
 #include "quaternion.h"
 #include "loader_obj.h"
+#include "view.h"
 
 //Declaration needed in next .h
 Mat global_img;
@@ -86,7 +86,7 @@ LoaderOBJ *lo;
 Escena e;
 Cubo *pc;
 ModeloMaterial* m;
-Textura tex,ladrillos,paredTex,texTv,texTablero,spiderTex,marioKartTex,minionTex,mariokartTex;
+Texture tex,ladrillos,paredTex,texTv,texTablero,spiderTex,marioKartTex,minionTex,mariokartTex;
 VideoCapture cap(0);
 CuboElastico *ce;
 CajaElastica* cje;
@@ -110,7 +110,7 @@ PoseEstimationChessBoard peChessBoard(K,dist);
 
 ProyeccionPerspectiva proyeccion;
 ///vector<Vista> vistas={{0.0,0.0,0.5,1,&proyeccion},{0.5,0.0,0.5,1,&pCam}};//,{0.0,0.5,0.5,0.5},{0.5,0.5,0.5,0.5}};
-vector<Vista> vistas={{0.0,0.0,0.5,1,&proyeccion},{0.5,0.0,0.5,1,&proyeccion}};
+vector<View> vistas={{0.0,0.0,0.5,1,&proyeccion},{0.5,0.0,0.5,1,&proyeccion}};
 vector<CamaraTPS> camaras(vistas.size());
 
 Mat opengl_default_frame_to_opencv() {
@@ -432,7 +432,7 @@ void init(void){
  mariokartTex.setImage(imread("tex_0301.png"));
 }
 void reshape(int width,int height){
-	for(Vista &v:vistas)
+	for(View &v:vistas)
 		v.reshape(width,height);
 }
 void initCamAR(){

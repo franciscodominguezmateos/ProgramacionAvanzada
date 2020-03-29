@@ -29,7 +29,7 @@ class ModelMesh {
 	//it should be Vector2D but....
 	vector<Vector3D> normals;
 	//theses three vector should have same size
-	vector<unsigned int> ivertices;
+	vector<int> ivertices;
 	vector<unsigned int> itextures;
 	vector<unsigned int> inormals;
 	//this vector size is above ones divided by 3 since are triangles
@@ -54,25 +54,25 @@ public:
 			vv.push_back(Vector3D(va));
 		}
 	}
-	inline void setVerticesFromFloats(vector<GLfloat> &vf){setVector(vertices,vf);}
-	inline void setTexturesFromFloats(vector<GLfloat> &vf){setVector(textures,vf);}
-	inline void setNormalsFromFloats (vector<GLfloat> &vf){setVector(normals ,vf,2);}
+	inline void setVerticesFromFloats(vector<GLfloat> &vf){setVector(vertices,vf  );}
+	inline void setTexturesFromFloats(vector<GLfloat> &vf){setVector(textures,vf,2);}
+	inline void setNormalsFromFloats (vector<GLfloat> &vf){setVector(normals ,vf  );}
 	inline vector<GLfloat> getVector(vector<Vector3D> &vv,int stride=3){
 		vector<GLfloat> vf;
-		for(Vector3D v:vv){
+		for(Vector3D &v:vv){
 			vf.push_back((GLfloat)v.getX());
 			vf.push_back((GLfloat)v.getY());
 			if(stride==3) vf.push_back((GLfloat)v.getZ());
 		}
 		return vf;
 	}
-	inline vector<GLfloat> getFloatFromVertices(){return getVector(vertices );}
-	inline vector<GLfloat> getFloatFromTextures(){return getVector(textures );}
-	inline vector<GLfloat> getFloatFromNormals (){return getVector(normals,2);}
+	inline vector<GLfloat> getFloatFromVertices(){return getVector(vertices  );}
+	inline vector<GLfloat> getFloatFromTextures(){return getVector(textures,2);}
+	inline vector<GLfloat> getFloatFromNormals (){return getVector(normals   );}
 	inline vector<Vector3D>& getVertices() {return vertices;}
 	inline vector<Vector3D>& getTextures() {return textures;}
 	inline vector<Vector3D>& getNormals()  {return normals; }
-	inline vector<unsigned int>& getIvertex()   {return ivertices;}
+	inline vector<int>& getIvertices()   {return ivertices;}
 	inline vector<unsigned int>& getInormals()  {return inormals; }
 	inline vector<unsigned int>& getItextures() {return itextures;}
 	inline vector<Triangle>& getTriangles()     {return triangles;}
@@ -102,5 +102,20 @@ public:
 			t.setN2(n2);
 			addTriangle(t);
 		}
+	}
+	ModelMesh buildShaderReadyMeshModel(){
+		ModelMesh m;
+		m.ivertices=ivertices;
+		m.vertices=vertices;
+		m.textures=vector<Vector3D>(vertices.size());
+		m.normals =vector<Vector3D>(vertices.size());
+		for(unsigned int i=0;i<ivertices.size();i++){
+			unsigned int iv=ivertices[i];
+			unsigned int it=itextures[i];
+			unsigned int in=inormals [i];
+			m.textures[iv]=textures[it];
+			m.normals [iv]=normals [in];
+		}
+		return m;
 	}
 };

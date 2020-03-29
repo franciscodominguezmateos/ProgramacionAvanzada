@@ -3,10 +3,11 @@
  *
  *  Created on: Dic 11, 2018
  *      Author: Francisco Dominguez
+ *  TODO: it is .obj dependent
  */
 #pragma once
 #include "util.h"
-#include "textura.h"
+#include "texture.h"
 #include "vector3d.h"
 
 class Material{
@@ -21,9 +22,9 @@ class Material{
 	Vector3D Ks;
 	Vector3D Ke;
 	string map_Ka;
-	Textura* map_Ka_tex;
+	Texture* map_Ka_tex;
 	string map_Kd;
-	Textura* map_Kd_tex;
+	Texture* map_Kd_tex;
 	string path;
 public:
 	Material(string path=""):path(path){}
@@ -53,7 +54,7 @@ public:
 			//string &su=vs[1];
 			//transform(su.begin(), su.end(), su.begin(), ::tolower);
 			map_Ka=vs[1];
-			map_Ka_tex=new Textura();
+			map_Ka_tex=new Texture();
 			map_Ka_tex->init();
 			map_Ka_tex->setImage(imread(path+map_Ka));
 		}
@@ -63,7 +64,7 @@ public:
 			//vs[1]=toLower(vs[1]);
 			//cout <<"kkk="<< vs[1] << endl;
 			map_Kd=vs[1];
-			map_Kd_tex=new Textura();
+			map_Kd_tex=new Texture();
 			map_Kd_tex->init();
 			map_Kd_tex->setImage(imread(path+map_Kd));
 		}
@@ -125,11 +126,11 @@ public:
 		map_Ka = mapKa;
 	}
 
-	Textura* getMapKaTex() const {
+	Texture* getMapKaTex() const {
 		return map_Ka_tex;
 	}
 
-	void setMapKaTex(Textura* mapKaTex) {
+	void setMapKaTex(Texture* mapKaTex) {
 		map_Ka_tex = mapKaTex;
 	}
 
@@ -141,11 +142,11 @@ public:
 		map_Kd = mapKd;
 	}
 
-	Textura* getMapKdTex() const {
+	Texture* getMapKdTex() const {
 		return map_Kd_tex;
 	}
 
-	void setMapKdTex(Textura* mapKdTex) {
+	void setMapKdTex(Texture* mapKdTex) {
 		map_Kd_tex = mapKdTex;
 	}
 

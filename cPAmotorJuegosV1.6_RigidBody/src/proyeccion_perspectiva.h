@@ -2,7 +2,7 @@
  * proyeccion_perspectiva.h
  *
  *  Created on: Oct 31, 2017
- *      Author: francisco
+ *      Author: Francisco Dominguez
  */
 
 #ifndef PROYECCION_PERSPECTIVA_H_
@@ -13,7 +13,7 @@
 using namespace cv;
 
 class ProyeccionPerspectiva: public Proyeccion {
-protected:
+public:
 	double campoDeVision;
 	double width;
 	double height;
@@ -55,15 +55,17 @@ public:
 		projectionMat[1]  = 0;
 		projectionMat[2]  = 0;
 		projectionMat[3]  = 0;
+
 		projectionMat[4]  = 0;
 		projectionMat[5]  = 2*camMtx.at<double>(1,1)/height;
 		projectionMat[6]  = 0;
 		projectionMat[7]  = 0;
-		projectionMat[8]  = 1 - 2*camMtx.at<double>(0,2)/width;
+
+		projectionMat[8]  =  1 -  2*camMtx.at<double>(0,2)     /width;
 		projectionMat[9]  = -1 + (2*camMtx.at<double>(1,2) + 2)/height;
-		projectionMat[9]  = -1 + (2*camMtx.at<double>(1,2) + 0)/height;
 		projectionMat[10] = (zNear + zFar)/(zNear - zFar);
 		projectionMat[11] = -1;
+
 		projectionMat[12] = 0;
 		projectionMat[13] = 0;
 		projectionMat[14] = 2*zNear*zFar/(zNear - zFar);

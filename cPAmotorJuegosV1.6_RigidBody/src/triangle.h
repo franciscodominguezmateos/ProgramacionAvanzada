@@ -10,7 +10,7 @@
 #include <GL/glut.h>
 #include "plane.h"
 #include "vector3d.h"
-#include "textura.h"
+#include "texture.h"
 
 using namespace std;
 
@@ -20,7 +20,9 @@ protected:
 	Vector3D n0,n1,n2;
 	Vector3D t0,t1,t2;
 	Vector3D v01,v12,v20;
-	Textura* textura;
+	//Care are to be taken
+	//Texture are outside the object
+	Texture* textura;
 	double area;
 	bool drawNormals;
 public:
@@ -94,7 +96,7 @@ public:
 	inline void setT0(Vector3D &n){t0=n;}
 	inline void setT1(Vector3D &n){t1=n;}
 	inline void setT2(Vector3D &n){t2=n;}
-	inline void setTextura(Textura* &t){textura=t;}
+	inline void setTextura(Texture* &t){textura=t;}
 	inline Vector3D getCenter(){return getPos();}
 	inline void setDrawNormals(bool b){drawNormals=b;}
 	inline void doScale(double s){

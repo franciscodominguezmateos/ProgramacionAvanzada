@@ -22,8 +22,8 @@ class Vector3Dx {
 	S x, y, z;
 public:
 	Vector3Dx() :Vector3Dx(0, 0, 0) {}
-	//Vector3Dx(S x, S y, S z) :x(x), y(y), z(z) {}
-	Vector3Dx(const S &x, const S &y, const S &z) :x(x), y(y), z(z) {}
+	Vector3Dx(S x, S y, S z=0) :x(x), y(y), z(z) {}
+	//Vector3Dx(const S &x, const S &y, const S &z) :x(x), y(y), z(z) {}
 	Vector3Dx(const vector<S> &v){x=v[0];y=v[1];if(v.size()==3)z=v[2];}
 	Vector3Dx(const Vector3Dx<S> &v) :x(v.x), y(v.y), z(v.z) {}
 	Vector3Dx<S> *clone() { return new Vector3Dx<S>(*this); }
@@ -155,7 +155,7 @@ inline Mat S(Vector3D v){
               -y,        x,     0 );
 	return s;
 }
-inline Vector3D asVector3D(Mat m){return Vector3D(m.at<double>(0,0),m.at<double>(0,1),m.at<double>(0,2));}
+inline Vector3D asVector3D(Mat &m){return Vector3D(m.at<double>(0,0),m.at<double>(0,1),m.at<double>(0,2));}
 
 // FROM: https://www.learnopencv.com/rotation-matrix-to-euler-angles/
 // Calculates rotation matrix given euler angles.

@@ -8,12 +8,12 @@
 #ifndef RECTANGULO_H_
 #define RECTANGULO_H_
 
-#include "textura.h"
+#include "texture.h"
 #include "triangle.h"
 
 class Rectangulo: public Triangle {
 	Vector3D p3;
-	Textura tex;
+	Texture tex;
 	unsigned int nu;
 	unsigned int nv;
 public:
@@ -22,8 +22,8 @@ public:
 	Rectangulo(const Rectangulo &r):Triangle(r.p0,r.p1,r.p2),p3(r.p3),nu(1),nv(1){}
 	virtual Rectangulo *clone(){return new Rectangulo(*this);}
 	inline Vector3D getP3(){return p3;}
-	inline Textura &getTex(){return tex;}
-	inline void setTextura(Textura t){tex=t;}
+	inline Texture &getTex(){return tex;}
+	inline void setTextura(Texture t){tex=t;}
 	inline void setNU(unsigned int u){nu=u;}
 	inline void setNV(unsigned int v){nv=v;}
 	void render(){	//Triangulo::render();

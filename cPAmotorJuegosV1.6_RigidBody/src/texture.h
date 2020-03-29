@@ -14,18 +14,18 @@
 using namespace std;
 using namespace cv;
 
-class Textura {
-	GLuint idTextura;
+class Texture {
+	GLuint idTexture;
 	Mat img;
 public:
-	Textura():idTextura(0){}
-	virtual ~Textura(){}
+	Texture():idTexture(0){}
+	virtual ~Texture(){}
 	bool isReady(){
-		return idTextura!=0 && !img.empty();
+		return idTexture!=0 && !img.empty();
 	}
 	void init(){
-		glGenTextures(1,&idTextura);
-		glBindTexture(GL_TEXTURE_2D, idTextura);
+		glGenTextures(1,&idTexture);
+		glBindTexture(GL_TEXTURE_2D, idTexture);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -46,7 +46,7 @@ public:
 		if(!isReady())
 			return;
 		glEnable(GL_TEXTURE_2D);
-		glBindTexture(GL_TEXTURE_2D, idTextura);
+		glBindTexture(GL_TEXTURE_2D, idTexture);
 	}
 	void desactivar(){
 		if(!isReady())
@@ -54,7 +54,7 @@ public:
 		glDisable(GL_TEXTURE_2D);
 	}
 	void update(){
-		glBindTexture(GL_TEXTURE_2D, idTextura);
+		glBindTexture(GL_TEXTURE_2D, idTexture);
 		glTexImage2D(GL_TEXTURE_2D,0,GL_RGB,img.cols,img.rows,0,GL_BGR,GL_UNSIGNED_BYTE,img.ptr());
 	}
 };

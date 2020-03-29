@@ -11,7 +11,7 @@
 
 class CajaElastica: public SolidoElastico {
 protected:
-	Textura tex;
+	Texture tex;
 	double w,h,d;
 public:
 	CajaElastica(double w2,double h2,double d2):w(w2),h(h2),d(d2){
@@ -68,7 +68,7 @@ public:
 				p->setPos(p->getPos()+iy);
 			}
 	}
-	void setTexture(Textura t){tex=t;}
+	void setTexture(Texture t){tex=t;}
 	inline void render(){/*
 		Rectangulo r0(
 				getParticula(0)->getPos(),

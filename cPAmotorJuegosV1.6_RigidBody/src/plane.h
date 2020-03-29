@@ -15,14 +15,14 @@ public:
 	Plane(){a=b=c=d=0;}
 	//vn must be normalized
 	Plane(Vector3D vn,Vector3D p):a(vn.getX()),b(vn.getY()),c(vn.getZ()),d(-(vn*p)){}
-	Plane(const Plane &p):Solido(p),a(p.a),b(p.b),c(p.c),d(p.d){}
+/*	Plane(const Plane &p):Solido(p),a(p.a),b(p.b),c(p.c),d(p.d){}
 	Plane &operator=(const Plane &&p){
 		a=p.a;
 		b=p.b;
 		c=p.c;
 		d=p.d;
 		return *this;
-	}
+	}*/
 	virtual ~Plane(){}
 	inline float getA() const {return a;}
 	inline void setA(float a) {this->a = a;}

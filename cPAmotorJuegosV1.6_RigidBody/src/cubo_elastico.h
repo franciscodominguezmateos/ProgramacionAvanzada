@@ -11,7 +11,7 @@
 #include "rectangulo.h"
 
 class CuboElastico: public SolidoElastico {
-	Textura tex;
+	Texture tex;
 public:
 	CuboElastico(double l){
 			Solido *p;
@@ -52,7 +52,7 @@ public:
 				p->setPos(p->getPos()+iy);
 			}
 	}
-	void setTexture(Textura t){tex=t;}
+	void setTexture(Texture t){tex=t;}
 	inline void render(){
 	    glColor3f(1.0f, 1.0f, 0.0f);
 		Rectangulo r0(

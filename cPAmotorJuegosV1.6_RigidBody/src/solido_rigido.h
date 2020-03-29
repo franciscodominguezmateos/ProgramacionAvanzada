@@ -20,7 +20,7 @@ class SolidoRigido: public Solido {
 	Mat T;      // Total Torque or Total Angular Force
 	vector<Vector3D> corners;
 public:
-	Textura tex;
+	Texture tex;
 	SolidoRigido(double w2,double h2,double d2){
 		R=Mat::eye(3,3,CV_64F);   // Identity matrix
 		//w=Mat:.zeros(3,1,CV_64F); // Not angular velocity yet
@@ -73,7 +73,6 @@ public:
 		corners.push_back(p);
 		setCol(Vector3D(0.9,0.9,0));
 	}
-	virtual ~SolidoRigido(){}
 	inline Vector3D getCorner(int i){
 		Mat c=asMat(corners[i]);
 		Mat p;
@@ -96,7 +95,6 @@ public:
 				aplicaFuerza(Vector3D(0,-20*v.getY(),0));
 			}
 		}
-
 		// LINEAR UPDATE
 		//Solido::update(dt);
 		Vector3D vel=getVel()+getF()/getM()*dt;

@@ -13,17 +13,19 @@ class Quaternion {
 	Vector3D v;
 	double w;
 public:
-	Quaternion();
+	Quaternion(){}
 	// from angle axis (aka exp operator?)
 	Quaternion(double angle,Vector3D axis){
 		double c=cos(angle/2.0);
 		double s=sin(angle/2.0);
 		w=c;
+		axis.normalize();
 		v=axis*s;
 	}
 	// from other vector and scalar
 	Quaternion(Vector3D v,double w=0):v(v),w(w){}
-	virtual ~Quaternion(){}
+	// from rotation matrix m, get vector representation vr and exp to get quaternion.
+	Quaternion(Mat &m){Mat vr;Rodrigues(m,vr);*this=exp(asVector3D(vr));}
 	Quaternion(const Quaternion &q):v(q.v),w(q.w){}
 	// better implementation from Kaes icra15 Grassia ref
 	inline static Quaternion exp(Vector3D v){
@@ -135,5 +137,4 @@ public:
 		return q1;
 	}
 };
-
 #endif /* QUATERNION_H_ */

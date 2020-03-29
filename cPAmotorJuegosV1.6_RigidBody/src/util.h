@@ -100,7 +100,7 @@ void operator>>(ifstream &f,vector<string> &v){
 inline string takeAwayExtension(string &s){
 	vector<string> vs=split(s,'.');	return vs[0];}
 inline string getExtension(string &s){
-	vector<string> vs=split(s,'.');	return vs[0];}
+	vector<string> vs=split(s,'.');	return vs[vs.size()-1];}
 
 /* NUMBERS TOOLS */
 inline bool nearZero(double d){return fabs(d)<0.001;}
@@ -116,7 +116,9 @@ inline double linearMap(double x,double i0,double i1,double o0,double o1){
 }
 
 /* ANGULAR CONVERSION */
-inline double deg2rad(double  a){return a/180*M_PI;}
-inline double rad2deg(double r){return r/M_PI*180;}
+static const double DEG2RAD=M_PI/180.0;
+static const double RAD2DEG=180.0/M_PI;
+inline double deg2rad(double a){return a*DEG2RAD;}
+inline double rad2deg(double r){return r*RAD2DEG;}
 
 #endif /* UTIL_H_ */
