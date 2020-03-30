@@ -49,7 +49,6 @@ public:
 				 drawChessboardCorners(tablero, patternsize, Mat(corners), patternfound);
 
 			 vector<Point3d> model_points;
-
 			 double squareSize=10;
 			 double x,y;
 			 int i,j;

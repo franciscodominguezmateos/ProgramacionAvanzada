@@ -29,7 +29,7 @@ class ModelMesh {
 	//it should be Vector2D but....
 	vector<Vector3D> normals;
 	//theses three vector should have same size
-	vector<int> ivertices;
+	vector<unsigned int> ivertices;
 	vector<unsigned int> itextures;
 	vector<unsigned int> inormals;
 	//this vector size is above ones divided by 3 since are triangles
@@ -72,7 +72,7 @@ public:
 	inline vector<Vector3D>& getVertices() {return vertices;}
 	inline vector<Vector3D>& getTextures() {return textures;}
 	inline vector<Vector3D>& getNormals()  {return normals; }
-	inline vector<int>& getIvertices()   {return ivertices;}
+	inline vector<unsigned int>& getIvertices() {return ivertices;}
 	inline vector<unsigned int>& getInormals()  {return inormals; }
 	inline vector<unsigned int>& getItextures() {return itextures;}
 	inline vector<Triangle>& getTriangles()     {return triangles;}

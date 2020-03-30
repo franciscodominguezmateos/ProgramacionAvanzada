@@ -5,7 +5,6 @@
  *      Author: Francisco Dominguez
  *  Inspired by: https://www.youtube.com/user/ThinMatrix
  */
-
 #ifndef SHADER_H_
 #define SHADER_H_
 #include "util.h"
@@ -38,42 +37,46 @@ public:
 			throw runtime_error("Error in Uniform::storeUniformLocation() uniform name="+name+" not found in programID");
 	}
 	inline GLint getLocation(){return location;}
-
+    // FLOAT
 	inline void load(GLfloat v){glUniform1f(location,v);}
 	inline Uniform &operator=(GLfloat f){load(f);return *this;}
-
+    // INT
 	inline void load(GLint   v){glUniform1i(location,v);}
 	inline Uniform &operator=(GLint f){load(f);return *this;}
-
+    // BOOLEAN
 	inline void load(bool v){glUniform1f(location,v?1:0);}
 	inline Uniform &operator=(bool f){load(f);return *this;}
-
+    // Vector 2D
 	inline void load(GLfloat x,GLfloat y){glUniform2f(location,x,y);}
 	inline void load(Vec2 v){load(v.x,v.y);}
 	inline Uniform &operator=(Vec2 f){load(f);return *this;}
-
+    // Vector 3D
 	inline void load(GLfloat x,GLfloat y,GLfloat z){glUniform3f(location,x,y,z);}
 	inline void load(Vec3 v){load(v.x,v.y,v.z);}
 	inline Uniform &operator=(Vec3 f){load(f);return *this;}
 	inline void load(Vector3D v){load((GLfloat)v.getX(),(GLfloat)v.getY(),(GLfloat)v.getZ());}
 	inline Uniform &operator=(Vector3D f){load(f);return *this;}
-
+    // Vector 4D
 	inline void load(GLfloat x,GLfloat y,GLfloat z,GLfloat w){glUniform4f(location,x,y,z,w);}
 	inline void load(Vec4 v){load(v.x,v.y,v.z,v.w);}
 	inline Uniform &operator=(Vec4 f){load(f);return *this;}
-
+    // Vector case size: 2->2D 3->3D 4->4D 9->Mat3x3 16->Mat4x4
+	// Matrices here are in OpenGL format in column mayor.
+	// that is the reason of 'false' in transpose parameter
 	inline void load(vector<GLfloat> v){
 		GLfloat* d=v.data();
 		if(v.size()== 2) glUniform2fv(location,1,d);
 		if(v.size()== 3) glUniform3fv(location,1,d);
 		if(v.size()== 4) glUniform4fv(location,1,d);
 		//if(v.size()== 4) glUniformMatrix2fv(location,1,true,d);
-		if(v.size()== 9) glUniformMatrix3fv(location,1,true,d);
+		if(v.size()== 9) glUniformMatrix3fv(location,1,false,d);
 		if(v.size()==16) glUniformMatrix4fv(location,1,false,d);
 	}
 	inline Uniform &operator=(vector<GLfloat> v){load(v);return *this;}
-
-	inline void load(Mat &m0){
+    // Matrix 2x2, 3x3 and 4x4
+	// Matrices are in OpenCV or traditional order mayor row not in OpenGL format
+	// that is the reason of 'true' in transpose parameter
+	inline void load(Mat m0){
 		Mat_<GLfloat> m(m0);
 		GLfloat* d=(GLfloat*)m.data;
 		if(m.cols==2 && m.rows==2) glUniformMatrix2fv(location,1,true,d);
@@ -81,8 +84,8 @@ public:
 		if(m.cols==4 && m.rows==4) glUniformMatrix4fv(location,1,true,d);
 	}
 	inline Uniform &operator=(Mat f){load(f);return *this;}
-
-	inline void load(vector<Mat> &v){
+    // Vector of Matrix 2x2, 3x3 and 4x4 for joints
+	inline void load(vector<Mat> v){
 		if(!v.empty()){
 			//take as granted that all Mat are same dimension
 			Mat_<GLfloat> m(v[0]);
@@ -102,19 +105,6 @@ public:
 	}
 	inline Uniform &operator=(vector<Mat> &v){load(v);return *this;}
 };
-class UniformFloat: public Uniform{
-	GLfloat value;
-	bool used;
-public:
-	UniformFloat(string name):Uniform(name),used(false){}
-	void load(GLfloat v){
-		if(!used || value!=v){
-			glUniform1f(getLocation(),v);
-			used=true;
-			value=v;
-		}
-	}
-};
 class GLSLVBO{
 	static const GLuint BYTES_PER_INT=4;
 	static const GLuint BYTES_PER_FLOAT=4;
@@ -122,16 +112,13 @@ class GLSLVBO{
 	GLuint type;
 public:
 	GLSLVBO():id(0),type(0){}
-	GLSLVBO(GLuint type):type(type){
-		glGenBuffers(1,&id);}
+	GLSLVBO(GLuint type):type(type){glGenBuffers(1,&id);}
 	inline void bind(){glBindBuffer(type,id);}
 	inline void unbind(){glBindBuffer(type,0);}
-	inline void storeData(vector<GLfloat> &data){
-		glBufferData(type,data.size()*BYTES_PER_FLOAT,data.data(),GL_STATIC_DRAW);}
-	inline void storeData(vector<GLint>  &data){
-		glBufferData(type,data.size()*BYTES_PER_INT  ,data.data(),GL_STATIC_DRAW);}
-	inline void deleleteBuffer(){
-		glDeleteBuffers(1,&id);}
+	inline void storeData(vector<GLfloat> &data){glBufferData(type,data.size()*BYTES_PER_FLOAT,data.data(),GL_STATIC_DRAW);}
+	inline void storeData(vector<GLint>   &data){glBufferData(type,data.size()*BYTES_PER_INT  ,data.data(),GL_STATIC_DRAW);}
+	inline void storeData(vector<GLuint>  &data){glBufferData(type,data.size()*BYTES_PER_INT  ,data.data(),GL_STATIC_DRAW);}
+	inline void deleleteBuffer(){glDeleteBuffers(1,&id);}
 };
 class GLSLVAO{
 	static const GLuint BYTES_PER_INT=4;
@@ -146,34 +133,22 @@ public:
 		glGenVertexArrays(1, &id);
 		bind();
 	}
-	inline void bind(){glBindVertexArray(id);}
+	GLuint getIndexCount(){return indexCount;}
+	inline void bind()  {glBindVertexArray(id);}
 	inline void unbind(){glBindVertexArray(0);}
-	inline void bind(vector<GLuint> &attributes){
-		bind();
-		for(GLuint i:attributes) glEnableVertexAttribArray(i);
-	}
-	inline void bind(GLuint atts...){
-		vector<GLuint> attributes(atts);
-		bind(attributes);
-	}
-	inline void bindAll(){
-		bind();
-		for(GLuint i=0;i<VBOs.size();i++) glEnableVertexAttribArray(i);
-	}
-	inline void unbind(vector<GLuint> &attributes){
-		for(GLuint i:attributes) glDisableVertexAttribArray(i);
-		unbind();
-	}
-	inline void unbind(GLuint atts...){
-		vector<GLuint> attributes(atts);
-		unbind(attributes);
-	}
-	inline void unbindAll(){
-		for(GLuint i=0;i<VBOs.size();i++) glDisableVertexAttribArray(i);
-		unbind();
-	}
+	inline void bind(vector<GLuint> &attributes){bind();for(GLuint i:attributes) glEnableVertexAttribArray(i);}
+	inline void bind(GLuint atts...){vector<GLuint> attributes(atts);bind(attributes);}
+	inline void bindAll(){bind();for(GLuint i=0;i<VBOs.size();i++) glEnableVertexAttribArray(i);}
+	inline void unbind(vector<GLuint> &attributes){for(GLuint i:attributes) glDisableVertexAttribArray(i);unbind();}
+	inline void unbind(GLuint atts...){vector<GLuint> attributes(atts);unbind(attributes);}
+	inline void unbindAll(){for(GLuint i=0;i<VBOs.size();i++) glDisableVertexAttribArray(i);unbind();}
 	void createIndexBuffer(vector<GLint> &indices){
-		//This is already done in the constructor
+		indexVBO=GLSLVBO(GL_ELEMENT_ARRAY_BUFFER);
+		indexVBO.bind();
+		indexVBO.storeData(indices);
+		indexCount=indices.size();
+	}
+	void createIndexBuffer(vector<GLuint> &indices){
 		indexVBO=GLSLVBO(GL_ELEMENT_ARRAY_BUFFER);
 		indexVBO.bind();
 		indexVBO.storeData(indices);
@@ -183,7 +158,6 @@ public:
 		GLSLVBO vbo(GL_ARRAY_BUFFER);
 		vbo.bind();
 		vbo.storeData(data);
-		//glVertexAttribPointer(attribute,attrSize,GL_FLOAT,GL_FALSE,attrSize*BYTES_PER_FLOAT,0);
 		glVertexAttribPointer(attribute,attrSize,GL_FLOAT,GL_FALSE,0,0);
 		vbo.unbind();
 		VBOs.push_back(vbo);
@@ -192,8 +166,15 @@ public:
 		GLSLVBO vbo(GL_ARRAY_BUFFER);
 		vbo.bind();
 		vbo.storeData(data);
-		//glVertexAttribIPointer(attribute,attrSize,GL_INT,attrSize*BYTES_PER_INT,0);
 		glVertexAttribIPointer(attribute,attrSize,GL_INT,0,0);
+		vbo.unbind();
+		VBOs.push_back(vbo);
+	}
+	void createAttribute(GLuint attribute,vector<GLuint> &data,GLuint attrSize){
+		GLSLVBO vbo(GL_ARRAY_BUFFER);
+		vbo.bind();
+		vbo.storeData(data);
+		glVertexAttribIPointer(attribute,attrSize,GL_UNSIGNED_INT,0,0);
 		vbo.unbind();
 		VBOs.push_back(vbo);
 	}
@@ -203,7 +184,6 @@ public:
 		indexVBO.deleleteBuffer();
 	}
 };
-
 class GLSLShader{
 	GLuint shaderID;
 public:
@@ -272,14 +252,10 @@ public:
 		glDeleteShader(VertexShaderID);
 		glDeleteShader(FragmentShaderID);
 	}
-	~GLSLShaderProgram(){
-		stop();
-		glDeleteProgram(programID);
-	}
-	void setUniformsLocation(vector<Uniform> &uniforms){
-		for(Uniform &u:uniforms)
-			u.setLocation(programID);
-	}
+	~GLSLShaderProgram(){stop();glDeleteProgram(programID);}
+	void setUniformsLocation(vector<Uniform> uniforms){for(Uniform &u:uniforms)u.setLocation(programID);}
+	// I don't know how this work jet. Any help out there?
+	//void setUniformsLocation(Uniform uniforms...){for(Uniform &u:uniforms)u.setLocation(programID);}
 	void bindAttribute(GLuint attribID,string s){
 		glBindAttribLocation(programID,attribID,s.c_str());
 	}

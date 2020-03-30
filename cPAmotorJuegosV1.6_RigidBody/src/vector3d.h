@@ -159,9 +159,10 @@ inline Vector3D asVector3D(Mat &m){return Vector3D(m.at<double>(0,0),m.at<double
 
 // FROM: https://www.learnopencv.com/rotation-matrix-to-euler-angles/
 // Calculates rotation matrix given euler angles.
-inline Mat eulerAnglesToRotationMatrix(Vector3D &theta)
+inline Mat eulerAnglesToRotationMatrix(Vector3D theta)
 {
-    // Calculate rotation about x axis
+	theta=theta*DEG2RAD;
+	// Calculate rotation about x axis
     Mat R_x = (Mat_<double>(3,3) <<
                1,       0,              0,
                0,       cos(theta[0]),   -sin(theta[0]),
@@ -184,6 +185,41 @@ inline Mat eulerAnglesToRotationMatrix(Vector3D &theta)
 
     // Combined rotation matrix
     Mat R = R_z * R_y * R_x;
+    return R;
+}
+inline Mat posEulerAnglesToTransformationMatrix(Vector3D pos,Vector3D theta)
+{
+	theta=theta*DEG2RAD;
+    // Calculate rotation about x axis
+    Mat R_x = (Mat_<double>(4,4) <<
+               1,       0,                            0, 0,
+               0,       cos(theta[0]),   -sin(theta[0]), 0,
+               0,       sin(theta[0]),    cos(theta[0]), 0,
+               0,       0,                            0, 1);
+
+    // Calculate rotation about y axis
+    Mat R_y = (Mat_<double>(4,4) <<
+               cos(theta[1]),    0,      sin(theta[1]), 0,
+                0,               1,                  0, 0,
+               -sin(theta[1]),   0,      cos(theta[1]), 0,
+               0,       0,                           0, 1);
+
+    // Calculate rotation about z axis
+    Mat R_z = (Mat_<double>(4,4) <<
+               cos(theta[2]),    -sin(theta[2]),      0, 0,
+               sin(theta[2]),     cos(theta[2]),      0, 0,
+               0,                 0,                  1, 0,
+               0,                 0,                  0, 1);
+
+    // Calculate translation
+    Mat T = (Mat_<double>(4,4) <<
+               1,    0,      0, pos[0],
+               0,    1,      0, pos[1],
+               0,    0,      1, pos[2],
+               0,    0,      0, 1);
+
+    // Combined rotation matrix
+    Mat R (T*R_x * R_y * R_z);
     return R;
 }
 
