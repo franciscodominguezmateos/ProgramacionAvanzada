@@ -63,7 +63,7 @@ public:
     /*      ACCESSORS    */
 	const string& getName() const {return name;	}
 	void setName(const string &name) {this->name = name;}
-	const string& getText() const {return text;}
+	string &getText() {return text;}
 	void setText(const string &text) {this->text = text;}
 	XMLNodeType getType() const {return type;}
 	void setType(XMLNodeType type) {this->type = type;}

@@ -14,8 +14,42 @@
 #include <fstream>
 #include <sstream>
 #include <stdexcept>
+#include <algorithm>
 
 using namespace std;
+
+
+
+
+/*
+Generic function to find an element in vector and also its position.
+It returns a pair of bool & int i.e.
+
+bool : Represents if element is present in vector or not.
+int : Represents the index of element in vector if its found else -1
+FROM: https://thispointer.com/c-how-to-find-an-element-in-vector-and-get-its-index/
+*/
+template < typename T>
+std::pair<bool, int > findInVector(const std::vector<T>  & vecOfElements, const T  & element)
+{
+	std::pair<bool, int > result;
+
+	// Find given element in vector
+	auto it = std::find(vecOfElements.begin(), vecOfElements.end(), element);
+
+	if (it != vecOfElements.end())
+	{
+		result.second = distance(vecOfElements.begin(), it);
+		result.first = true;
+	}
+	else
+	{
+		result.first = false;
+		result.second = -1;
+	}
+
+	return result;
+}
 
 /* RANDOMNESS */
 inline float getRand(float max,float min=0){
