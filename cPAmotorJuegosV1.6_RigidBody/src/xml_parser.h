@@ -85,6 +85,7 @@ public:
 		}
 	}
 	inline map<string, string>& getAttributes() {return attributes;}
+	inline bool hasAttribute(string name){return attributes.count(name)>0;}
 	inline string &getAttribute(string name){
 		if(attributes.count(name)>0)
 			return attributes[name];
