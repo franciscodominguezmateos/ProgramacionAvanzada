@@ -41,6 +41,7 @@ public:
 		itextures.push_back(it);
 		inormals.push_back(in);
 	}
+	inline void scale(GLfloat s){for(unsigned int i=0;i<vertices.size();i++) vertices[i]*=s;}
 	inline void addVertex (Vector3D &v){vertices.push_back(v);}
 	inline void addTexture(Vector3D &v){textures.push_back(v);}
 	inline void addNormal (Vector3D &v){normals.push_back(v);}
@@ -57,18 +58,19 @@ public:
 	inline void setVerticesFromFloats(vector<GLfloat> &vf){setVector(vertices,vf  );}
 	inline void setTexturesFromFloats(vector<GLfloat> &vf){setVector(textures,vf,2);}
 	inline void setNormalsFromFloats (vector<GLfloat> &vf){setVector(normals ,vf  );}
-	inline vector<GLfloat> getVector(vector<Vector3D> &vv,int stride=3){
-		vector<GLfloat> vf;
+	template<class T>
+	inline vector<T> getVector(vector<Vector3D> &vv,int stride=3){
+		vector<T> vf;
 		for(Vector3D &v:vv){
-			vf.push_back((GLfloat)v.getX());
-			vf.push_back((GLfloat)v.getY());
-			if(stride==3) vf.push_back((GLfloat)v.getZ());
+			vf.push_back((T)v.getX());
+			vf.push_back((T)v.getY());
+			if(stride==3) vf.push_back((T)v.getZ());
 		}
 		return vf;
 	}
-	inline vector<GLfloat> getFloatFromVertices(){return getVector(vertices  );}
-	inline vector<GLfloat> getFloatFromTextures(){return getVector(textures,2);}
-	inline vector<GLfloat> getFloatFromNormals (){return getVector(normals   );}
+	inline vector<GLfloat> getFloatFromVertices(){return getVector<GLfloat>(vertices  );}
+	inline vector<GLfloat> getFloatFromTextures(){return getVector<GLfloat>(textures,2);}
+	inline vector<GLfloat> getFloatFromNormals (){return getVector<GLfloat>(normals   );}
 	inline vector<Vector3D>& getVertices() {return vertices;}
 	inline vector<Vector3D>& getTextures() {return textures;}
 	inline vector<Vector3D>& getNormals()  {return normals; }

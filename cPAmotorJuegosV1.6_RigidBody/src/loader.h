@@ -39,6 +39,9 @@ public:
 	virtual void load()=0;
 	inline string &getName(){return name;}
 	inline ModelMesh &getModel(){return m;}
+	inline ModelMeshArticulated &getModelArticulated(){return m;}
+	inline void setJointNames(vector<string> &jn){m.setJointNames(jn);}
+	inline int getJointIdx(string name){return m.getJointIdx(name);}
 	inline vector<Triangle>& getTriangles(){return m.getTriangles();}
 	inline map<string, Material>& getMaterials() {return m.getMaterials();}
 	inline vector<Vector3D>& getVertices() {return m.getVertices();}

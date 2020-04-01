@@ -10,7 +10,6 @@
 #include "model_mesh_articulated.h"
 
 class LoaderDAE: public Loader {
-	vector<string> jointNames;
 	int idxGeo;
 public:
 	LoaderDAE(string name,int idx=0):Loader(name),idxGeo(idx){}
@@ -29,22 +28,25 @@ public:
 	  XMLNode &library_controllers  =collada("library_controllers");
 	  XMLNode &library_visual_scenes=collada("library_visual_scenes");
 
-	  //for the moment this only load first geoometry
+	  //for the moment this only load the idxGeo geometry
 	  XMLNode &geometry=library_geometries["geometry"][idxGeo];
 	  XMLNode &mesh=geometry("mesh");
 	  loadVertices(mesh);
 	  loadNormals (mesh);
 	  loadTextures(mesh);
 	  loadIndixes (mesh);
-/*
+
 	  XMLNode &skin=library_controllers("controller")("skin");
 	  loadSkin(skin);
 
 	  XMLNode &armature=library_visual_scenes("visual_scene")("node","id","Armature");
 	  XMLNode &torso=armature("node","id","Torso");
 	  //cout << torso <<endl;
-	  setJointsRoot(loadJoints(torso));
-*/
+	  Joint jointsRoot=loadJoints(torso);
+	  cout <<"********************************************** DAE *********************"<< endl;
+	  jointsRoot.calcInverseBindTransform(Mat::eye(4,4,CV_32F));
+	  setJointsRoot(jointsRoot);
+
 	  // SkeletonLoader
 	  for(auto &pair:collada.getChildren()){
 		  cout << pair.first << endl;
@@ -55,7 +57,8 @@ public:
 		  XMLNode &vertex_weights=skin("vertex_weights");
 
 		  XMLNode &iJoint=vertex_weights("input","semantic","JOINT");
-		  jointNames=colladaSourceStrings(iJoint,skin,"Name_array");
+		  vector<string>jointNames=colladaSourceStrings(iJoint,skin,"Name_array");
+		  setJointNames(jointNames);
 
 		  XMLNode &iWeight=vertex_weights("input","semantic","WEIGHT");
 	      vector<GLfloat> weights=colladaSourceNumbers<GLfloat>(iWeight,skin,"float_array");
@@ -76,7 +79,6 @@ public:
 		Joint joint=getJoint(jointNode);
 		if(jointNode.hasChild("node")){
 			vector<XMLNode> &vn=jointNode["node"];
-			cout << jointNode.getName() <<" vn="<<vn.size()<<endl;
 			for(XMLNode &n:vn)
 				joint.addChild(loadJoints(n));
 		}
@@ -84,15 +86,13 @@ public:
 	}
 	Joint getJoint(XMLNode &jointNode){
 		string name=jointNode.getAttribute("id");
-		pair<bool,int> r=findInVector<string>(jointNames,name);
-		if(!r.first)
-			throw runtime_error("LoaderDAE::getJoint(): Joint name='"+name+"not found at jointNames");
-		int idx=r.second;
+		int idx=getJointIdx(name);
 		string matrixTxt=jointNode("matrix").getText();
 		vector<GLfloat> vf=split_numbers<GLfloat>(matrixTxt);
 		assert(vf.size()==16);
 		Mat m=Mat(4,4,CV_32F, vf.data());
-		cout << m<<endl;
+		cout << "--------->"<<jointNode.getAttribute("id") <<endl;
+		cout << m <<endl;
 		return Joint(idx,name,m);
 	}
 	void loadVertices(XMLNode &mesh){
