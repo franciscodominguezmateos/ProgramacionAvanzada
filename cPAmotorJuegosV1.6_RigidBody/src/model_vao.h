@@ -10,27 +10,113 @@
 #include "solido.h"
 #include "shader.h"
 #include "model_mesh_articulated.h"
-class KeyFrameJoint{
+/*
+class KeyFrameJoints{
 	float timeStamp;
 	vector<Mat> localJointTransforms;
 public:
 };
-class AnimationJoints{
+class KeyFrameJoint{
+	float timeStamp;
+	Mat localJointTransform;
+public:
+	float getTimeStamp(){return timeStamp;}
+	Mat &getT(){return localJointTransform;}
+};
+class KeyFramesJoint{
+	string jointName;
+	int currentFrame;
 	vector<KeyFrameJoint> keyFrames;
 public:
-	Mat interpolate(Mat m0,Mat m1,float t){
-		Mat dm,vt,mt;
-		dm=m1*m0.inv();
-		Rodrigues(dm,vt);
-		vt=vt*t;
-		Rodrigues(vt,mt);
-		return mt*m0;
+	KeyFramesJoint(){}//needed for default containers constructor
+	KeyFramesJoint(string name):jointName(name),currentFrame(0){}
+	Mat getTransformation(KeyFrameJoint c,KeyFrameJoint n,float t){
+		float di=n.getTimeStamp()-c.getTimeStamp();
+		float dt=t-c.getTimeStamp();
+		float tr=dt/di;
+		return interpolate(n.getT(),c.getT(),tr);
+	}
+	Mat getTransformation(float t){
+		int nextFrame=currentFrame+1;
+		if(keyFrames[nextFrame].getTimeStamp()<t){
+			currentFrame=nextFrame;
+			while(keyFrames[nextFrame].getTimeStamp()<t) nextFrame++
+		}
+		Mat r=getTransformtion(keyFrames[currentFrame],keyFrames[nextFrame],t);
+		return r;
+	}
+	string &getName(){return jointName;}
+};
+class KeyFramesSkeleton{
+	vector<string> jointNames;
+	map<string,KeyFramesJoint> keyFramesSkeleton;
+public:
+	void addKeyFramesJoint(KeyFramesJoint &kfj){keyFramesSkeleton[kfj.getName()]=kfj;}
+	map<string,Mat> snapShotSkeleton(float t){
+		map<string,Mat> mm;
+		for(string &n:jointNames){
+			mm[n]=keyFramesSkeleton[n].getTransformation(t);
+		}
+		return mm;
 	}
 };
-/*class AnimatorArticulated{
+class AnimationJoints{
+	vector<KeyFrameJoints> keyFrames;
+public:
+	Mat getRotation(Mat &t){
+		Mat r=t(Rect(0,0,3,3)).clone();
+		return r;
+	}
+	Mat getTranslation(Mat &t){
+		Mat r=t(Rect(3,0,1,3)).clone();
+		return r;
+	}
+	Mat buildTransformation(Mat R,Mat t){
+		Mat r=Mat_<GLfloat>(4,4,CV_32F);
+		for(int i=0;i<3;i++){
+			for(int j=0;j<3;j++)
+				r.at<GLfloat>(i,j)=R.at<GLfloat>(i,j);
+			r.at<GLfloat>(i,3)=t.at<GLfloat>(1,0);
+			r.at<GLfloat>(3,i)=0;
+		}
+		r.at<GLfloat>(3,3)=1;
+		return r;
+	}
+	Mat interpolate(Mat T0,Mat T1,float t){
+		//Totation
+		Mat m0=getRotation(T0);
+		Mat m1=getRotation(T1);
+		Mat dm,vt,mt;
+		//m1=dm*m0->dm=m1*m0.inv()
+		dm=m1*m0.inv();
+		//get vector axis representatiom
+		Rodrigues(dm,vt);
+		//scale vector by t
+		vt=vt*t;
+		//get final matrix increment mt
+		Rodrigues(vt,mt);
+		//Translation
+		Mat t0=getTranslation(T0);
+		Mat t1=getTranslation(T1);
+		Mat mdif=t1-t0;
+		Mat tt=mdif*t;
+		//Build increment Transformation
+		Mat Tt=buildTransformation(mt,tt);
+		Mat r=Tt*T0;
+		return r;
+	}
+};
+class AnimatorArticulated{
 	SolidArticulated sa;
 	AnimationJoints animation;
 public:
+void applyPose2Joints(vector<Mat> &vm,Joint &joint,Mat &currentParentTransform){
+	Mat &currentLocalTransform=vm[joint.getIdx()];
+	 Mat currentTransform=currentParentTransform*currentLocalTransform;
+	 for(Joint &j:joint.getChildren())
+		 applyPose2Joints(vm,j,currentTransform);
+	 Mat animationTransform=currentTransform*joint.getInverseBindTransform();
+	 joint.setAnimationTransform(animationTransform);
 };*/
 class SolidArticulated: public Solido{
 	Joint jointsRoot;

@@ -94,8 +94,8 @@ public:
 			GLfloat* d=new GLfloat[n*stride];
 			unsigned int idx=0;
 			for(Mat &m:v)
-				for(unsigned int i=0;i<m.rows;i++)
-					for(unsigned int j=0;j<m.cols;j++)
+				for(int i=0;i<m.rows;i++)
+					for(int j=0;j<m.cols;j++)
 						d[idx++]=m.at<GLfloat>(i,j);
 			if(m.cols==2 && m.rows==2) glUniformMatrix2fv(location,n,false,d);
 			if(m.cols==3 && m.rows==3) glUniformMatrix3fv(location,n,false,d);

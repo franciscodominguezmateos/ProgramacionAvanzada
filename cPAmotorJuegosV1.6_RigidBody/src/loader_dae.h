@@ -53,6 +53,24 @@ public:
 	  }
 	  cout << "END"<<endl;
 	}
+	void loadJointAnimations(XMLNode &animations){
+
+	}
+	void loadJointAnimation(XMLNode &animation){
+		XMLNode &sampler=animation("sampler");
+		XMLNode &channel=animation("channel");
+		string jointName=getJointName(channel);
+		XMLNode &iInput=sampler("input","semantic","INPUT");
+		vector<GLfloat> times=colladaSourceNumbers<GLfloat>(iInput,animation);
+		XMLNode &iOutput=sampler("input","semantic","OUTPUT");
+		vector<Mat> localTransformations=colladaSourceMatrices4x4(iOutput,animation);
+	}
+	string getJointName(XMLNode &channel){
+		string target=channel.getAttribute("target");
+		vector<string> vs=split(target,'/');
+		assert(vs.size()==2);
+		return vs[0];
+	}
 	void loadSkin(XMLNode &skin){
 		  XMLNode &vertex_weights=skin("vertex_weights");
 
@@ -61,13 +79,13 @@ public:
 		  setJointNames(jointNames);
 
 		  XMLNode &iWeight=vertex_weights("input","semantic","WEIGHT");
-	      vector<GLfloat> weights=colladaSourceNumbers<GLfloat>(iWeight,skin,"float_array");
+	      vector<GLfloat> weights=colladaSourceNumbers<GLfloat>(iWeight,skin);
 
 	      vector<GLint> counts=split_numbers<GLint>(vertex_weights("vcount").getText());
 	      vector<GLint> data  =split_numbers<GLint>(vertex_weights("v").getText());
 	      unsigned int idx=0;
 	      for(int &c:counts)
-	    	  for(unsigned i=0;i<c;i++){
+	    	  for(int i=0;i<c;i++){
 	    		  GLint jointID =data[idx++];
 	    		  GLint weightId=data[idx++];
 	    		  GLfloat weight=weights[weightId];
@@ -90,6 +108,7 @@ public:
 		string matrixTxt=jointNode("matrix").getText();
 		vector<GLfloat> vf=split_numbers<GLfloat>(matrixTxt);
 		assert(vf.size()==16);
+		//this constructor doesn't copy data from vf.data()
 		Mat m=Mat(4,4,CV_32F, vf.data());
 		cout << "--------->"<<jointNode.getAttribute("id") <<endl;
 		cout << m <<endl;
@@ -98,19 +117,19 @@ public:
 	void loadVertices(XMLNode &mesh){
 		XMLNode &vertices=mesh("vertices");
 		XMLNode &iPosition=vertices("input","semantic","POSITION");
-		vector<GLfloat> vf=colladaSourceNumbers<GLfloat>(iPosition,mesh,"float_array");
+		vector<GLfloat> vf=colladaSourceNumbers<GLfloat>(iPosition,mesh);
 		setVerticesFromFloats(vf);
 	}
 	void loadNormals(XMLNode &mesh){
         XMLNode &polylist=mesh("polylist");
 		XMLNode &iNormal=polylist("input","semantic","NORMAL");
-		vector<GLfloat> vn=colladaSourceNumbers<GLfloat>(iNormal,mesh,"float_array");
+		vector<GLfloat> vn=colladaSourceNumbers<GLfloat>(iNormal,mesh);
 		setNormalsFromFloats(vn);
 	}
 	void loadTextures(XMLNode &mesh){
 		XMLNode &polylist=mesh("polylist");
 		XMLNode &iTextcoord=polylist("input","semantic","TEXCOORD");
-		vector<GLfloat> vt=colladaSourceNumbers<GLfloat>(iTextcoord,mesh,"float_array");
+		vector<GLfloat> vt=colladaSourceNumbers<GLfloat>(iTextcoord,mesh);
 		setTexturesFromFloats(vt);
 	}
 	void loadIndixes(XMLNode &mesh){
@@ -144,14 +163,14 @@ public:
 			  string &text=sourceNode.getText();
 			  vector<string> vs=split(text);
 			  if(sourceNode.hasAttribute("count")){
-				  int count=sourceNode.getAttributeInt("count");
+				  unsigned int count=sourceNode.getAttributeInt("count");
 				  if(count!=vs.size())
 					  runtime_error("Error LoaderDAE::colladaSourceStrings() vector size doesn't seem to be correct");
 			  }
 			  return vs;
 		}
 	template<class T>
-	vector<T> colladaSourceNumbers(XMLNode &nodeID,XMLNode &nodeData,string source){
+	vector<T> colladaSourceNumbers(XMLNode &nodeID,XMLNode &nodeData,string source="float_array"){
 		// find in nodeID a source id
 		  string dataSourceID=nodeID.getAttribute("source");
 		  ltrim(dataSourceID,"#");
@@ -160,11 +179,22 @@ public:
 		  string &text=sourceNode.getText();
 		  vector<T> vf=split_numbers<T>(text);
 		  if(sourceNode.hasAttribute("count")){
-			  int count=sourceNode.getAttributeInt("count");
+			  unsigned int count=sourceNode.getAttributeInt("count");
 			  if(count!=vf.size())
 				  runtime_error("Error LoaderDAE::colladaSourceNumbers() vector size doesn't seem to be correct");
 		  }
 		  return vf;
+	}
+	vector<Mat> colladaSourceMatrices4x4(XMLNode &nodeID,XMLNode &nodeData,string source="float_array"){
+		vector<Mat> vm;
+		vector<GLfloat> vf=colladaSourceNumbers<GLfloat>(nodeID,nodeData,source);
+		for(unsigned int i=0;i<vf.size();i+=16){
+			//this constructor doesn't copy data from vf.data()
+			//that is the reason we call m.clone()
+			Mat m=Mat(4,4,CV_32F, vf.data()+i);
+			vm.push_back(m.clone());
+		}
+		return vm;
 	}
 };
 

@@ -222,7 +222,48 @@ inline Mat posEulerAnglesToTransformationMatrix(Vector3D pos,Vector3D theta)
     Mat R (T*R_x * R_y * R_z);
     return R;
 }
-
+Mat getRotation(Mat &t){
+	Mat r=t(Rect(0,0,3,3)).clone();
+	return r;
+}
+Mat getTranslation(Mat &t){
+	Mat r=t(Rect(3,0,1,3)).clone();
+	return r;
+}
+Mat buildTransformation(Mat R,Mat t){
+	Mat r=Mat_<float>(4,4,CV_32F);
+	for(int i=0;i<3;i++){
+		for(int j=0;j<3;j++)
+			r.at<float>(i,j)=R.at<float>(i,j);
+		r.at<float>(i,3)=t.at<float>(1,0);
+		r.at<float>(3,i)=0;
+	}
+	r.at<float>(3,3)=1;
+	return r;
+}
+Mat interpolate(Mat T0,Mat T1,float t){
+	//Totation
+	Mat m0=getRotation(T0);
+	Mat m1=getRotation(T1);
+	Mat dm,vt,mt;
+	//m1=dm*m0->dm=m1*m0.inv()
+	dm=m1*m0.inv();
+	//get vector axis representatiom
+	Rodrigues(dm,vt);
+	//scale vector by t
+	vt=vt*t;
+	//get final matrix increment mt
+	Rodrigues(vt,mt);
+	//Translation
+	Mat t0=getTranslation(T0);
+	Mat t1=getTranslation(T1);
+	Mat mdif=t1-t0;
+	Mat tt=mdif*t;
+	//Build increment Transformation
+	Mat Tt=buildTransformation(mt,tt);
+	Mat r=Tt*T0;
+	return r;
+}
 // Checks if a matrix is a valid rotation matrix.
 inline bool isRotationMatrix(Mat &R)
 {
