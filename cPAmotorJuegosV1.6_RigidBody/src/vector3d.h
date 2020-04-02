@@ -27,6 +27,13 @@ public:
 	Vector3Dx(const vector<S> &v){x=v[0];y=v[1];if(v.size()==3)z=v[2];}
 	Vector3Dx(const Vector3Dx<S> &v) :x(v.x), y(v.y), z(v.z) {}
 	Vector3Dx<S> *clone() { return new Vector3Dx<S>(*this); }
+	inline Vector3Dx<S> operator=(Mat m) {
+		Vector3Dx<S> &v=*this;
+		if(m.cols==1 && m.rows>=3)	    for(int i=0;i<3;i++) v[i]=m.at<S>(i,0);
+		else if(m.cols>=3 && m.rows==1) for(int i=0;i<3;i++) v[i]=m.at<S>(0,i);
+		else throw runtime_error("Error in Vector3D::operator=(Mat) Vector from Mat");
+		return v;
+	}
 	inline Vector3Dx<S> operator+(const Vector3Dx<S> &b) {return	Vector3Dx<S>(x + b.x, y + b.y, z + b.z);}
 	inline Vector3Dx<S> operator+=(const Vector3Dx<S> &v){x+=v.x;y+=v.y;z+=v.z;return *this;}
 	inline Vector3Dx<S> operator-() {return	Vector3Dx<S>(-x,-y,-z);}
@@ -42,12 +49,11 @@ public:
 	inline void setX(const double &px) { x = px; }
 	inline void setY(const double &py) { y = py; }
 	inline void setZ(const double &pz) { z = pz; }
-	// read only operator
-	inline S operator[](int i){
+	inline S &operator[](int i){
 		if (i==0) return x;
 		if (i==1) return y;
 		if (i==2) return z;
-		return 0;
+		throw runtime_error("Error in Vector3Dx::operator[] index must be 0..2");
 	}
 	// outer product
 	inline Mat O(Vector3Dx<S> v){
@@ -118,6 +124,10 @@ public:
 		S d=vn*v;
 		return Vector3Dx<S>(vn*d);
 	}
+	// column vector
+	inline Mat asMat(){	return (Mat_<S>(3,1)<< x,y,z);}
+	inline Mat asH()  {	return (Mat_<S>(4,1)<< x,y,z,1);}
+	inline Mat asH0() {	return (Mat_<S>(4,1)<< x,y,z,0);}
 	//template <class S>  //this doesn't work
 	friend ostream &operator<<(ostream &os, const Vector3Dx<S> &v);
 };

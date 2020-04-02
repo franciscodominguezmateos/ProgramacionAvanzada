@@ -8,9 +8,11 @@
 #include "loader.h"
 #include "xml_parser.h"
 #include "model_mesh_articulated.h"
+#include "animation_skeleton.h"
 
 class LoaderDAE: public Loader {
 	int idxGeo;
+	KeyFramesSkeleton kfSkeleton;
 public:
 	LoaderDAE(string name,int idx=0):Loader(name),idxGeo(idx){}
 	void load(){
@@ -26,6 +28,7 @@ public:
 	  XMLNode &collada=root("COLLADA");
 	  XMLNode &library_geometries   =collada("library_geometries");
 	  XMLNode &library_controllers  =collada("library_controllers");
+	  XMLNode &library_animations   =collada("library_animations");
 	  XMLNode &library_visual_scenes=collada("library_visual_scenes");
 
 	  //for the moment this only load the idxGeo geometry
@@ -47,14 +50,17 @@ public:
 	  jointsRoot.calcInverseBindTransform(Mat::eye(4,4,CV_32F));
 	  setJointsRoot(jointsRoot);
 
+	  loadJointAnimations(library_animations);
 	  // SkeletonLoader
 	  for(auto &pair:collada.getChildren()){
 		  cout << pair.first << endl;
 	  }
-	  cout << "END"<<endl;
+	  cout << "END COLLADA"<<endl;
 	}
 	void loadJointAnimations(XMLNode &animations){
-
+		//TODO: set jointNames
+		for(XMLNode &n:animations["animation"])
+			loadJointAnimation(n);
 	}
 	void loadJointAnimation(XMLNode &animation){
 		XMLNode &sampler=animation("sampler");
@@ -64,6 +70,11 @@ public:
 		vector<GLfloat> times=colladaSourceNumbers<GLfloat>(iInput,animation);
 		XMLNode &iOutput=sampler("input","semantic","OUTPUT");
 		vector<Mat> localTransformations=colladaSourceMatrices4x4(iOutput,animation);
+		assert(times.size()==localTransformations.size());
+		KeyFramesJoint kfJoint(jointName);
+		for(unsigned int i=0;i<times.size();i++)
+			kfJoint.addKeyFrameJoint(KeyFrameJoint(times[i],localTransformations[i]));
+		kfSkeleton.addKeyFramesJoint(kfJoint);
 	}
 	string getJointName(XMLNode &channel){
 		string target=channel.getAttribute("target");
@@ -110,8 +121,8 @@ public:
 		assert(vf.size()==16);
 		//this constructor doesn't copy data from vf.data()
 		Mat m=Mat(4,4,CV_32F, vf.data());
-		cout << "--------->"<<jointNode.getAttribute("id") <<endl;
-		cout << m <<endl;
+		//cout << "--------->"<<jointNode.getAttribute("id") <<endl;
+		//cout << m <<endl;
 		return Joint(idx,name,m);
 	}
 	void loadVertices(XMLNode &mesh){

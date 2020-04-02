@@ -42,6 +42,10 @@ public:
 		inormals.push_back(in);
 	}
 	inline void scale(GLfloat s){for(unsigned int i=0;i<vertices.size();i++) vertices[i]*=s;}
+	inline void transform(Mat &T){
+		for(Vector3D &v:vertices) v=T*v.asH ();
+		for(Vector3D &n:normals ) n=T*n.asH0();
+	}
 	inline void addVertex (Vector3D &v){vertices.push_back(v);}
 	inline void addTexture(Vector3D &v){textures.push_back(v);}
 	inline void addNormal (Vector3D &v){normals.push_back(v);}

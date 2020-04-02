@@ -4,16 +4,15 @@
  *  Created on: 2 Apr 2020
  *      Author: Francisco Dominguez
  */
-
 #pragma once
-
-#include "model_mesh_articulated.h"
+#include "model_joint.h"
 class KeyFrameJoint{
 	float timeStamp;
 	Mat localJointTransform;
 public:
-	float getTimeStamp(){return timeStamp;}
-	Mat &getT(){return localJointTransform;}
+	KeyFrameJoint(float t,Mat &m):timeStamp(t),localJointTransform(m.clone()){}
+	inline float getTimeStamp(){return timeStamp;}
+	inline Mat &getT(){return localJointTransform;}
 };
 class KeyFramesJoint{
 	string jointName;
@@ -22,6 +21,7 @@ class KeyFramesJoint{
 public:
 	KeyFramesJoint(){}//needed for default containers constructor
 	KeyFramesJoint(string name):jointName(name),currentFrame(0){}
+	inline void addKeyFrameJoint(KeyFrameJoint kfj){keyFrames.push_back(kfj);}
 	Mat getTransformation(KeyFrameJoint c,KeyFrameJoint n,float t){
 		float di=n.getTimeStamp()-c.getTimeStamp();
 		float dt=t-c.getTimeStamp();
@@ -29,7 +29,7 @@ public:
 		return interpolate(n.getT(),c.getT(),tr);
 	}
 	Mat getTransformation(float t){
-		//TODO: finetune this ethos it is to rough sure it fail
+		//TODO: fine tune this method, it is to rough sure it fail
 		int nextFrame=currentFrame+1;
 		if(keyFrames[nextFrame].getTimeStamp()<t){
 			if(nextFrame==(int)keyFrames.size()){
@@ -50,7 +50,7 @@ class KeyFramesSkeleton{
 	vector<string> jointNames;
 	map<string,KeyFramesJoint> keyFramesSkeleton;
 public:
-	void addKeyFramesJoint(KeyFramesJoint &kfj){keyFramesSkeleton[kfj.getName()]=kfj;}
+	void addKeyFramesJoint(KeyFramesJoint kfj){keyFramesSkeleton[kfj.getName()]=kfj;}
 	map<string,Mat> snapShotSkeleton(float t){
 		map<string,Mat> mm;
 		for(string &n:jointNames){
@@ -68,7 +68,6 @@ public:
 class AnimationJoints{
 	vector<KeyFrameJoints> keyFrames;
 public:
-
 };
 
 class AnimationSkeleton {
@@ -79,12 +78,12 @@ class AnimatorArticulated{
 	//SolidArticulated sa;
 	AnimationJoints animation;
 public:
-void applyPose2Joints(map<string,Mat> &vm,Joint &joint,Mat &currentParentTransform){
-	Mat &currentLocalTransform=vm[joint.getName()];
-	 Mat currentTransform=currentParentTransform*currentLocalTransform;
-	 for(Joint &j:joint.getChildren())
-		 applyPose2Joints(vm,j,currentTransform);
-	 Mat animationTransform=currentTransform*joint.getInverseBindTransform();
-	 joint.setAnimatedTransform(animationTransform);
-}
+	void applyPose2Joints(map<string,Mat> &vm,Joint &joint,Mat &currentParentTransform){
+		Mat &currentLocalTransform=vm[joint.getName()];
+		Mat currentTransform=currentParentTransform*currentLocalTransform;
+		for(Joint &j:joint.getChildren())
+			applyPose2Joints(vm,j,currentTransform);
+		Mat animationTransform=currentTransform*joint.getInverseBindTransform();
+		joint.setAnimatedTransform(animationTransform);
+	}
 };

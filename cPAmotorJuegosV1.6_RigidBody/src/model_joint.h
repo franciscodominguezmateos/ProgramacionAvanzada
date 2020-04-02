@@ -18,18 +18,20 @@ class Joint{
 	Mat inverseBindTransform;
 public:
 	Joint(){};
-	Joint(GLuint idx,string name,Mat pLocalBindTransform):idx(idx),name(name){
-		pLocalBindTransform.copyTo(localBindTransform);
-	}
+	Joint(GLuint idx,string name,Mat pLocalBindTransform):
+		idx(idx),
+		name(name),
+		localBindTransform(pLocalBindTransform.clone())
+	{}
 	void addChild(Joint child){
 		children.push_back(child);
 	}
 	void calcInverseBindTransform(Mat parentBindTransform){
 		Mat bindTransform=parentBindTransform*localBindTransform;
-		cout<<"********" << name << "*********" <<endl;
+		/*cout<<"********" << name << "*********" <<endl;
 		cout << "pbT"<<parentBindTransform<<endl;
 		cout << "lbT"<<localBindTransform<<endl;
-		cout << "bT"<<bindTransform<<endl;
+		cout << "bT"<<bindTransform<<endl;*/
 		animatedTransform=bindTransform;
 		inverseBindTransform=bindTransform.inv();
 		for(Joint &j:children)
