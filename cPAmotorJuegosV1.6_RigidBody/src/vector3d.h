@@ -138,7 +138,6 @@ os << v.x << "," << v.y << "," << v.z;
 return os;
 }
 */
-
 inline ostream &operator<<(ostream &os, const Vector3Dd &v) {
 	os << v.x << "," << v.y << "," << v.z;
 	return os;
@@ -169,8 +168,7 @@ inline Vector3D asVector3D(Mat &m){return Vector3D(m.at<double>(0,0),m.at<double
 
 // FROM: https://www.learnopencv.com/rotation-matrix-to-euler-angles/
 // Calculates rotation matrix given euler angles.
-inline Mat eulerAnglesToRotationMatrix(Vector3D theta)
-{
+inline Mat eulerAnglesToRotationMatrix(Vector3D theta){
 	theta=theta*DEG2RAD;
 	// Calculate rotation about x axis
     Mat R_x = (Mat_<double>(3,3) <<
@@ -178,56 +176,48 @@ inline Mat eulerAnglesToRotationMatrix(Vector3D theta)
                0,       cos(theta[0]),   -sin(theta[0]),
                0,       sin(theta[0]),   cos(theta[0])
                );
-
     // Calculate rotation about y axis
     Mat R_y = (Mat_<double>(3,3) <<
                cos(theta[1]),    0,      sin(theta[1]),
                0,               1,      0,
                -sin(theta[1]),   0,      cos(theta[1])
                );
-
     // Calculate rotation about z axis
     Mat R_z = (Mat_<double>(3,3) <<
                cos(theta[2]),    -sin(theta[2]),      0,
                sin(theta[2]),    cos(theta[2]),       0,
                0,               0,                  1);
-
-
     // Combined rotation matrix
     Mat R = R_z * R_y * R_x;
     return R;
 }
-inline Mat posEulerAnglesToTransformationMatrix(Vector3D pos,Vector3D theta)
-{
+template<class S=double>
+inline Mat posEulerAnglesToTransformationMatrix(Vector3D pos,Vector3D theta){
 	theta=theta*DEG2RAD;
     // Calculate rotation about x axis
-    Mat R_x = (Mat_<double>(4,4) <<
+    Mat R_x = (Mat_<S>(4,4) <<
                1,       0,                            0, 0,
                0,       cos(theta[0]),   -sin(theta[0]), 0,
                0,       sin(theta[0]),    cos(theta[0]), 0,
                0,       0,                            0, 1);
-
     // Calculate rotation about y axis
-    Mat R_y = (Mat_<double>(4,4) <<
+    Mat R_y = (Mat_<S>(4,4) <<
                cos(theta[1]),    0,      sin(theta[1]), 0,
                 0,               1,                  0, 0,
                -sin(theta[1]),   0,      cos(theta[1]), 0,
                0,       0,                           0, 1);
-
     // Calculate rotation about z axis
-    Mat R_z = (Mat_<double>(4,4) <<
+    Mat R_z = (Mat_<S>(4,4) <<
                cos(theta[2]),    -sin(theta[2]),      0, 0,
                sin(theta[2]),     cos(theta[2]),      0, 0,
                0,                 0,                  1, 0,
                0,                 0,                  0, 1);
-
     // Calculate translation
-    Mat T = (Mat_<double>(4,4) <<
+    Mat T = (Mat_<S>(4,4) <<
                1,    0,      0, pos[0],
                0,    1,      0, pos[1],
                0,    0,      1, pos[2],
                0,    0,      0, 1);
-
     // Combined rotation matrix
     Mat R (T*R_x * R_y * R_z);
     return R;
@@ -272,24 +262,23 @@ Mat interpolate(Mat T0,Mat T1,float t){
 	//Build increment Transformation
 	Mat Tt=buildTransformation(mt,tt);
 	Mat r=Tt*T0;
+	/*cout << "T0="<<T0<<endl;
+	cout << "T1="<<T1<<endl;
+	cout << "r="<<r<<endl;*/
 	return r;
 }
 // Checks if a matrix is a valid rotation matrix.
-inline bool isRotationMatrix(Mat &R)
-{
+inline bool isRotationMatrix(Mat &R){
     Mat Rt;
     transpose(R, Rt);
     Mat shouldBeIdentity = Rt * R;
     Mat I = Mat::eye(3,3, shouldBeIdentity.type());
-
     return  norm(I, shouldBeIdentity) < 1e-6;
 }
-
 // Calculates rotation matrix to euler angles
 // The result is the same as MATLAB except the order
 // of the euler angles ( x and z are swapped ).
-inline Vector3D rotationMatrixToEulerAngles(Mat &R)
-{
+inline Vector3D rotationMatrixToEulerAngles(Mat &R){
     assert(isRotationMatrix(R));
 
     float sy = sqrt(R.at<double>(0,0) * R.at<double>(0,0) +  R.at<double>(1,0) * R.at<double>(1,0) );

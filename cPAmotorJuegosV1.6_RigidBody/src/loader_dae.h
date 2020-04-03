@@ -7,19 +7,21 @@
 #pragma once
 #include "loader.h"
 #include "xml_parser.h"
+#include "model_joint.h"
 #include "model_mesh_articulated.h"
 #include "animation_skeleton.h"
 
 class LoaderDAE: public Loader {
 	int idxGeo;
-	KeyFramesSkeleton kfSkeleton;
+	AnimationSkeleton animSkeleton;
 public:
 	LoaderDAE(string name,int idx=0):Loader(name),idxGeo(idx){}
+	AnimationSkeleton &getAnimationSkeleton(){return animSkeleton;}
 	void load(){
 		//ifstream ifdae("model.dae");
 		string fileName=getName();
 		cout << "fileName="<<fileName <<endl;
-		ifstream ifdae(fileName);
+		ifstream ifdae(fileName.c_str());
 	  XMLNode root;
 	  ifdae >> root;
 
@@ -47,10 +49,12 @@ public:
 	  //cout << torso <<endl;
 	  Joint jointsRoot=loadJoints(torso);
 	  cout <<"********************************************** DAE *********************"<< endl;
-	  jointsRoot.calcInverseBindTransform(Mat::eye(4,4,CV_32F));
+	  Mat I=Mat::eye(4,4,CV_32F);
+	  jointsRoot.calcInverseBindTransform(I);
 	  setJointsRoot(jointsRoot);
 
 	  loadJointAnimations(library_animations);
+
 	  // SkeletonLoader
 	  for(auto &pair:collada.getChildren()){
 		  cout << pair.first << endl;
@@ -58,7 +62,7 @@ public:
 	  cout << "END COLLADA"<<endl;
 	}
 	void loadJointAnimations(XMLNode &animations){
-		//TODO: set jointNames
+		animSkeleton.setJointNames(getJointNames());
 		for(XMLNode &n:animations["animation"])
 			loadJointAnimation(n);
 	}
@@ -71,10 +75,10 @@ public:
 		XMLNode &iOutput=sampler("input","semantic","OUTPUT");
 		vector<Mat> localTransformations=colladaSourceMatrices4x4(iOutput,animation);
 		assert(times.size()==localTransformations.size());
-		KeyFramesJoint kfJoint(jointName);
+		AnimationJoint kfJoint(jointName);
 		for(unsigned int i=0;i<times.size();i++)
 			kfJoint.addKeyFrameJoint(KeyFrameJoint(times[i],localTransformations[i]));
-		kfSkeleton.addKeyFramesJoint(kfJoint);
+		animSkeleton.addKeyFramesJoint(kfJoint);
 	}
 	string getJointName(XMLNode &channel){
 		string target=channel.getAttribute("target");

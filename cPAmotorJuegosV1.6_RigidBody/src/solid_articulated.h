@@ -29,7 +29,7 @@ public:
 		return jointTransforms;
 	}
 	void addJoints(Joint &joint,vector<Mat> &jm){
-		jm[joint.getIdx()]=joint.getAnimatedTransform();
+		jm[joint.getIdx()]=joint.getAnimatedTransform()*joint.getBindTransform();
 		for(Joint &j:joint.getChildren()){
 			addJoints(j,jm);
 		}
@@ -59,7 +59,7 @@ public:
 			glPopMatrix();
 			glPushMatrix();
 			glColor3f(0,1,0);
-			glScalef(0.05,0.6,0.05);
+			glScalef(0.05,1.0,0.05);
 			glTranslatef(0,0.5,0);
 			glutSolidCube(1);
 			glPopMatrix();

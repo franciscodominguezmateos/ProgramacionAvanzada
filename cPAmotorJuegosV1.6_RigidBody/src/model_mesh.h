@@ -13,7 +13,6 @@
 #include <sstream>
 #include <GL/glut.h>
 #include "vector3d.h"
-//#include "contorno.h"
 #include "util.h"
 #include "material.h"
 #include "triangle.h"

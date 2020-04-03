@@ -5,7 +5,8 @@
  *      Author: Francisco Dominguez
  */
 #pragma once
-#include "model_joint.h"
+#include "solid_articulated.h"
+#include "animation.h"
 class KeyFrameJoint{
 	float timeStamp;
 	Mat localJointTransform;
@@ -14,25 +15,27 @@ public:
 	inline float getTimeStamp(){return timeStamp;}
 	inline Mat &getT(){return localJointTransform;}
 };
-class KeyFramesJoint{
+class AnimationJoint{
 	string jointName;
 	int currentFrame;
 	vector<KeyFrameJoint> keyFrames;
 public:
-	KeyFramesJoint(){}//needed for default containers constructor
-	KeyFramesJoint(string name):jointName(name),currentFrame(0){}
+	AnimationJoint(){}//needed for default containers constructor
+	AnimationJoint(string name):jointName(name),currentFrame(0){}
 	inline void addKeyFrameJoint(KeyFrameJoint kfj){keyFrames.push_back(kfj);}
+	inline KeyFrameJoint &getKeyFrameJoint(int idx){return keyFrames[idx];}
 	Mat getTransformation(KeyFrameJoint c,KeyFrameJoint n,float t){
 		float di=n.getTimeStamp()-c.getTimeStamp();
 		float dt=t-c.getTimeStamp();
 		float tr=dt/di;
-		return interpolate(n.getT(),c.getT(),tr);
+		return interpolate(c.getT().clone(),n.getT().clone(),tr);
 	}
 	Mat getTransformation(float t){
 		//TODO: fine tune this method, it is to rough sure it fail
 		int nextFrame=currentFrame+1;
+		cout << "currentFrame=" << currentFrame<<","<<nextFrame<<endl;
 		if(keyFrames[nextFrame].getTimeStamp()<t){
-			if(nextFrame==(int)keyFrames.size()){
+			if(nextFrame==(int)keyFrames.size()-1){
 				currentFrame=0;
 				nextFrame=currentFrame+1;
 			}
@@ -46,44 +49,29 @@ public:
 	}
 	string &getName(){return jointName;}
 };
-class KeyFramesSkeleton{
+class AnimationSkeleton:public Animation{
 	vector<string> jointNames;
-	map<string,KeyFramesJoint> keyFramesSkeleton;
+	map<string,AnimationJoint> animationJoints;
 public:
-	void addKeyFramesJoint(KeyFramesJoint kfj){keyFramesSkeleton[kfj.getName()]=kfj;}
-	map<string,Mat> snapShotSkeleton(float t){
-		map<string,Mat> mm;
+	void addKeyFramesJoint(AnimationJoint kfj){animationJoints[kfj.getName()]=kfj;}
+	void setJointNames(vector<string> vs){jointNames=vs;}
+	SkeletonPose getCurrentPose(float t){
+		SkeletonPose mm;
 		for(string &n:jointNames){
-			mm[n]=keyFramesSkeleton[n].getTransformation(t);
+			AnimationJoint &aJointNth=animationJoints[n];
+			mm[n]=aJointNth.getTransformation(t).clone();
+		}
+		return mm;
+	}
+	//Assuming all AnimationJoint have the same number of keyframes
+	SkeletonPose getPose(int idx){
+		SkeletonPose mm;
+		for(string &n:jointNames){
+			AnimationJoint &aJointNth=animationJoints[n];
+			mm[n]=aJointNth.getKeyFrameJoint(idx).getT().clone();
 		}
 		return mm;
 	}
 };
 
-class KeyFrameJoints{
-	float timeStamp;
-	vector<Mat> localJointTransforms;
-public:
-};
-class AnimationJoints{
-	vector<KeyFrameJoints> keyFrames;
-public:
-};
 
-class AnimationSkeleton {
-	KeyFramesSkeleton kfSkeleton;
-	float duration;
-};
-class AnimatorArticulated{
-	//SolidArticulated sa;
-	AnimationJoints animation;
-public:
-	void applyPose2Joints(map<string,Mat> &vm,Joint &joint,Mat &currentParentTransform){
-		Mat &currentLocalTransform=vm[joint.getName()];
-		Mat currentTransform=currentParentTransform*currentLocalTransform;
-		for(Joint &j:joint.getChildren())
-			applyPose2Joints(vm,j,currentTransform);
-		Mat animationTransform=currentTransform*joint.getInverseBindTransform();
-		joint.setAnimatedTransform(animationTransform);
-	}
-};

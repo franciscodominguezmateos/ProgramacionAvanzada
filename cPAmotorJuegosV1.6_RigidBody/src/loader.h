@@ -39,6 +39,7 @@ public:
 	inline string &getName(){return name;}
 	inline ModelMesh &getModel(){return m;}
 	inline ModelMeshArticulated &getModelArticulated(){return m;}
+	inline vector<string> &getJointNames(){return m.getJointNames();}
 	inline void setJointNames(vector<string> &jn){m.setJointNames(jn);}
 	inline int getJointIdx(string name){return m.getJointIdx(name);}
 	inline vector<Triangle>& getTriangles(){return m.getTriangles();}
