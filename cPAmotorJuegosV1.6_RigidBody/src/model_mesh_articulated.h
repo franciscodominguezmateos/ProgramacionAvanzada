@@ -24,6 +24,12 @@ public:
 	inline int getJointIdx(string name){return jointIdx[name];}
 	inline void addJoint (GLuint jIdx){joints.push_back(jIdx);}
 	inline void addWeight(GLfloat w)  {weights.push_back(w);}
+	/*int firstHigher(vector<GLfloat>&v,GLfloat f){
+		for(int i=0;i<v.size();i++)
+	}
+	inline void addJointWeight(GLuint jIdx,GLfloat w){
+
+	}*/
 	inline void setJointsRoot(Joint j){jointsRoot=j;}
 	inline Joint &getJointsRoot(){return jointsRoot;}
 };

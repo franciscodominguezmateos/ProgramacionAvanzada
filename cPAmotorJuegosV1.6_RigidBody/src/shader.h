@@ -5,8 +5,7 @@
  *      Author: Francisco Dominguez
  *  Inspired by: https://www.youtube.com/user/ThinMatrix
  */
-#ifndef SHADER_H_
-#define SHADER_H_
+#pragma once
 #include "util.h"
 #include "vector3d.h"
 
@@ -26,6 +25,9 @@ class Uniform{
 	GLint location;
 public:
 	Uniform(string n):name(n),location(NOT_FOUND){}
+	//void setLocation(GLSLShaderProgram &p){
+	//	setLocation(p.id());
+	//}
 	void setLocation(GLuint programID){
 		location=glGetUniformLocation(programID,name.c_str());
 		if(location == GL_INVALID_VALUE)
@@ -221,8 +223,6 @@ class GLSLShaderProgram {
 public:
 	GLSLShaderProgram(){}
 	void compileFromFileNames(string vertexFileName,string fragmentFileName){
-		cout << vertexFileName <<endl;
-		cout << fragmentFileName<<endl;
 		// Compiling vertes shader
 		GLSLShader vs(GL_VERTEX_SHADER);
 	    GLuint VertexShaderID=vs.compileFromFileName(vertexFileName);
@@ -261,8 +261,6 @@ public:
 		glBindAttribLocation(programID,attribID,s.c_str());
 	}
 	void start(){glUseProgram(programID);}
-	void stop(){glUseProgram(0);}
+	void stop() {glUseProgram(0);}
 	inline GLuint id(){return programID;}
 };
-
-#endif /* SHADER_H_ */
