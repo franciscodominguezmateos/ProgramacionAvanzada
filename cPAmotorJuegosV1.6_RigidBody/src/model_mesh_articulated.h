@@ -9,13 +9,14 @@
 #include "model_mesh.h"
 #include "model_joint.h"
 //Each vertex has a number of joints and weights acting on it
+//in our case for our shader is 3
 class VertexSkinData{
 	vector<GLuint>  joints;
 	vector<GLfloat> weights;
 public:
 	void addJointEffect(GLuint jointId,GLfloat weight){
 		for(unsigned int i=0;i<weights.size();i++){
-			if(weight<weights[i]){
+			if(weight>weights[i]){
 				 joints.insert( joints.begin()+i,jointId);
 				weights.insert(weights.begin()+i,weight);
 				return;
@@ -37,6 +38,7 @@ public:
 			}
 			i++;
 		}
+		// fill up with 0
 		for(;i<max;i++){
 			vj.push_back(0);
 		}

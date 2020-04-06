@@ -13,6 +13,7 @@ class SolidArticulatedVAO: SolidArticulated{
 	GLSLVAO *vao;
 	Uniform jointTransforms;
 	bool isMaster;
+public:
 	SolidArticulatedVAO(GLSLShaderProgram* p,GLSLVAO *pvao=nullptr):shaderProgram(p),vao(pvao),jointTransforms("jointTransforms"),isMaster(false){
 		jointTransforms.setLocation(shaderProgram->id());
 		if(vao==nullptr){
@@ -21,8 +22,11 @@ class SolidArticulatedVAO: SolidArticulated{
 			isMaster=true;
 		}
 	}
+	virtual ~SolidArticulatedVAO(){
+		if(isMaster) delete vao;
+	}
 	void init(ModelMeshArticulated &pm){
-		ModelMeshArticulated m;//=pm.buildShaderReadyMeshModel();
+		ModelMesh m=pm.buildShaderReadyMeshModel();
 		vao->init();
 		vao->createIndexBuffer(m.getIvertices());
 		vector<GLfloat> vf=m.getFloatFromVertices();
@@ -31,10 +35,15 @@ class SolidArticulatedVAO: SolidArticulated{
 		vao->createAttribute(1,vt,2);
 		vector<GLfloat> vn=m.getFloatFromNormals();
 		vao->createAttribute(2,vn,3);
-		//vector<GLuint> vj=m.getJoints();
-		//vao->createAttribute(3,vj,3);
-		//vector<GLfloat> vw=m.getWeights();
-		//vao->createAttribute(4,vw,3);
+		vector<GLuint> vj=pm.getJoints();
+		vao->createAttribute(3,vj,3);
+		vector<GLfloat> vw=pm.getWeights();
+		vao->createAttribute(4,vw,3);
+	}
+	void loadJointTransforms(vector<Mat> transforms){
+		shaderProgram->start();
+		jointTransforms=transforms;
+		shaderProgram->stop();
 	}
 	void render(){
 		shaderProgram->start();

@@ -31,7 +31,7 @@ public:
 		return jointTransforms;
 	}
 	void addJoints(Joint &joint,vector<Mat> &jm){
-		jm[joint.getIdx()]=joint.getAnimatedTransform();//*joint.getBindTransform();
+		jm[joint.getIdx()]=joint.getAnimatedTransform()*joint.getBindTransform();
 		for(Joint &j:joint.getChildren()){
 			addJoints(j,jm);
 		}

@@ -30,12 +30,10 @@ public:
 		float tr=dt/di;
 		return interpolate(c.getT(),n.getT(),tr);
 	}
-	void zeroCurrentFrame(){currentFrame=0;}
+	void resetCurrentFrame(){currentFrame=0;}
 	Mat getTransformation(float t){
-		//TODO: fine tune this method, it is to rough sure it fail
 		int nextFrame=currentFrame+1;
 		if(t>keyFrames[nextFrame].getTimeStamp()){
-			cout << "currentFrame=" << currentFrame<<","<<nextFrame<<endl;
 			if(nextFrame!=(int)keyFrames.size()-1){
 				currentFrame=nextFrame;
 				nextFrame+=1;
@@ -50,9 +48,9 @@ class AnimationSkeleton:public Animation{
 	vector<string> jointNames;
 	map<string,AnimationJoint> animationJoints;
 public:
-	void zeroCurrentFrame(){
+	void resetCurrentFrame(){
 		for(string &n:jointNames){
-			animationJoints[n].zeroCurrentFrame();
+			animationJoints[n].resetCurrentFrame();
 		}
 	}
 	void addKeyFramesJoint(AnimationJoint kfj){animationJoints[kfj.getName()]=kfj;}
@@ -60,13 +58,13 @@ public:
 	SkeletonPose getCurrentPose(float t){
 		SkeletonPose mm;
 		for(string &n:jointNames){
-			cout << n << endl;
 			AnimationJoint &aJointNth=animationJoints[n];
 			mm[n]=aJointNth.getTransformation(t);
 		}
 		return mm;
 	}
 	//Assuming all AnimationJoint have the same number of keyframes
+	//and all start at same time.
 	SkeletonPose getPose(int idx){
 		SkeletonPose mm;
 		for(string &n:jointNames){

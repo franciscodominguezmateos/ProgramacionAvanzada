@@ -108,6 +108,7 @@ public:
 	    		GLfloat weight=weights[weightId];
 	    		vskin.addJointEffect(jointID,weight);
 	    	}
+	    	cout << vskin;
 	        addVertexSkinData(vskin);
 	    }
 	}
