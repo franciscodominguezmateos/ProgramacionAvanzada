@@ -31,10 +31,10 @@ class SolidArticulatedVAO: SolidArticulated{
 		vao->createAttribute(1,vt,2);
 		vector<GLfloat> vn=m.getFloatFromNormals();
 		vao->createAttribute(2,vn,3);
-		vector<GLuint> vj=m.getJoints();
-		vao->createAttribute(3,vj,3);
-		vector<GLfloat> vw=m.getWeights();
-		vao->createAttribute(4,vw,3);
+		//vector<GLuint> vj=m.getJoints();
+		//vao->createAttribute(3,vj,3);
+		//vector<GLfloat> vw=m.getWeights();
+		//vao->createAttribute(4,vw,3);
 	}
 	void render(){
 		shaderProgram->start();

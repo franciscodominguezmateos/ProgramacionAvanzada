@@ -154,5 +154,15 @@ static const double DEG2RAD=M_PI/180.0;
 static const double RAD2DEG=180.0/M_PI;
 inline double deg2rad(double a){return a*DEG2RAD;}
 inline double rad2deg(double r){return r*RAD2DEG;}
+/* VECTOR */
+// from: http://www.jclay.host/dev-journal/simple_cpp_argmax_argmin.html
+template <typename T, typename A>
+int arg_max(std::vector<T, A> const& vec) {
+  return static_cast<int>(std::distance(vec.begin(), max_element(vec.begin(), vec.end())));
+}
+template <typename T, typename A>
+int arg_min(std::vector<T, A> const& vec) {
+  return static_cast<int>(std::distance(vec.begin(), min_element(vec.begin(), vec.end())));
+}
 
 #endif /* UTIL_H_ */

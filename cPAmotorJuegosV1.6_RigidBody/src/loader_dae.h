@@ -42,6 +42,7 @@ public:
 	  loadIndixes (mesh);
 
 	  XMLNode &skin=library_controllers("controller")("skin");
+	  cout << "skin"<<endl;
 	  loadSkin(skin);
 
 	  XMLNode &armature=library_visual_scenes("visual_scene")("node","id","Armature");
@@ -49,8 +50,8 @@ public:
 	  //cout << torso <<endl;
 	  Joint jointsRoot=loadJoints(torso);
 	  cout <<"********************************************** DAE *********************"<< endl;
-	  Mat I=Mat::eye(4,4,CV_32F);
-	  jointsRoot.calcInverseBindTransform(I);
+	  //Mat I=Mat::eye(4,4,CV_32F);
+	  //jointsRoot.calcInverseBindTransform(I);
 	  setJointsRoot(jointsRoot);
 
 	  loadJointAnimations(library_animations);
@@ -87,26 +88,28 @@ public:
 		return vs[0];
 	}
 	void loadSkin(XMLNode &skin){
-		  XMLNode &vertex_weights=skin("vertex_weights");
+		cout<<"loadSkin"<<endl;
+		XMLNode &vertex_weights=skin("vertex_weights");
+		XMLNode &iJoint=vertex_weights("input","semantic","JOINT");
+		vector<string>jointNames=colladaSourceStrings(iJoint,skin,"Name_array");
+		setJointNames(jointNames);
 
-		  XMLNode &iJoint=vertex_weights("input","semantic","JOINT");
-		  vector<string>jointNames=colladaSourceStrings(iJoint,skin,"Name_array");
-		  setJointNames(jointNames);
+		XMLNode &iWeight=vertex_weights("input","semantic","WEIGHT");
+	    vector<GLfloat> weights=colladaSourceNumbers<GLfloat>(iWeight,skin);
 
-		  XMLNode &iWeight=vertex_weights("input","semantic","WEIGHT");
-	      vector<GLfloat> weights=colladaSourceNumbers<GLfloat>(iWeight,skin);
-
-	      vector<GLint> counts=split_numbers<GLint>(vertex_weights("vcount").getText());
-	      vector<GLint> data  =split_numbers<GLint>(vertex_weights("v").getText());
-	      unsigned int idx=0;
-	      for(int &c:counts)
-	    	  for(int i=0;i<c;i++){
-	    		  GLint jointID =data[idx++];
-	    		  GLint weightId=data[idx++];
-	    		  GLfloat weight=weights[weightId];
-	    		  addJoint(jointID);
-	    		  addWeight(weight);
-	    	  }
+	    vector<GLint> counts=split_numbers<GLint>(vertex_weights("vcount").getText());
+	    vector<GLint> data  =split_numbers<GLint>(vertex_weights("v").getText());
+	    unsigned int idx=0;
+	    for(int &c:counts){
+	    	VertexSkinData vskin;
+	    	for(int j=0;j<c;j++){
+	    		GLint jointID =data[idx++];
+	    		GLint weightId=data[idx++];
+	    		GLfloat weight=weights[weightId];
+	    		vskin.addJointEffect(jointID,weight);
+	    	}
+	        addVertexSkinData(vskin);
+	    }
 	}
 	Joint loadJoints(XMLNode &jointNode){
 		Joint joint=getJoint(jointNode);

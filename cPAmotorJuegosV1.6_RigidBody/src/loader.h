@@ -56,10 +56,9 @@ public:
 	inline void setVerticesFromFloats(vector<GLfloat> &vf){m.setVerticesFromFloats(vf);}
 	inline void setTexturesFromFloats(vector<GLfloat> &vf){m.setTexturesFromFloats(vf);}
 	inline void setNormalsFromFloats (vector<GLfloat> &vf){m.setNormalsFromFloats(vf) ;}
-	inline void addJoint (GLuint jIdx){m.addJoint(jIdx);}
-	inline void addWeight(GLfloat w)  {m.addWeight(w);}
 	inline void setJointsRoot(Joint j){m.setJointsRoot(j);}
-	inline Joint &getJointsRoot(){return m.getJointsRoot();}};
-
+	inline Joint &getJointsRoot(){return m.getJointsRoot();}
+	inline void addVertexSkinData(VertexSkinData &vsd){m.addVertexSkinData(vsd);}
+};
 //must finish on slash '/'
 string Loader::model_base_path="modelos/";

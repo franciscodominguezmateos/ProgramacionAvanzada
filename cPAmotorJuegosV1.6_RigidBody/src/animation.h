@@ -15,6 +15,7 @@ class Animation{
 public:
 	float getDuration() const {return duration;}
 	void setDuration(float duration) {this->duration = duration;}
+	virtual void zeroCurrentFrame()=0;
 	virtual SkeletonPose getCurrentPose(float currentTime)=0;
 
 };
@@ -30,26 +31,24 @@ public:
 		incrementTime(dt);
 		SkeletonPose currentPose=animation->getCurrentPose(currentTime);
 		Mat I=Mat::eye(4,4,CV_32F);
-	    Mat up32f=Mat::zeros(4,4,CV_32F);
-	    up32f.at<float>(0,0)= 1.0;
-	    up32f.at<float>(3,3)= 1.0;
-	    up32f.at<float>(1,2)= 1.0;
-	    up32f.at<float>(2,1)=-1.0;
+	    Mat up32f=posEulerAnglesToTransformationMatrix<float>(Vector3D(),Vector3D(-90,0,0));
 		applyPose2Joints(currentPose,sa->getJointsRoot(),up32f);
 	}
 	void incrementTime(float dt){
 		currentTime+=dt;
 		float animDuration=animation->getDuration();
-		if(currentTime>animDuration)
+		if(currentTime>animDuration){
 			// aproximation to remaind/mod/% with two floats
 			while(currentTime>animDuration) currentTime-=animDuration;
+			animation->zeroCurrentFrame();
+		}
 	}
-	void applyPose2Joints(SkeletonPose &vm,Joint &joint,Mat &currentParentTransform){
-		Mat &currentLocalTransform=vm[joint.getName()];
+	void applyPose2Joints(SkeletonPose &pose,Joint &joint,Mat &currentParentTransform){
+		Mat &currentLocalTransform=pose[joint.getName()];
 		Mat currentTransform=currentParentTransform*currentLocalTransform;
 		for(Joint &j:joint.getChildren())
-			applyPose2Joints(vm,j,currentTransform);
-		Mat animationTransform=currentTransform*joint.getInverseBindTransform();
+			applyPose2Joints(pose,j,currentTransform);
+		Mat animationTransform=currentTransform;//*joint.getInverseBindTransform();
 		joint.setAnimatedTransform(animationTransform);
 	}
 };

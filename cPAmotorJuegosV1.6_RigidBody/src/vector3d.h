@@ -223,11 +223,11 @@ inline Mat posEulerAnglesToTransformationMatrix(Vector3D pos,Vector3D theta){
     return R;
 }
 Mat getRotation(Mat &t){
-	Mat r=t(Rect(0,0,3,3)).clone();
+	Mat r=t(Rect(0,0,3,3));
 	return r;
 }
 Mat getTranslation(Mat &t){
-	Mat r=t(Rect(3,0,1,3)).clone();
+	Mat r=t(Rect(3,0,1,3));
 	return r;
 }
 Mat buildTransformation(Mat R,Mat t){
@@ -235,37 +235,36 @@ Mat buildTransformation(Mat R,Mat t){
 	for(int i=0;i<3;i++){
 		for(int j=0;j<3;j++)
 			r.at<float>(i,j)=R.at<float>(i,j);
-		r.at<float>(i,3)=t.at<float>(1,0);
+		r.at<float>(i,3)=t.at<float>(i,0);
 		r.at<float>(3,i)=0;
 	}
 	r.at<float>(3,3)=1;
 	return r;
 }
+// this interpolated by right-> dm in on the right and update is r=T0*Tt
+// m1=m0*dm->dm=m0.inv()*m1;
 Mat interpolate(Mat T0,Mat T1,float t){
 	//Totation
 	Mat m0=getRotation(T0);
 	Mat m1=getRotation(T1);
 	Mat dm,vt,mt;
-	//m1=dm*m0->dm=m1*m0.inv()
-	dm=m1*m0.inv();
+	dm=m0.inv()*m1;
 	//get vector axis representatiom
 	Rodrigues(dm,vt);
 	//scale vector by t
 	vt=vt*t;
 	//get final matrix increment mt
 	Rodrigues(vt,mt);
+	Mat mr=m0*mt;
 	//Translation
 	Mat t0=getTranslation(T0);
 	Mat t1=getTranslation(T1);
 	Mat mdif=t1-t0;
 	Mat tt=mdif*t;
+	Mat tr=t0+tt;
 	//Build increment Transformation
-	Mat Tt=buildTransformation(mt,tt);
-	Mat r=Tt*T0;
-	/*cout << "T0="<<T0<<endl;
-	cout << "T1="<<T1<<endl;
-	cout << "r="<<r<<endl;*/
-	return r;
+	Mat Tr=buildTransformation(mr,tr);
+	return Tr;
 }
 // Checks if a matrix is a valid rotation matrix.
 inline bool isRotationMatrix(Mat &R){

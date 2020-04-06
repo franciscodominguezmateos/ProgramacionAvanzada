@@ -28,20 +28,17 @@ public:
 		float di=n.getTimeStamp()-c.getTimeStamp();
 		float dt=t-c.getTimeStamp();
 		float tr=dt/di;
-		return interpolate(c.getT().clone(),n.getT().clone(),tr);
+		return interpolate(c.getT(),n.getT(),tr);
 	}
+	void zeroCurrentFrame(){currentFrame=0;}
 	Mat getTransformation(float t){
 		//TODO: fine tune this method, it is to rough sure it fail
 		int nextFrame=currentFrame+1;
-		cout << "currentFrame=" << currentFrame<<","<<nextFrame<<endl;
-		if(keyFrames[nextFrame].getTimeStamp()<t){
-			if(nextFrame==(int)keyFrames.size()-1){
-				currentFrame=0;
-				nextFrame=currentFrame+1;
-			}
-			else{
+		if(t>keyFrames[nextFrame].getTimeStamp()){
+			cout << "currentFrame=" << currentFrame<<","<<nextFrame<<endl;
+			if(nextFrame!=(int)keyFrames.size()-1){
 				currentFrame=nextFrame;
-				while(keyFrames[nextFrame].getTimeStamp()<t) nextFrame++;
+				nextFrame+=1;
 			}
 		}
 		Mat r=getTransformation(keyFrames[currentFrame],keyFrames[nextFrame],t);
@@ -53,13 +50,19 @@ class AnimationSkeleton:public Animation{
 	vector<string> jointNames;
 	map<string,AnimationJoint> animationJoints;
 public:
+	void zeroCurrentFrame(){
+		for(string &n:jointNames){
+			animationJoints[n].zeroCurrentFrame();
+		}
+	}
 	void addKeyFramesJoint(AnimationJoint kfj){animationJoints[kfj.getName()]=kfj;}
 	void setJointNames(vector<string> vs){jointNames=vs;}
 	SkeletonPose getCurrentPose(float t){
 		SkeletonPose mm;
 		for(string &n:jointNames){
+			cout << n << endl;
 			AnimationJoint &aJointNth=animationJoints[n];
-			mm[n]=aJointNth.getTransformation(t).clone();
+			mm[n]=aJointNth.getTransformation(t);
 		}
 		return mm;
 	}
@@ -68,7 +71,7 @@ public:
 		SkeletonPose mm;
 		for(string &n:jointNames){
 			AnimationJoint &aJointNth=animationJoints[n];
-			mm[n]=aJointNth.getKeyFrameJoint(idx).getT().clone();
+			mm[n]=aJointNth.getKeyFrameJoint(idx).getT();
 		}
 		return mm;
 	}
