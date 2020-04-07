@@ -40,7 +40,7 @@ public:
 		jointsRoot=ma.getJointsRoot();
 		Mat I=Mat::eye(4,4,CV_32F);
 		Mat upf=posEulerAnglesToTransformationMatrix<float>(Vector3D(),Vector3D(-90,0,0));
-		jointsRoot.calcInverseBindTransform(I);
+		jointsRoot.calcInverseBindTransform(upf);
 		setJointNames(ma.getJointNames());
 		buildJointTransforms();
 	}

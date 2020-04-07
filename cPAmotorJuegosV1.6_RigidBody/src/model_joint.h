@@ -39,11 +39,22 @@ public:
 		cout << "lbT"<<localBindTransform<<endl;
 		cout << "bT"<<bindTransform<<endl;*/
 	}
+	vector<Mat> getJointTransforms(){
+		vector<Mat> vm(16);
+		addJoints(*this,vm);
+		return vm;
+	}
+	void addJoints(Joint &joint,vector<Mat> &jm){
+		jm[joint.getIdx()]=joint.getAnimatedTransform();
+		for(Joint &j:joint.getChildren()){
+			addJoints(j,jm);
+		}
+	}
 	inline vector<Joint> &getChildren(){return children;}
 	inline GLuint getIdx(){return idx;}
 	inline string &getName(){return name;}
 	inline Mat &getAnimatedTransform(){return animatedTransform;}
 	inline Mat &getInverseBindTransform(){return inverseBindTransform;}
 	inline Mat &getBindTransform(){return bindTransform;}
-	inline void setAnimatedTransform(Mat &m){animatedTransform=m.clone();}
+	inline void setAnimatedTransform(Mat &m){animatedTransform=m;}
 };

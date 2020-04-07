@@ -14,7 +14,7 @@ class SolidArticulatedVAO: SolidArticulated{
 	Uniform jointTransforms;
 	bool isMaster;
 public:
-	SolidArticulatedVAO(GLSLShaderProgram* p,GLSLVAO *pvao=nullptr):shaderProgram(p),vao(pvao),jointTransforms("jointTransforms"),isMaster(false){
+	SolidArticulatedVAO(GLSLShaderProgram* p,GLSLVAO *pvao=nullptr):shaderProgram(p),vao(pvao),jointTransforms("jointT"),isMaster(false){
 		jointTransforms.setLocation(shaderProgram->id());
 		if(vao==nullptr){
 			//this is the master instance the owner of vao
@@ -25,7 +25,13 @@ public:
 	virtual ~SolidArticulatedVAO(){
 		if(isMaster) delete vao;
 	}
+	void setShaderProgram(GLSLShaderProgram *p){shaderProgram=p;}
+	void buildLocationUniforms(){
+		//I don't know where this should be done
+		jointTransforms.setLocation(shaderProgram->id());
+	}
 	void init(ModelMeshArticulated &pm){
+		SolidArticulated::init(pm);
 		ModelMesh m=pm.buildShaderReadyMeshModel();
 		vao->init();
 		vao->createIndexBuffer(m.getIvertices());

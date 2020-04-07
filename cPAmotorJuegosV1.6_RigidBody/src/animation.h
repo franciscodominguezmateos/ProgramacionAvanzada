@@ -17,7 +17,6 @@ public:
 	void setDuration(float duration) {this->duration = duration;}
 	virtual void resetCurrentFrame()=0;
 	virtual SkeletonPose getCurrentPose(float currentTime)=0;
-
 };
 
 class AnimatorArticulated{
