@@ -5,6 +5,15 @@
  *      Author: Francisco Dominguez
  */
 #pragma once
+#include <vector>
+#include <map>
+#include <string>
+#include <opencv2/opencv.hpp>
+
+// SkeletonPose is all local transformations for a hole skeleton, in this case map<string,Mat>
+// since they are indexed by name
+typedef map<string,Mat> SkeletonPose;
+
 class Joint{
 	// idx is the VAO index
 	GLuint idx;
@@ -34,13 +43,11 @@ public:
 		animatedTransform=Mat::eye(4,4,CV_32F);
 		for(Joint &j:children)
 			j.calcInverseBindTransform(bindTransform);
-		/*cout<<"********" << name << "*********" <<endl;
-		cout << "pbT"<<parentBindTransform<<endl;
-		cout << "lbT"<<localBindTransform<<endl;
-		cout << "bT"<<bindTransform<<endl;*/
 	}
 	vector<Mat> getJointTransforms(){
-		vector<Mat> vm(16);
+		//TODO: FIX this 100 should be the number of articulations
+		vector<Mat> vm(100);
+		for(Mat &m:vm) m=Mat::eye(4,4,CV_32F);
 		addJoints(*this,vm);
 		return vm;
 	}
@@ -50,11 +57,23 @@ public:
 			addJoints(j,jm);
 		}
 	}
+	SkeletonPose getLocalBindPose(){
+		SkeletonPose sp;
+		addLocalJoint(*this,sp);
+		return sp;
+	}
+	void addLocalJoint(Joint &joint,SkeletonPose &sp){
+		sp[joint.getName()]=joint.getLocalBindTransform().clone();
+		for(Joint &j:joint.getChildren()){
+			addLocalJoint(j,sp);
+		}
+	}
 	inline vector<Joint> &getChildren(){return children;}
 	inline GLuint getIdx(){return idx;}
 	inline string &getName(){return name;}
 	inline Mat &getAnimatedTransform(){return animatedTransform;}
 	inline Mat &getInverseBindTransform(){return inverseBindTransform;}
 	inline Mat &getBindTransform(){return bindTransform;}
+	inline Mat &getLocalBindTransform(){return localBindTransform;}
 	inline void setAnimatedTransform(Mat &m){animatedTransform=m;}
 };

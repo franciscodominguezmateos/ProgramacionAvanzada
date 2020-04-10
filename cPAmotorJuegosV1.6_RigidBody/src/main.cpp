@@ -583,7 +583,7 @@ int main(int argc, char** argv) try{
  //mm->setVel(Vector3D(getRand(10,-10),0,getRand(10,-10)));
  e.add(mm);
 
- ModeloMaterial* felicia=new ModeloMaterial("Felicia.obj");
+ ModeloMaterial* felicia=new ModeloMaterial("Lara Croft MAX 2010.obj");
  felicia->setPos(Vector3D(4,0,-20));
  felicia->setScale(0.5);
  //felicia->setVel(Vector3D(getRand(10,-10),0,getRand(10,-10)));

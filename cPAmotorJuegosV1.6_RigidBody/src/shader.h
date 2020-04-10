@@ -100,17 +100,6 @@ public:
 				for(int i=0;i<m.rows;i++)
 					for(int j=0;j<m.cols;j++)
 						d[idx++]=(GLfloat)m.at<GLfloat>(i,j);
-			cout << "load"<<endl;
-			idx=0;
-			for(int i=0;i<v.size();i++){
-				cout << idx++ <<endl;
-				for(int j=0;j<4;j++){
-					for(int k=0;k<4;k++)
-						cout << d[i*16+j*4+k] <<",";
-					cout<<endl;
-				}
-				cout<<endl;
-			}
 			if(m.cols==2 && m.rows==2) glUniformMatrix2fv(location,n,true,d);
 			if(m.cols==3 && m.rows==3) glUniformMatrix3fv(location,n,true,d);
 			if(m.cols==4 && m.rows==4) glUniformMatrix4fv(location,n,true,d);

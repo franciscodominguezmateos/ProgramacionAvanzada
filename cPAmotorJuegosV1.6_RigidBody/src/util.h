@@ -101,6 +101,11 @@ inline string toLower(string s){
 	for(char c:s) r+=tolower(c);
 	return r;
 }
+// Replace all chars in param chars for param rchar in text
+inline string &replaceChars(string &text,const string &chars="\t\n\v\f\r",char rchar=' '){
+	for(const char &c:chars) replace( text.begin(), text.end(), c, rchar);
+	return text;
+}
 inline string& removeQuotes(string &s){
 	return trim(s,"\t\"\n\v\f\r ");
 }

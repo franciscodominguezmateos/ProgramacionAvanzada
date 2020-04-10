@@ -13,7 +13,7 @@ class KeyFrameJoint{
 public:
 	KeyFrameJoint(float t,Mat &m):timeStamp(t),localJointTransform(m.clone()){}
 	inline float getTimeStamp(){return timeStamp;}
-	inline Mat &getT(){return localJointTransform;}
+	inline Mat getT(){return localJointTransform.clone();}
 };
 class AnimationJoint{
 	string jointName;
@@ -58,8 +58,11 @@ public:
 	SkeletonPose getCurrentPose(float t){
 		SkeletonPose mm;
 		for(string &n:jointNames){
-			AnimationJoint &aJointNth=animationJoints[n];
-			mm[n]=aJointNth.getTransformation(t);
+			//some articulation could not be animated
+			if(animationJoints.count(n)>0){
+				AnimationJoint &aJointNth=animationJoints[n];
+				mm[n]=aJointNth.getTransformation(t);
+			}
 		}
 		return mm;
 	}
@@ -67,9 +70,25 @@ public:
 	//and all start at same time.
 	SkeletonPose getPose(int idx){
 		SkeletonPose mm;
-		for(string &n:jointNames){
-			AnimationJoint &aJointNth=animationJoints[n];
+/*		for(string &n:jointNames){
+			//some articulation could not be animated
+			if(animationJoints.count(n)>0){
+				AnimationJoint &aJointNth=animationJoints[n];
+				mm[n]=aJointNth.getKeyFrameJoint(idx).getT();
+			}
+		}
+*/
+		int i=0;
+		for(pair<string,AnimationJoint> p:animationJoints){
+			//some articulation could not be animated
+			string &n=p.first;
+			AnimationJoint &aJointNth=p.second;
 			mm[n]=aJointNth.getKeyFrameJoint(idx).getT();
+			cout << i++ << "="<<n << "=="<<aJointNth.getName()<<endl;
+		}
+		cout <<"jointNames="<< jointNames.size()<<endl;
+		for(int i=0;i<jointNames.size();i++){
+			cout << i<<"="<<jointNames[i]<<endl;
 		}
 		return mm;
 	}

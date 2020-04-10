@@ -8,7 +8,7 @@
 #include "shader.h"
 #include "model_mesh_articulated.h"
 #include "solid_articulated.h"
-class SolidArticulatedVAO: SolidArticulated{
+class SolidArticulatedVAO:public SolidArticulated{
 	GLSLShaderProgram* shaderProgram;
 	GLSLVAO *vao;
 	Uniform jointTransforms;
@@ -52,6 +52,8 @@ public:
 		shaderProgram->stop();
 	}
 	void render(){
+		SolidArticulated::render();
+
 		shaderProgram->start();
 	    vao->bindAll();
 		//T=posEulerAnglesToTransformationMatrix<float>(getPos(),getRot());

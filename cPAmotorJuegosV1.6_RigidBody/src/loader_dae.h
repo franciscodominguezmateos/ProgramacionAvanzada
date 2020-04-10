@@ -41,19 +41,30 @@ public:
 	  loadTextures(mesh);
 	  loadIndixes (mesh);
 
+	  //Load skin
 	  XMLNode &skin=library_controllers("controller")("skin");
 	  cout << "skin"<<endl;
 	  loadSkin(skin);
 
-	  XMLNode &armature=library_visual_scenes("visual_scene")("node","id","Armature");
-	  XMLNode &torso=armature("node","id","Torso");
-	  //cout << torso <<endl;
-	  Joint jointsRoot=loadJoints(torso);
+	  //Load joints
+	  Joint jointsRoot;
+	  //TODO: fix this trick, if dae it mean from blender and z-up, if xml mean y-up
+	  if(getExtension(getName())=="dae"){
+		  XMLNode &armature=library_visual_scenes("visual_scene")("node","id","Armature");
+		  XMLNode &torso=armature("node","id","Torso");
+		  //cout << torso <<endl;
+		  jointsRoot=loadJoints(torso);
+	  }
+	  else{
+		  XMLNode &hips=library_visual_scenes("visual_scene")("node","id","Hips");
+		  jointsRoot=loadJoints(hips);
+	  }
 	  cout <<"********************************************** DAE *********************"<< endl;
 	  //Mat I=Mat::eye(4,4,CV_32F);
 	  //jointsRoot.calcInverseBindTransform(I);
 	  setJointsRoot(jointsRoot);
 
+	  //Load Animations
 	  loadJointAnimations(library_animations);
 
 	  // SkeletonLoader
@@ -108,7 +119,7 @@ public:
 	    		GLfloat weight=weights[weightId];
 	    		vskin.addJointEffect(jointID,weight);
 	    	}
-	    	cout << vskin;
+	    	//cout << vskin;
 	        addVertexSkinData(vskin);
 	    }
 	}
@@ -180,6 +191,7 @@ public:
 			  // in nodeData there is a source node with id dataSourceID then get the source node
 			  XMLNode &sourceNode=nodeData("source","id",dataSourceID)(source);
 			  string &text=sourceNode.getText();
+			  replaceChars(text);
 			  vector<string> vs=split(text);
 			  if(sourceNode.hasAttribute("count")){
 				  unsigned int count=sourceNode.getAttributeInt("count");
@@ -196,6 +208,7 @@ public:
 		  // in nodeData there is a source node with id dataSourceID then get the source node
 		  XMLNode &sourceNode=nodeData("source","id",dataSourceID)(source);
 		  string &text=sourceNode.getText();
+		  replaceChars(text);
 		  vector<T> vf=split_numbers<T>(text);
 		  if(sourceNode.hasAttribute("count")){
 			  unsigned int count=sourceNode.getAttributeInt("count");
