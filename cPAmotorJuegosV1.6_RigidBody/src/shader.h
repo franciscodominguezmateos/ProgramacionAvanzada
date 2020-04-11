@@ -14,6 +14,7 @@
 #include <GL/glut.h>
 // In order to use GLSL
 #include <GL/glext.h>
+#include "texture.h"
 
 struct Vec2{float x,y;};
 struct Vec3{float x,y,z;};
@@ -186,6 +187,27 @@ public:
 		for(GLSLVBO &vbo:VBOs) vbo.deleleteBuffer();
 		indexVBO.deleleteBuffer();
 	}
+};
+//11/04/2020 To test this class
+class GLSLFBO{
+	int width,height;
+	GLuint id;
+	Texture color;
+	Texture depth;
+public:
+	GLSLFBO(int w,int h):width(w),height(h),id(0){}
+	void init(){
+		glGenFramebuffers(1, &id);
+		glBindFramebuffer(GL_FRAMEBUFFER, id);
+		color.init();
+		color.asRenderTexture(width,height);
+		depth.init();
+		depth.asDepthTexture(width,height);
+		if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+			throw runtime_error("Error in GLSLFBO::init() not frame buffer complete.");
+	}
+	inline void bind()  {glBindFramebuffer(GL_FRAMEBUFFER, id);}
+	inline void unbind(){glBindFramebuffer(GL_FRAMEBUFFER, 0); }
 };
 class GLSLShader{
 	GLuint shaderID;
