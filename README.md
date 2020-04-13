@@ -8,7 +8,9 @@ En esta asignatura de construye un motor de video juegos desde cero a la vez que
 * Motor fisico de particulas.
 * Lee formatos .obj con ilimitadas texturas. Faltan transparencias.
 * Permite varias vistas
+
 Desde 2020
+
 * Permite programacion de GLSL shaders, VBO, VBA, FBO.
 ** Permite modelos renderizados con shader y solo una textura.
 ** Permite modelos articulados con shader y con una textura.
@@ -17,7 +19,8 @@ Desde 2020
 * Servicios de networking: Servidor streaming de imagenes, recepcion de datos de sensores wiimote, servidor http sencillo con protocolo CGI.
 * Lee formatos .dae con una textura, articulaciones y animacion de articulaciones.
 * Permite Realidad Virtual con movil y un servidor python modificado de Trinus VR. 
-
+* Pequeña libreria para utilizar Quaterniones en las rotaciones.
+* Motor fisico de solidos rigidos (faltan colisiones).
 
 
 En la captura de pantalla se muestra dos objetos obj, spiderman y mariokart, una vista en tercera persona y una en realidad aumentada sobre el suelo de mi despacho. Un cubo animado con el motor fisico, con una textura de camara en directo.
