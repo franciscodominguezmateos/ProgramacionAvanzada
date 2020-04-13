@@ -12,9 +12,9 @@ En esta asignatura de construye un motor de video juegos desde cero a la vez que
 Desde 2020
 
 * Permite programacion de GLSL shaders, VBO, VBA, FBO.
-** Permite modelos renderizados con shader y solo una textura.
-** Permite modelos articulados con shader y con una textura.
-** Permite modelos articulados y animados con shader y con una textura.
+* Permite modelos renderizados con shader y solo una textura.
+* Permite modelos articulados con shader y con una textura.
+* Permite modelos articulados y animados con shader y con una textura.
 * Parser XML en 300 líneas de codigo sin punteros.
 * Servicios de networking: Servidor streaming de imagenes, recepcion de datos de sensores wiimote, servidor http sencillo con protocolo CGI.
 * Lee formatos .dae con una textura, articulaciones y animacion de articulaciones.
