@@ -189,6 +189,7 @@ public:
 	}
 };
 //11/04/2020 To test this class
+//13/04/2020 Works like a charm
 class GLSLFBO{
 	int width,height;
 	GLuint id;
@@ -208,6 +209,15 @@ public:
 	}
 	inline void bind()  {glBindFramebuffer(GL_FRAMEBUFFER, id);}
 	inline void unbind(){glBindFramebuffer(GL_FRAMEBUFFER, 0); }
+	Mat toOpenCV() {
+	    cv::Mat img(height, width, CV_8UC3);
+	    glPixelStorei(GL_PACK_ALIGNMENT, (img.step & 3)?1:4);
+	    glPixelStorei(GL_PACK_ROW_LENGTH, img.step/img.elemSize());
+	    glReadPixels(0, 0, img.cols, img.rows, GL_BGR_EXT, GL_UNSIGNED_BYTE, img.data);
+	    cv::Mat flipped(img);
+	    cv::flip(img, flipped, 0);
+	    return img;
+	}
 };
 class GLSLShader{
 	GLuint shaderID;

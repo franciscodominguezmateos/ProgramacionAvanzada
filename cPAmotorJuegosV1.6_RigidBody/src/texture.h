@@ -15,6 +15,9 @@
 using namespace std;
 using namespace cv;
 
+//this prototype is to avoid #include loops
+extern int glFramebufferTexture();
+
 class Texture {
 	GLuint idTexture;
 	Mat img;

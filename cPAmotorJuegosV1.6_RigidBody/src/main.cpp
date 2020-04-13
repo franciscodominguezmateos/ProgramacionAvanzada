@@ -572,23 +572,24 @@ int main(int argc, char** argv) try{
  //m->setVel(Vector3D(getRand(10,-10),0,-1.1));
  //e.add(m);
 
- lo=new LoaderOBJ("TheAmazingSpiderman.obj");
+/* lo=new LoaderOBJ("skharrymesh.obj");
  lo->setPos(Vector3D(3,0,-40));
+ //lo->setScale(0.25);
  //m->setVel(Vector3D(getRand(10,-10),0,-1.1));
  e.add(lo);
-
+*/
  ModeloMaterial* mm=new ModeloMaterial("M-FF_iOS_HERO_Natasha_Romanoff_Black_Widow_Age_Of_Ultron.obj");
  mm->setPos(Vector3D(0,0,-40));
  mm->setScale(3.5);
  //mm->setVel(Vector3D(getRand(10,-10),0,getRand(10,-10)));
  e.add(mm);
 
- ModeloMaterial* felicia=new ModeloMaterial("Lara Croft MAX 2010.obj");
+ /*ModeloMaterial* felicia=new ModeloMaterial("Lara Croft MAX 2010.obj");
  felicia->setPos(Vector3D(4,0,-20));
  felicia->setScale(0.5);
  //felicia->setVel(Vector3D(getRand(10,-10),0,getRand(10,-10)));
  e.add(felicia);
-
+*/
  ModeloMaterial* shrek=new ModeloMaterial("shrek.obj");
  shrek->setPos(Vector3D(-4,0,-45));
  shrek->doScale(0.25);
