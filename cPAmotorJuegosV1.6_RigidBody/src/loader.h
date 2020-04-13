@@ -17,6 +17,7 @@
 #include "util.h"
 #include "material.h"
 #include "triangle.h"
+#include "model_mesh.h"
 #include "model_mesh_articulated.h"
 
 using namespace std;

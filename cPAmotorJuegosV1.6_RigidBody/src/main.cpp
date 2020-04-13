@@ -1,8 +1,9 @@
-#include <GL/glut.h>
+//#include <GL/glut.h>
 #include <stdlib.h>
 #include <iostream>
 #include <mutex>
 #include "opencv2/opencv.hpp"
+#include "shader.h"
 #include "vector3d.h"
 #include "esfera.h"
 #include "cubo.h"
@@ -12,7 +13,7 @@
 #include "escena.h"
 #include "pared.h"
 #include "camara.h"
-#include "texture.h"
+//#include "texture.h"
 #include "rectangulo.h"
 #include "pendulo.h"
 #include "cubo_elastico.h"
@@ -29,6 +30,7 @@
 #include "quaternion.h"
 #include "loader_obj.h"
 #include "view.h"
+
 
 //Declaration needed in next .h
 Mat global_img;
@@ -571,8 +573,8 @@ int main(int argc, char** argv) try{
  //m->setPos(Vector3D(3,0,-40));
  //m->setVel(Vector3D(getRand(10,-10),0,-1.1));
  //e.add(m);
-
-/* lo=new LoaderOBJ("skharrymesh.obj");
+/*
+ lo=new LoaderOBJ("TheAmazingSpiderman.obj");
  lo->setPos(Vector3D(3,0,-40));
  //lo->setScale(0.25);
  //m->setVel(Vector3D(getRand(10,-10),0,-1.1));

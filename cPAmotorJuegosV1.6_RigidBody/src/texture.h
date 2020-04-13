@@ -9,14 +9,16 @@
 #ifndef TEXTURA_H_
 #define TEXTURA_H_
 #include <string>
-#include <GL/glut.h>
 #include "opencv2/opencv.hpp"
+
+// In order to use GLSL
+#define GL_GLEXT_PROTOTYPES
+#include <GL/glut.h>
+// In order to use GLSL
+#include <GL/glext.h>
 
 using namespace std;
 using namespace cv;
-
-//this prototype is to avoid #include loops
-extern int glFramebufferTexture();
 
 class Texture {
 	GLuint idTexture;
