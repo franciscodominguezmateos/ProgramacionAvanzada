@@ -163,7 +163,7 @@ Triangle* nearestTriangle(vector<Triangle*> &triangles,Vector3D p){
 	for(Triangle* &t:triangles){
 		/* if triangle is up */
 		if(t->getNormal()*up>0.5){
-			if(t->isIn(p)){
+			if(t->isOver(p)){
 				double d=t->distancia(p);
 				if(fabs(d)<3)
 				if(d<min){
@@ -191,7 +191,7 @@ void upKart(){
 		 }
 		*/
 		if(t->getNormal()*up>0.5){
-			if(t->isIn(p)){
+			if(t->isOver(p)){
 				double d=t->distancia(p);
 				if(fabs(d)<3)
 				if(d<min){
@@ -427,6 +427,9 @@ void init(void){
  texTv.init();
  texTablero.init();
  spiderTex.init();
+ //this is to read transparency, but I have to prepare the texture object to support this
+ //15/04/2020
+ //spiderTex.setImage(imread("TheAmazingSpiderman1Tex.png"),cv2.IMREAD_UNCHANGED);
  spiderTex.setImage(imread("TheAmazingSpiderman1Tex.png"));
  marioKartTex.init();
  marioKartTex.setImage(imread("E_main.png"));

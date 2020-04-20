@@ -7,7 +7,7 @@
 class Esfera: public Solido{
  double r;
 public:
- Esfera():r(){}
+ Esfera():Solido(),r(1){}
  Esfera(const Esfera &e):Solido(e),r(e.r){}
  Esfera *clone(){
 	 return new Esfera(*this);

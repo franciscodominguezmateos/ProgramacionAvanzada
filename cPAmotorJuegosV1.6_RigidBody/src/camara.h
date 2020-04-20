@@ -67,7 +67,7 @@ class CamaraTPS : public Camara {
 	Solido *s;
 	bool lookSolido;
 public:
-	CamaraTPS(double x = 0, double y = 1.65, double z = 0) :Camara(x, y, z),s(nullptr),lookSolido(true) {}
+	CamaraTPS(double x = 0, double y = 2.65, double z = 3) :Camara(x, y, z),s(nullptr),lookSolido(true) {}
 	void setSolido(Solido *s) { this->s = s; }
 	Solido *getSolido() { return s; }
 	void update(double dt) {

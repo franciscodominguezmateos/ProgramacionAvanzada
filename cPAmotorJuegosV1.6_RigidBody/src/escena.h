@@ -37,12 +37,15 @@ public:
 			s->limpiaFuerza();
 	}
 	void update(double dt){
-		 for(Solido *s:solidos){
-			 s->acumulaFuerza(Vector3D(0,-9.8/1,0));
-			 s->update(dt);
-		 }
+		limpiaFuerzas();
+		for(Solido *s:solidos){
+			s->acumulaFuerza(Vector3D(0,-9.8/1.0,0));
+			s->update(dt);
+		}
 	}
 	vector<Solido*> getSolidos(){return solidos;}
+	Solido* getLastSolido(){int last=solidos.size()-1;return solidos[last];}
+	void setLastSolido(Solido *s){int last=solidos.size()-1;solidos[last]=s;}
 	void add(Solido *s){solidos.push_back(s);}
 	friend std::ostream &operator << (std::ostream &os, const Escena &v);
 };

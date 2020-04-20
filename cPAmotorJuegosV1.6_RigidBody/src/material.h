@@ -56,7 +56,8 @@ public:
 			map_Ka=vs[1];
 			map_Ka_tex=new Texture();
 			map_Ka_tex->init();
-			map_Ka_tex->setImage(imread(path+map_Ka));
+			Mat img=imread(path+map_Ka,IMREAD_UNCHANGED);
+			map_Ka_tex->setImage(img);
 		}
 		if(vs[0]=="map_Kd"){
 			//string &su=vs[1];
@@ -66,7 +67,8 @@ public:
 			map_Kd=vs[1];
 			map_Kd_tex=new Texture();
 			map_Kd_tex->init();
-			map_Kd_tex->setImage(imread(path+map_Kd));
+			Mat img=imread(path+map_Kd,IMREAD_UNCHANGED);
+			map_Kd_tex->setImage(img);
 		}
 	}
 

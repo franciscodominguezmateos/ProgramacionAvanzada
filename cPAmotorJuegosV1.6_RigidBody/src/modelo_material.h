@@ -101,6 +101,10 @@ public:
 		maxY+=v.getY();
 		maxZ+=v.getZ();
 	}
+	inline void doRotate(Vector3D av){
+		for(Triangle* &t:triangulos)
+			t->doRotate(av);
+	}
 	inline void doCenter(){doTranslate(-getCentro());}
 	inline void render(){
 		Vector3D p=this->getPos();

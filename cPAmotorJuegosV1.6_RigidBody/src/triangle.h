@@ -111,6 +111,22 @@ public:
 		p2+=t;
 		init();
 	}
+	inline void doRotate(Vector3D av){
+		Mat r=eulerAnglesToRotationMatrix(av);
+		Mat m0=r*p0.asMat();
+		p0=asVector3D(m0);
+		Mat m1=r*p1.asMat();
+		p1=asVector3D(m1);
+		Mat m2=r*p2.asMat();
+		p2=asVector3D(m2);
+		Mat mn0=r*n0.asMat();
+		n0=asVector3D(mn0);
+		Mat mn1=r*n1.asMat();
+		n1=asVector3D(mn1);
+		Mat mn2=r*n2.asMat();
+		n2=asVector3D(mn2);
+		init();
+	}
 	virtual ~Triangle(){}
 	void render(){
 		Vector3D c=this->getCol();
@@ -156,7 +172,7 @@ public:
 	// I will use double check:
 	// - Area check
 	// - Normal check
-	bool isIn(Vector3D pt){
+	bool isOver(Vector3D pt){
 		// Project pt in triangle plane
 		Vector3D p=project(pt);
 		// p should be in the plane

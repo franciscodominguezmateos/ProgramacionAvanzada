@@ -18,8 +18,10 @@
 
 using namespace std;
 
-
-
+/* BITWISE FUNCTIONS */
+#define BIT_ON(bf,b)  (bf) = ((bf) |  (b))
+#define BIT_OFF(bf,b) (bf) = ((bf) & ~(b))
+#define BIT_STATUS(bf,b) ((bf) & (b))
 
 /*
 Generic function to find an element in vector and also its position.

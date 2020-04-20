@@ -6,7 +6,7 @@
 class Cubo: public Solido{
  float s;
 public:
- Cubo():s(1){}
+ Cubo():Solido(),s(1){}
  Cubo(const Cubo &c):Solido(c),s(c.s){}
  Cubo *clone(){
 	 return new Cubo(*this);

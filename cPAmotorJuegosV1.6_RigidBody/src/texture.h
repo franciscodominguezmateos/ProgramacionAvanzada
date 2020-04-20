@@ -62,7 +62,10 @@ public:
 	}
 	void update(){
 		glBindTexture(GL_TEXTURE_2D, idTexture);
-		glTexImage2D(GL_TEXTURE_2D,0,GL_RGB,img.cols,img.rows,0,GL_BGR,GL_UNSIGNED_BYTE,img.ptr());
+		if (img.channels()==3)
+			glTexImage2D(GL_TEXTURE_2D,0,GL_RGB,img.cols,img.rows,0,GL_BGR,GL_UNSIGNED_BYTE,img.ptr());
+		if (img.channels()==4)
+			glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,img.cols,img.rows,0,GL_BGRA,GL_UNSIGNED_BYTE,img.ptr());
 	}
 	void asRenderTexture(int w,int h){
 		glBindTexture(GL_TEXTURE_2D, idTexture);

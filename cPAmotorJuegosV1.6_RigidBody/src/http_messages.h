@@ -27,7 +27,13 @@ public:
 			params[vp[0]]=vp[1];
 		}
 	}
+	map<string,string> &getParams(){return params;}
+	void add(string k,string v){params[k]=v;}
+	bool hasKey(string key){return params.count(key)>0;}
 	string &operator[](string key){return params[key];}
+	int    getInt   (string key){return stoi(params[key]);}
+	float  getFloat (string key){return stof(params[key]);}
+	double getDouble(string key){return stod(params[key]);}
 	inline int size() const {return params.size();}
 	friend ostream &operator<<(ostream &so,const CGI &m){
 		// Are there CGI parameters?

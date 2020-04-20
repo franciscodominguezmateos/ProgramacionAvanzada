@@ -4,9 +4,7 @@
  *  Created on: 2 Nov 2017
  *      Author: Francisco Dominguez
  */
-
-#ifndef POSE_ESTIMATION_CHESSBOARD_H_
-#define POSE_ESTIMATION_CHESSBOARD_H_
+#pragma once
 #include <opencv2/opencv.hpp>
 
 class PoseEstimationChessBoard{
@@ -146,7 +144,3 @@ public:
 	}
 };
 
-
-
-
-#endif /* POSE_ESTIMATION_CHESSBOARD_H_ */
