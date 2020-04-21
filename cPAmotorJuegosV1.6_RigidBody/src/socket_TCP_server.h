@@ -363,7 +363,7 @@ public:
 	    }
 	    close(localSocket);
 	}
-	//This is the nethod that thread invoke
+	//This is the method that thread invoke
 	void operator()(){
 		start();
 	}
@@ -411,7 +411,7 @@ public:
 		}
 		close(localSocket);
 	}
-	//This is the nethod that thread invoke
+	//This is the method that thread invoke
 	void operator()(){
 		start();
 	}
@@ -421,31 +421,44 @@ class SocketMJPEGServer:public SocketTCPServer{
 	bool stop;
 	thread* pstring_th;
 	Mat img;
+	//mutex mtxImg;
+
 public:
 	SocketMJPEGServer(int port=4097):port(port),stop(false){
-		pstring_th=new thread(*this);
+		pstring_th=new thread(*this,&img);
 		 // wait a minute
 		 this_thread::sleep_for(chrono::milliseconds(100));
 	}
-	void setImg(Mat &image){img=image;}
+	void setImg(Mat image){
+		//mtxImg.lock();
+		img=image;
+		//mtxImg.unlock();
+	}
 	static void send_image_thread(bool* stop,void *ptr,Mat* pimg){
 	    int socket = *(int *)ptr;
 	    //OpenCV Code
 	    //----------------------------------------------------------
-	    Mat img, flippedFrame;
+	    Mat simg, flippedFrame;
 	    while(!(*stop)){
-	    	img=*pimg;
+	    	simg=*pimg;
 	        // flip the frame
 	        //flip(img, flippedFrame, 0);
 	        //resize(img,img,Size(),0.5,0.5);
-
-	        if(!send_image(socket,img))
-	        	break;
+            /*if(simg.empty()){
+            	cout<< "empty in send_image.."<<endl;
+            	break;
+            }*/
+    		//mtxImg.lock();
+    		int ok=send_image(socket,simg);
+    		//mtxImg.unlock();
+	        if(!ok){
+				perror("send_image in send_image_thread failed!");
+	        	break;}
 			this_thread::sleep_for(chrono::milliseconds(30));
 	    }
 	    close(socket);
 	}
-	void start(){
+	void start(Mat* pimg){
 		//--------------------------------------------------------
 		//networking stuff: socket, bind, listen
 		//--------------------------------------------------------
@@ -471,8 +484,10 @@ public:
 				perror("accept failed!");
 				break;
 			}
-			std::cout << "Connection accepted" << std::endl;
-			s_t=new thread(send_image_thread,&stop,&remoteSocket,&img);
+			std::cout << "Connection accepted at SocketMJPEGServer port=" << port<< std::endl;
+			if(img.empty())
+				std::cout << "img empty port=" << port<< std::endl;
+			s_t=new thread(send_image_thread,&stop,&remoteSocket,pimg);
 			threads.push_back(s_t);
 			//r_t=new thread(recv_data,&remoteSocket);
 		}
@@ -484,10 +499,12 @@ public:
 		}
 		close(localSocket);
 	}
-	//This is the nethod that thread invoke
-	void operator()(){
-		start();
+	//This is the method that thread invoke
+	void operator()(Mat* pimg){
+		start(pimg);
 	}
 };
+//Mat SocketMJPEGServer::img;
+//mutex SocketMJPEGServer::mtxImg;
 
 #endif /* SOCKET_TCP_SERVER_H_ */

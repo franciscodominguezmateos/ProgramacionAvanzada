@@ -29,8 +29,12 @@ public:
 	}
 	map<string,string> &getParams(){return params;}
 	void add(string k,string v){params[k]=v;}
+	void add(string k,int v){params[k]=to_string(v);}
+	void add(string k,double v){params[k]=to_string(v);}
+	void add(string k,char v){params[k]=to_string(v);}
 	bool hasKey(string key){return params.count(key)>0;}
 	string &operator[](string key){return params[key];}
+	char   getChar  (string key){return (char)stoi(params[key]);}
 	int    getInt   (string key){return stoi(params[key]);}
 	float  getFloat (string key){return stof(params[key]);}
 	double getDouble(string key){return stod(params[key]);}

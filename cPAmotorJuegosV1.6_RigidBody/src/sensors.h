@@ -5,18 +5,19 @@
  *      Author: Francisco Dominguez
  */
 #pragma once
+#include <mutex>
 #include <chrono>
 #include "socket_TCP_server.h"
 
 using namespace std;
 
-class Sensors {
-};
 typedef CGI SensorEventData;
+
 class SensorObserver{
 public:
 	virtual void onSensorEvent(SensorEventData &sed)=0;
 };
+
 class SensorCGIProcessor:public StringProcessor{
 	vector<CGI> sensorEvents;
 	mutex mtxSensorEvents;
@@ -31,6 +32,7 @@ public:
 		for(SensorObserver* &so:observers)
 			so->onSensorEvent(e);
 	}
+	void setSpeed(int s){speed=s;}
 	string process(string &si){
 		CGI event(si);
 		//cout << si << endl;
