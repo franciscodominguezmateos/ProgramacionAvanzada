@@ -32,6 +32,7 @@ class Game{
 	vector<Escena*> scenes;
 	SensorCGIProcessor sprocessor;
 	SocketMJPEGServer  sms;
+	Mat img;
 	double t;  // time in seconds
 	double dt; // time increment in seconds
 public:
@@ -43,6 +44,7 @@ public:
 	}
 	void addSensorObserver(SensorObserver* so){sprocessor.addSensorObserver(so);}
 	string &getTitle(){return title;}
+	Mat &getImg(){return img;}
 	virtual void onDisplay(){
 		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 		for(unsigned int i=0;i<views.size();i++){
@@ -55,7 +57,8 @@ public:
 			e->render();
 		}
 		glutSwapBuffers();
-		sms.setImg(opengl_default_frame_to_opencv());
+		img=opengl_default_frame_to_opencv();
+		sms.setImg(img);
 	}
 	virtual void onIdle(){
 		 t+=dt;
