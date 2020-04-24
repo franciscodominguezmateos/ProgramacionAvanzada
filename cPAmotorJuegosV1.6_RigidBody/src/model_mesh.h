@@ -31,9 +31,13 @@ class ModelMesh {
 	vector<unsigned int> ivertices;
 	vector<unsigned int> itextures;
 	vector<unsigned int> inormals;
+	vector<string>       iMaterialNames;
 	//this vector size is above ones divided by 3 since are triangles
 	vector<Triangle> triangles;
+	vector<string>   triangleMaterialNames;
 	map<string,Material> materials;
+	float maxX,maxY,maxZ;
+	float minX,minY,minZ;
 public:
 	inline void addVTNindex(unsigned int iv,unsigned int it,unsigned int in){
 		ivertices.push_back(iv);
@@ -50,6 +54,8 @@ public:
 	inline void addNormal (Vector3D &v){normals.push_back(v);}
 	inline void addMaterial(string name,Material &m){materials[name]=m;}
 	inline void addTriangle(Triangle &t){triangles.push_back(t);}
+	inline void addTriangleMaterialName(string s){triangleMaterialNames.push_back(s);}
+	inline void addIdxMaterialName(string s){iMaterialNames.push_back(s);}
 	inline void setVector(vector<Vector3D> &vv,vector<GLfloat> &vf,unsigned int stride=3){
 		vector<double> va(stride);
 		for(unsigned int i=0;i<vf.size()/stride;i++){
@@ -82,6 +88,13 @@ public:
 	inline vector<unsigned int>& getItextures() {return itextures;}
 	inline vector<Triangle>& getTriangles()     {return triangles;}
 	inline map<string, Material>& getMaterials(){return materials;}
+	inline Material              &getMaterial(string n){return materials[n];}
+	inline vector<string>         getMaterialNames(){
+		vector<string> vs;
+		for(pair<string,Material> pm:materials)
+			vs.push_back(pm.first);
+		return vs;
+	}
 	void buildTriangles(){
 		//it is supose that all data is ready: vertices,textures,normals and indixes
 		unsigned int stride=3; //since we are building triangles
@@ -105,12 +118,17 @@ public:
 			t.setN0(n0);
 			t.setN1(n1);
 			t.setN2(n2);
+			string &currentMaterial=triangleMaterialNames[i];
+			Texture* tex=getMaterial(currentMaterial).getMapKdTex();
+			t.setTextura(tex);
 			addTriangle(t);
 		}
 	}
 	ModelMesh buildShaderReadyMeshModel(){
 		ModelMesh m;
 		m.ivertices=ivertices;
+		m.materials=materials;
+		m.iMaterialNames=iMaterialNames;
 		m.vertices=vertices;
 		m.textures=vector<Vector3D>(vertices.size());
 		m.normals =vector<Vector3D>(vertices.size());
@@ -122,5 +140,58 @@ public:
 			m.normals [iv]=normals [in];
 		}
 		return m;
+	}
+	vector<unsigned int> getIverticesMaterial(string materialName){
+		vector<unsigned int> idxV;
+		for(unsigned int i=0;i<ivertices.size();i++){
+			int j=i/3;
+			if(iMaterialNames[j]==materialName){
+				unsigned int iv=ivertices[i];
+				idxV.push_back(iv);
+			}
+		}
+		return idxV;
+	}
+	void calculaExtremos(Vector3D &v){
+		float x=v.getX();
+		float y=v.getY();
+		float z=v.getZ();
+		maxX=fmax(maxX,x);
+		maxY=fmax(maxY,y);
+		maxZ=fmax(maxZ,z);
+		minX=fmin(minX,x);
+		minY=fmin(minY,y);
+		minZ=fmin(minZ,z);
+	}
+	Triangle centrar(Triangle &t){
+		Vector3D centro(minX+getAncho()/2.0,minY+getAlto()/2.0,minZ+getProfundo()/2);
+		Vector3D p0=t.getP0();
+		Vector3D p1=t.getP1();
+		Vector3D p2=t.getP2();
+		/// NNOOOOOOOOO
+		return(Triangle(p0-centro,p1-centro,p2-centro));
+	}
+	inline float getAncho()    {return maxX-minX;}
+	inline float getAlto()     {return maxY-minY;}
+	inline float getProfundo() {return maxZ-minZ;}
+	inline Vector3D getCentro(){return Vector3D(minX+getAncho()/2.0,minY+getAlto()/2.0,minZ+getProfundo()/2);}
+	void computeMinMax(){
+		for(Triangle &t:triangles){
+			calculaExtremos(t.getP0());
+			calculaExtremos(t.getP1());
+			calculaExtremos(t.getP2());
+		}
+	}
+	void doCentrar(){
+		for(Triangle &t:triangles){
+			t=centrar(t);
+		}
+	}
+	void doScale(double s){
+		for(Triangle &t:triangles){
+			t.doScale(s);
+		}
+		for(Vector3D &v:vertices)
+			v*=s;
 	}
 };

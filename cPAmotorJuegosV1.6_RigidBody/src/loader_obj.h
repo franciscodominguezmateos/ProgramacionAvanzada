@@ -40,6 +40,7 @@ public:
 		name=s;
 		load();
 		scale=Vector3D(1,1,1);
+		currentMaterial="default";
 	}
 	Triangle *centrar(Triangle *t){
 		Vector3D centro(minX+getAncho()/2.0,minY+getAlto()/2.0,minZ+getProfundo()/2);
@@ -52,6 +53,7 @@ public:
 	inline ModelMesh &getModel(){return m;}
 	inline vector<Triangle>& getTriangles(){return m.getTriangles();}
 	inline map<string, Material>& getMaterials() {return m.getMaterials();}
+	inline Material &getMaterial(string n) {return m.getMaterial(n);}
 	inline vector<Vector3D>& getVertices() {return m.getVertices();}
 	inline vector<Vector3D>& getTextures() {return m.getTextures();}
 	inline vector<Vector3D>& getNormals()  {return m.getNormals();}
@@ -61,6 +63,9 @@ public:
 	inline void addNormal (Vector3D &v){m.addNormal(v);}
 	inline void addMaterial(string name,Material &mat){m.addMaterial(name,mat);}
 	inline void addTriangle(Triangle &t){m.addTriangle(t);}
+	inline void addTriangleMaterialName(string s){m.addTriangleMaterialName(s);}
+	inline void addIdxMaterialName(string s){m.addIdxMaterialName(s);}
+
 
 	inline float getAncho()    {return maxX-minX;}
 	inline float getAlto()     {return maxY-minY;}
@@ -132,7 +137,7 @@ public:
 				if(linea.find("newmtl")!=string::npos){
 					vector<string> vs=split(linea);
 					matName=vs[1];
-					getMaterials()[matName]=Material(path);
+					getMaterials()[matName]=Material(path,matName);
 				}
 				else{
 					getMaterials()[matName].parseLine(linea);
@@ -182,12 +187,13 @@ public:
 					}
 				}
 				if (linea[0] == 'f'){
-					Triangle *t=parseTriangulos(linea);
+					Triangle *t=parseTriangles(linea);
 					if(t){//t!=nullptr
 						Texture* tex=getMaterials()[currentMaterial].getMapKdTex();
 						t->setTextura(tex);
 						Triangle &tr=*t;
 						addTriangle(tr);
+						addTriangleMaterialName(currentMaterial);
 					}
 				}
 				if(linea.find("mtllib")!=string::npos){
@@ -240,7 +246,7 @@ public:
 		Triangle t=Triangle(p0,p1,p2);
 		return t;
 	}
-	Triangle *parseTriangulos(string &linea){
+	Triangle *parseTriangles(string &linea){
 		vector<string> vs=split(linea);
 		if (vs.size()!=4){
 			//throw runtime_error("Not triangle detected in parseTriangulos from model.cpp");
@@ -277,6 +283,9 @@ public:
 		Vector3D &p1=getVertices()[vid1[0]];
 		Vector3D &p2=getVertices()[vid2[0]];
 		Triangle *t=new Triangle(p0,p1,p2);
+		Vector3D normal=t->getNormal();
+		if(nearZero(normal.lengthSquared()))
+			return nullptr;
 		if(vid0.size()>1){
 			if(vid0[1]!=-1){
 				Vector3D &t0=getTextures()[vid0[1]];
@@ -295,9 +304,15 @@ public:
 			t->setN1(n1);
 			t->setN2(n2);
 		}
+		else{
+			t->setN0(normal);
+			t->setN1(normal);
+			t->setN2(normal);
+		}
 		addVTNindex(vid0[0],vid0[1],vid0[2]);
 		addVTNindex(vid1[0],vid1[1],vid1[2]);
 		addVTNindex(vid2[0],vid2[1],vid2[2]);
+		addIdxMaterialName(currentMaterial);
 		return t;
 	}
 	void calculaExtremos(Vector3D &v){

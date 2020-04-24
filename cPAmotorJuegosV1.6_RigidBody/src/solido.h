@@ -4,9 +4,7 @@
  *  Created on: 25 Oct 2016
  *      Author: francisco
  */
-
-#ifndef SOLIDO_H_
-#define SOLIDO_H_
+#pragma once
 #include <GL/glut.h>
 #include "vector3d.h"
 
@@ -19,11 +17,15 @@ class Solido {
 	 double m;
 	 bool fija;
 	 double edad;
+	 static double floorAll;
+	 double suelo;
 public:
-	 Solido(Vector3D p):pos(p),rot(0,0,0),vel(0,0,0),color(1,1,1),f(0,0,0),m(1.0),fija(false),edad(0){}
-	 Solido(double x,double y,double z):Solido(Vector3D(x,y,z)){}
-	 Solido():Solido(0,0,0) {}
+	 Solido(Vector3D p):pos(p),rot(0,0,0),vel(0,0,0),color(1,1,1),f(0,0,0),m(1.0),fija(false),edad(0){suelo=floorAll;}
+	 Solido(double x,double y,double z):Solido(Vector3D(x,y,z)){suelo=floorAll;}
+	 Solido():Solido(0,0,0) {suelo=floorAll;}
 	 Solido(const Solido &s):pos(s.pos),vel(s.vel),color(s.color),f(s.f),m(s.m),fija(s.fija){}
+	 void setSuelo(double s){suelo=s;}
+	 static void setFloorAll(double s){floorAll=s;}
 	 Solido& operator=(const Solido &s){
 		 pos=s.pos;
 		 vel=s.vel;
@@ -66,9 +68,9 @@ public:
 		 if(abs(pos.getZ())>50){
 		 	 vel.setZ(vel.getZ()*-0.99);
 		 }
-		 if(pos.getY()<0){
+		 if(pos.getY()<suelo){
 			 vel.setY(vel.getY()*-0.99);
-			 pos.setY(0.0001);
+			 pos.setY(suelo+0.0001);
 		 }
 	 }
 	 virtual void render(){
@@ -84,4 +86,4 @@ inline std::ostream &operator<<(std::ostream &os, const Solido &s){
     os << "Pos=" << s.pos << ",Vel=" << s.vel << ",Col=" << s.color;
     return os;
 }
-#endif /* SOLIDO_H_ */
+double Solido::floorAll=0;

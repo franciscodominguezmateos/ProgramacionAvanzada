@@ -286,6 +286,8 @@ public:
 		Vector3D p1=*vertices[vid1[0]];
 		Vector3D p2=*vertices[vid2[0]];
 		Triangle *t=new Triangle(p0,p1,p2);
+		if(nearZero(t->getNormal().lengthSquared()))
+			return nullptr;
 		if(vid0.size()>1){
 			if(vid0[1]!=-1){
 				Vector3D t0=*textures[vid0[1]];

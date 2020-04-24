@@ -41,6 +41,14 @@ public:
 		}
 		catch (exception &e){
 			//not normalize
+			/*cout << "not normalizzing at Triangle constructor"<< endl;
+			cout << "p0="<<p0<<endl;
+			cout << "p1="<<p1<<endl;
+			cout << "p2="<<p2<<endl;
+			cout << "vn="<<vn<<endl;
+			cout << "v01="<<v01<<endl;
+			cout << "v12="<<v12<<endl;
+			cout << "v20="<<v20<<endl;*/
 		}
 		//Initial homogeneous vertex normals
 		n0=n1=n2=vn;
@@ -212,7 +220,7 @@ public:
 		//t01.area+t12.area+t20.area should be EQUAL than triangle area
 		a+=t20.getArea();
 		if(!nearZero(a-area))
-			return false;
+			return true;
 		double d2p=t20.getNormal()*vn;
 		//On the other hand if p is out of triangle then dot product with plane normal should be negative
 		if(d2p<0)

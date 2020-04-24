@@ -114,9 +114,13 @@ class GLSLVBO{
 	static const GLuint BYTES_PER_FLOAT=4;
 	GLuint id;
 	GLuint type;
+	GLuint data_type;
+	GLuint attrSize;
 public:
 	GLSLVBO():id(0),type(0){}
-	GLSLVBO(GLuint type):type(type){glGenBuffers(1,&id);}
+	GLSLVBO(GLuint type,GLuint dt=GL_FLOAT,GLuint as=3):type(type),data_type(dt),attrSize(as){glGenBuffers(1,&id);}
+	inline GLuint getDataType(){return data_type;}
+	inline GLuint getAttrSize(){return attrSize;}
 	inline void bind(){glBindBuffer(type,id);}
 	inline void unbind(){glBindBuffer(type,0);}
 	inline void storeData(vector<GLfloat> &data){glBufferData(type,data.size()*BYTES_PER_FLOAT,data.data(),GL_STATIC_DRAW);}
@@ -138,6 +142,18 @@ public:
 		bind();
 	}
 	GLuint getIndexCount(){return indexCount;}
+	vector<GLSLVBO> &getVBOs(){return VBOs;}
+	void setVBOs(vector<GLSLVBO> &vbos){
+		VBOs=vbos;
+		//this makes the asumption that attributes location
+		//are the same that position in the vector
+		for(unsigned int i=0;i<vbos.size();i++){
+			GLSLVBO &vbo=vbos[i];
+			vbo.bind();
+			setVertexAttribPointer(i,vbo);
+			vbo.unbind();
+		}
+	}
 	inline void bind()  {glBindVertexArray(id);}
 	inline void unbind(){glBindVertexArray(0);}
 	inline void bind(vector<GLuint> &attributes){bind();for(GLuint i:attributes) glEnableVertexAttribArray(i);}
@@ -158,27 +174,33 @@ public:
 		indexVBO.storeData(indices);
 		indexCount=indices.size();
 	}
+	void setVertexAttribPointer(GLuint attribute,GLSLVBO &vbo){
+		if(vbo.getDataType()==GL_FLOAT)
+			glVertexAttribPointer(attribute,vbo.getAttrSize(),GL_FLOAT,GL_FALSE,0,0);
+		else
+			glVertexAttribIPointer(attribute,vbo.getAttrSize(),vbo.getDataType(),0,0);
+	}
 	void createAttribute(GLuint attribute,vector<GLfloat> &data,GLuint attrSize){
-		GLSLVBO vbo(GL_ARRAY_BUFFER);
+		GLSLVBO vbo(GL_ARRAY_BUFFER,GL_FLOAT,attrSize);
 		vbo.bind();
 		vbo.storeData(data);
-		glVertexAttribPointer(attribute,attrSize,GL_FLOAT,GL_FALSE,0,0);
+		setVertexAttribPointer(attribute,vbo);
 		vbo.unbind();
 		VBOs.push_back(vbo);
 	}
 	void createAttribute(GLuint attribute,vector<GLint> &data,GLuint attrSize){
-		GLSLVBO vbo(GL_ARRAY_BUFFER);
+		GLSLVBO vbo(GL_ARRAY_BUFFER,GL_INT,attrSize);
 		vbo.bind();
 		vbo.storeData(data);
-		glVertexAttribIPointer(attribute,attrSize,GL_INT,0,0);
+		setVertexAttribPointer(attribute,vbo);
 		vbo.unbind();
 		VBOs.push_back(vbo);
 	}
 	void createAttribute(GLuint attribute,vector<GLuint> &data,GLuint attrSize){
-		GLSLVBO vbo(GL_ARRAY_BUFFER);
+		GLSLVBO vbo(GL_ARRAY_BUFFER,GL_UNSIGNED_INT,attrSize);
 		vbo.bind();
 		vbo.storeData(data);
-		glVertexAttribIPointer(attribute,attrSize,GL_UNSIGNED_INT,0,0);
+		setVertexAttribPointer(attribute,vbo);
 		vbo.unbind();
 		VBOs.push_back(vbo);
 	}
@@ -196,6 +218,7 @@ class GLSLFBO{
 	Texture color;
 	Texture depth;
 public:
+	//If we don't call init() toOpenCV get the default screen pixels
 	GLSLFBO(int w,int h):width(w),height(h),id(0){}
 	void init(){
 		glGenFramebuffers(1, &id);
@@ -210,12 +233,14 @@ public:
 	inline void bind()  {glBindFramebuffer(GL_FRAMEBUFFER, id);}
 	inline void unbind(){glBindFramebuffer(GL_FRAMEBUFFER, 0); }
 	Mat toOpenCV() {
+		bind();
 	    cv::Mat img(height, width, CV_8UC3);
 	    glPixelStorei(GL_PACK_ALIGNMENT, (img.step & 3)?1:4);
 	    glPixelStorei(GL_PACK_ROW_LENGTH, img.step/img.elemSize());
 	    glReadPixels(0, 0, img.cols, img.rows, GL_BGR_EXT, GL_UNSIGNED_BYTE, img.data);
 	    cv::Mat flipped(img);
 	    cv::flip(img, flipped, 0);
+	    unbind();
 	    return img;
 	}
 };

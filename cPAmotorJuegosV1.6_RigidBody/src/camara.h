@@ -70,6 +70,11 @@ public:
 	CamaraTPS(double x = 0, double y = 2.65, double z = 3) :Camara(x, y, z),s(nullptr),lookSolido(true) {}
 	void setSolido(Solido *s) { this->s = s; }
 	Solido *getSolido() { return s; }
+	inline Vector3D getVectorOrienationY(){
+		double ry = deg2rad(s->getRot().getY());
+		Vector3D vel = { sin(ry),0,cos(ry) };
+		return vel;
+	}
 	void update(double dt) {
 		double ry = deg2rad(s->getRot().getY());
 		Vector3D vel = { sin(ry),0,cos(ry) };

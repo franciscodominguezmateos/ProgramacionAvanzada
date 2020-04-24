@@ -22,7 +22,7 @@
 
 using namespace std;
 using namespace cv;
-
+/*
 int socket_TCP_server_bind(int port=4097){
     //--------------------------------------------------------
     //networking stuff: socket, bind, listen
@@ -57,7 +57,7 @@ string receive_string(int socket){
 	//Receive size l max length
     int l=100000;
     vector<char> buf(l);
-    bytes = recv(socket, buf.data(), l, 0 /* MSG_WAITALL*/);
+    bytes = recv(socket, buf.data(), l, 0); // MSG_WAITALL
     if (bytes <= -1) {
         throw(runtime_error("receive_string failed on recv"));
     }
@@ -230,7 +230,7 @@ void string_server(bool* pstop,StringProcessor* sp,int port=8881){
     	close(remoteSocket);
     }
     close(localSocket);
-}
+}*/
 // This class is just a package of methods
 class SocketTCPServer{
 public:

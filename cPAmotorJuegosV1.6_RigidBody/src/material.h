@@ -26,8 +26,9 @@ class Material{
 	string map_Kd;
 	Texture* map_Kd_tex;
 	string path;
+	string name;
 public:
-	Material(string path=""):path(path){}
+	Material(string path="",string name=""):path(path),name(name),map_Ka_tex(nullptr),map_Kd_tex(nullptr){}
 	void parseLine(string linea){
 		vector<string> vs=split(linea,' ');
 		if(vs[0]=="Ns")
@@ -71,116 +72,40 @@ public:
 			map_Kd_tex->setImage(img);
 		}
 	}
-
-	double getD() const {
-		return d;
+	void bind(){
+		if(map_Kd_tex) map_Kd_tex->activar();
+		if(map_Ka_tex) map_Ka_tex->activar();
 	}
-
-	void setD(double d) {
-		this->d = d;
+	void unbind(){
+		if(map_Kd_tex) map_Kd_tex->desactivar();
+		if(map_Ka_tex) map_Ka_tex->desactivar();
 	}
-
-	double getIllum() const {
-		return illum;
-	}
-
-	void setIllum(double illum) {
-		this->illum = illum;
-	}
-
-	const Vector3D& getKa() const {
-		return Ka;
-	}
-
-	void setKa(const Vector3D& ka) {
-		Ka = ka;
-	}
-
-	const Vector3D& getKd() const {
-		return Kd;
-	}
-
-	void setKd(const Vector3D& kd) {
-		Kd = kd;
-	}
-
-	const Vector3D& getKe() const {
-		return Ke;
-	}
-
-	void setKe(const Vector3D& ke) {
-		Ke = ke;
-	}
-
-	const Vector3D& getKs() const {
-		return Ks;
-	}
-
-	void setKs(const Vector3D& ks) {
-		Ks = ks;
-	}
-
-	const string& getMapKa() const {
-		return map_Ka;
-	}
-
-	void setMapKa(const string& mapKa) {
-		map_Ka = mapKa;
-	}
-
-	Texture* getMapKaTex() const {
-		return map_Ka_tex;
-	}
-
-	void setMapKaTex(Texture* mapKaTex) {
-		map_Ka_tex = mapKaTex;
-	}
-
-	const string& getMapKd() const {
-		return map_Kd;
-	}
-
-	void setMapKd(const string& mapKd) {
-		map_Kd = mapKd;
-	}
-
-	Texture* getMapKdTex() const {
-		return map_Kd_tex;
-	}
-
-	void setMapKdTex(Texture* mapKdTex) {
-		map_Kd_tex = mapKdTex;
-	}
-
-	double getNi() const {
-		return Ni;
-	}
-
-	void setNi(double ni) {
-		Ni = ni;
-	}
-
-	double getNs() const {
-		return Ns;
-	}
-
-	void setNs(double ns) {
-		Ns = ns;
-	}
-
-	const Vector3D& getTf() const {
-		return Tf;
-	}
-
-	void setTf(const Vector3D& tf) {
-		Tf = tf;
-	}
-
-	double getTr() const {
-		return Tr;
-	}
-
-	void setTr(double tr) {
-		Tr = tr;
-	}
+	double getD() const {return d;}
+	void setD(double d) {this->d = d;}
+	double getIllum() const {return illum;}
+	void setIllum(double illum) {this->illum = illum;}
+	const Vector3D& getKa() const {return Ka;}
+	void setKa(const Vector3D& ka) {Ka = ka;}
+	const Vector3D& getKd() const {return Kd;}
+	void setKd(const Vector3D& kd) {Kd = kd;}
+	const Vector3D& getKe() const {return Ke;}
+	void setKe(const Vector3D& ke) {Ke = ke;}
+	const Vector3D& getKs() const {return Ks;}
+	void setKs(const Vector3D& ks) {Ks = ks;}
+	const string& getMapKa() const {return map_Ka;}
+	void setMapKa(const string& mapKa) {map_Ka = mapKa;}
+	Texture* getMapKaTex() const {return map_Ka_tex;}
+	void setMapKaTex(Texture* mapKaTex) {map_Ka_tex = mapKaTex;}
+	const string& getMapKd() const {return map_Kd;}
+	void setMapKd(const string& mapKd) {map_Kd = mapKd;}
+	Texture* getMapKdTex() const {return map_Kd_tex;}
+	void setMapKdTex(Texture* mapKdTex) {map_Kd_tex = mapKdTex;	}
+	double getNi() const {return Ni;}
+	void setNi(double ni) {Ni = ni;}
+	double getNs() const {return Ns;}
+	void setNs(double ns) {Ns = ns;	}
+	const Vector3D& getTf() const {return Tf;}
+	void setTf(const Vector3D& tf) {Tf = tf;}
+	double getTr() const {return Tr;}
+	void setTr(double tr) {Tr = tr;}
 };
