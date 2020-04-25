@@ -28,7 +28,7 @@ class Material{
 	string path;
 	string name;
 public:
-	Material(string path="",string name=""):path(path),name(name),map_Ka_tex(nullptr),map_Kd_tex(nullptr){}
+	Material(string path="",string name=""):map_Ka_tex(nullptr),map_Kd_tex(nullptr),path(path),name(name){}
 	void parseLine(string linea){
 		vector<string> vs=split(linea,' ');
 		if(vs[0]=="Ns")

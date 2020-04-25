@@ -54,6 +54,7 @@ public:
 	 inline void setFija(bool b){fija=b;}
 	 inline void hazFija (){fija=true;}
 	 inline void hazMovil(){fija=false;}
+	 inline bool esFija(){return fija;}
 	 virtual void limpiaFuerza(){f=Vector3D();}
 	 virtual void acumulaFuerza(Vector3D fv){f=f+fv;}
 	 virtual void aplicaFuerza (Vector3D fv){f=f+fv;}

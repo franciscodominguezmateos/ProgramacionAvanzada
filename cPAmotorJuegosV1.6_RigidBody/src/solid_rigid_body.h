@@ -9,7 +9,6 @@
 #define SOLID_RIGID_BODY_H_
 #include <opencv2/opencv.hpp>
 #include "solido.h"
-#include "contact.h"
 
 //for the moment are just boxes
 class SolidRigidBody: public Solido {
@@ -26,11 +25,15 @@ class SolidRigidBody: public Solido {
 	vector<Vector3D> corners;
 public:
 	Texture tex;
+	inline double getRestitution()    {return restitution;}
+	inline double getStaticFriction() {return staticFriction;}
+	inline double getDynamicFriction(){return dynamicFriction;}
 	double getInvM(){
 		if(esFija()) return 0;
 		return 1.0/getM();
 	}
-	Mat &getInvI(){
+	Mat getInvI(){
+		if(esFija()) return Mat::zeros(3,3,CV_64F);
 		Iinv=R*Ibinv*R.t();
 		return Iinv;
 	}
@@ -51,6 +54,7 @@ public:
 	}
 	Vector3D getRot(){return rotationMatrixToEulerAngles(R);}
 	Mat &getRotMat(){return R;}
+	Vector3D getW(){return Vector3D(w.at<double>(0,0),w.at<double>(1,0),w.at<double>(2,0));}
 	Mat  getPosMat(){return getPos().asMat();}
 	Mat  getVelMat(){return getVel().asMat();}
 	SolidRigidBody(double w2,double h2,double d2){
@@ -69,7 +73,9 @@ public:
 		Ib.at<double>(2,2)=m*(w2*w2+d2*d2)/12;;
 		Ibinv=Ib.inv();
 		updateWIinv();
-
+		staticFriction=0;
+		dynamicFriction=0;
+		restitution=0.9;
 		// shape
 		double w=w2/2;
 		double h=h2/2;
@@ -117,19 +123,6 @@ public:
 	void update(double dt){
 		// ground collision
 		Vector3D pcm=getPos();
-		cout << "pcm="<<pcm<<endl;
-		for(unsigned int i=0;i<corners.size();i++){
-			Vector3D v=getCorner(i); //corner in global frame
-			cout << "v="<<v<<endl;
-			if(v.getY()<0){
-				// here apply impulse
-				Vector3D torque=torqueFromForce(Vector3D(0,500,0),v);
-				aplicaTorque(torque);
-				Vector3D v=getVel();
-				v.setY(-v.getY()*0.9);
-				setVel(v);
-			}
-		}
 		// LINEAR UPDATE
 		//Solido::update(dt);
 		Vector3D vel=getVel()+getF()*getInvM()*dt;
@@ -174,7 +167,7 @@ public:
 		Mat tm=asMat(tv);
 		T=T+tm;
 	}
-	void applyImpulse(Vector3D &impulse,Vector3D &contactVector){
+	void applyImpulse(Vector3D impulse,Vector3D contactVector){
 		setVel(getVel()+impulse*getInvM());
 		Vector3D cvi=contactVector.X(impulse);
 		w+=getInvI()*cvi.asMat();

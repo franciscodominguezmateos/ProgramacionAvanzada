@@ -164,7 +164,7 @@ inline Mat S(Vector3D v){
               -y,        x,     0 );
 	return s;
 }
-inline Vector3D asVector3D(Mat &m){return Vector3D(m.at<double>(0,0),m.at<double>(0,1),m.at<double>(0,2));}
+inline Vector3D asVector3D(Mat m){return Vector3D(m.at<double>(0,0),m.at<double>(0,1),m.at<double>(0,2));}
 
 // FROM: https://www.learnopencv.com/rotation-matrix-to-euler-angles/
 // Calculates rotation matrix given euler angles.
@@ -297,7 +297,7 @@ inline Vector3D rotationMatrixToEulerAngles(Mat &R){
         y = atan2(-R.at<double>(2,0), sy);
         z = 0;
     }
-    return Vector3D(x, y, z);
+    return Vector3D(rad2deg(x), rad2deg(y), rad2deg(z));
 }
 
 #endif // !VECTOR3D__

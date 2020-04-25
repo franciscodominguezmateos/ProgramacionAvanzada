@@ -9,7 +9,6 @@
 #include "cubo.h"
 #include "cilindro.h"
 #include "rosco.h"
-#include "compuesto.h"
 #include "escena.h"
 #include "pared.h"
 #include "camara.h"
@@ -25,12 +24,14 @@
 #include "modelo_material.h"
 #include "caja_elastica.h"
 #include "caja_modelo_elastico.h"
+#include "composite.h"
 #include "walking_inverted_pendulum.h"
-#include "solido_rigido.h"
 #include "quaternion.h"
 #include "loader_obj.h"
+#include "solid_rigid_body.h"
 #include "view.h"
-
+#include "contact.h"
+#include "stage_rigid_body.h"
 
 //Declaration needed in next .h
 Mat global_img;
@@ -93,6 +94,7 @@ VideoCapture cap(0);
 CuboElastico *ce;
 CajaElastica* cje;
 CajaModeloElastico* cme;
+StageRigidBody* srb;
 
 // Pendulum masses
 Solido *pt1;
@@ -112,7 +114,7 @@ PoseEstimationChessBoard peChessBoard(K,dist);
 
 ProyeccionPerspectiva proyeccion;
 ///vector<Vista> vistas={{0.0,0.0,0.5,1,&proyeccion},{0.5,0.0,0.5,1,&pCam}};//,{0.0,0.5,0.5,0.5},{0.5,0.5,0.5,0.5}};
-vector<View> vistas={{0.0,0.0,0.5,1,&proyeccion},{0.5,0.0,0.5,1,&proyeccion}};
+vector<View> vistas={{0.0,0.0,1,1,&proyeccion},{0.5,0.0,0.5,1,&proyeccion}};
 vector<CamaraTPS> camaras(vistas.size());
 
 Mat opengl_default_frame_to_opencv() {
@@ -130,10 +132,10 @@ void displayMe(void){
 	vistas[0].render();
 	fondo.render();
     glLoadIdentity();
-    //camaras[0].render();
-    camVR.renderLeft();
+    camaras[0].render();
+    //camVR.renderLeft();
     e.render();
-
+/*
 	vistas[1].render();
 	//fondoTablero.render();
 	fondo.render();
@@ -142,6 +144,7 @@ void displayMe(void){
     camVR.renderRight();
     //camaras[1].render();
     e.render();
+*/
     glutSwapBuffers();
     global_img=opengl_default_frame_to_opencv();
 }
@@ -440,73 +443,7 @@ void reshape(int width,int height){
 	for(View &v:vistas)
 		v.reshape(width,height);
 }
-void initCamAR(){
-	 tablero=imread("2017-11-03-091218.jpg");
-	 if(peChessBoard.estimatePose(tablero)){
-		 camAR=new CamaraAR(peChessBoard.getRvec(),peChessBoard.getTvec());
-	 }
-	 else{
-		 cout << "Tablero no detectado!!!"<< endl;
-		 camAR= new CamaraAR(Mat::zeros(3,1,cv::DataType<double>::type),
-				             Mat::zeros(3,1,cv::DataType<double>::type));
-	 }
-	 texTablero.setImage(tablero);
-}
 
-void loadCircuit(int i){
-	 /*  C I R C U I T O S */
-	 if(i==0){
-		 //Initial pose of mariokart in this circuit
-		 mariokart->setPos(Vector3D(4.71491,4,69.8178));
-		 circuit=new ModeloMaterial("mariocircuit.obj");
-		 circuit->hazFija();
-		 circuit->setDrawNormals(true);
-		 circuit->doScale(0.004);
-		 e.add(circuit);
-	 }
-	 if(i==1){
-		 //Initial pose of mariokart in this circuit
-		 mariokart->setPos(Vector3D(46,10,-45));
-		 mariokart->setRot(Vector3D(0,90,0));
-		 circuit=new ModeloMaterial("mario_course.obj");
-		 circuit->hazFija();
-		 //circuit->setDrawNormals(true);
-		 circuit->doScale(0.5);
-		 e.add(circuit);
-	 }
-	 if(i==2){
-		 //Initial pose of mariokart in this circuit
-		 mariokart->setPos(Vector3D(0,6,0));
-		 //mariokart->setRot(Vector3D(0,90,0));
-		 circuit=new ModeloMaterial("course_model.obj");
-		 circuit->hazFija();
-		 circuit->setDrawNormals(true);
-		 //circuit->doTranslate(Vector3D(0,circuit->getMinY()*3,0));
-		 //circuit->doScale(0.5);
-		 e.add(circuit);
-	 }
-	 if(i==3){
-		 //Initial pose of mariokart in this circuit
-		 mariokart->setPos(Vector3D(66,12,38));
-		 //mariokart->setRot(Vector3D(0,90,0));
-		 circuit=new ModeloMaterial("Kinoko.obj");
-		 circuit->hazFija();
-		 //circuit->setDrawNormals(true);
-		 circuit->doScale(0.5);
-		 e.add(circuit);
-	 }
-	 if(i==4){
-		 //Initial pose of mariokart in this circuit
-		 mariokart->setPos(Vector3D(0,0,0));
-		 //mariokart->setRot(Vector3D(0,90,0));
-		 circuit=new ModeloMaterial("KoopaTroopaBeach.obj");
-		 circuit->hazFija();
-		 //circuit->setDrawNormals(true);
-		 circuit->doScale(0.5);
-		 circuit->doTranslate(Vector3D(20,0,-100));
-		 e.add(circuit);
-	 }
-}
 int main(int argc, char** argv) try{
 	srand(10);
 	//Quaternion test
@@ -516,14 +453,14 @@ int main(int argc, char** argv) try{
 	/* THREADS */
 	//this thread stream the rendered game
 	bool stop=false;
-	thread server_th(video_jpeg_stream_server,&stop,4097);
+	//thread server_th(video_jpeg_stream_server,&stop,4097);
 	// wait a minute
-	this_thread::sleep_for(chrono::milliseconds(100));
+	//this_thread::sleep_for(chrono::milliseconds(100));
 	// Launch input sensor server thread
 	StringCGIProcessor scp;
-	thread string_th(string_server,&stop,&scp,8881);
+	//thread string_th(string_server,&stop,&scp,8881);
 	// wait a minute
-	this_thread::sleep_for(chrono::milliseconds(100));
+	//this_thread::sleep_for(chrono::milliseconds(100));
 
 	/*        PAGameVRLinusTrinusTest  */
  vel=0;
@@ -545,11 +482,11 @@ int main(int argc, char** argv) try{
  glutInit(&argc,argv);
  //glutInitDisplayMode(GLUT_SINGLE);
  glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
- //glutInitWindowSize(640*2,480);
+ glutInitWindowSize(640,480);
  //glutInitWindowSize(1920,1080);
  //glutInitWindowPosition(0,0);
  glutCreateWindow("Hello wold :D");
- glutFullScreen();
+ //glutFullScreen();
  init();
 
 
@@ -563,10 +500,13 @@ int main(int argc, char** argv) try{
 
  //loadCircuit(ci);
 
- SolidoRigido *sr=new SolidoRigido(1,0.5,2);
+ SolidRigidBody *sr=new SolidRigidBody(1,0.5,2);
  sr->setPos(Vector3D(0,2,0));
+ //sr->setRot(Vector3D(30,15,15));
  //e.add(sr);
 
+ srb=new StageRigidBody();
+ e.add(srb);
  //m=new ModeloMaterial("leia.obj");
  //m->setPos(Vector3D(0,0,-20));
  //m->setScale(0.1);
@@ -611,6 +551,7 @@ int main(int argc, char** argv) try{
  mariokart->doCenter();
  //cme=new CajaModeloElastico(mariokart);
  cme=new MarioKart();
+ cme->setVel(Vector3D(1,0,1));
  e.add(cme);
  camaras[0].setSolido(cme);
 
@@ -667,7 +608,7 @@ int main(int argc, char** argv) try{
  ce->setTexture(tex);
  //e.add(ce);
 
- initCamAR();
+ //initCamAR();
  fondo.setTextura(texTv);
  fondoTablero.setTextura(texTablero);
 
