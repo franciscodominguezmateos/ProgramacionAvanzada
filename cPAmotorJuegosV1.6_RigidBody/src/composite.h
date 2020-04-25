@@ -5,8 +5,8 @@
  *      Author: francisco
  */
 
-#ifndef COMPUESTO_H_
-#define COMPUESTO_H_
+#ifndef COMPOSITE_H_
+#define COMPOSITE_H_
 #include <iostream>
 #include <vector>
 #include <GL/glut.h>
@@ -15,11 +15,11 @@
 
 using namespace std;
 
-class Compuesto:public Solido {
+class Composite:public Solido {
 	vector<Solido*> solidos;
 public:
-	Compuesto();
-	Compuesto(const Compuesto &c){
+	Composite();
+	Composite(const Composite &c){
 		//cout<<"dentro de cc"<<endl;
 		//Copia plana
 		//solidos=c.solidos;
@@ -33,14 +33,14 @@ public:
 			solidos.push_back(s->clone());
 		}
 	}
-	virtual ~Compuesto(){
+	virtual ~Composite(){
 		 for(Solido *s:solidos){
 			delete s;
 		 }
 		 solidos.clear();//no es necesario se llama en el destructor de vector
 	}
-	Compuesto *clone(){
-		return new Compuesto(*this);
+	Composite *clone(){
+		return new Composite(*this);
 	}
 	void render(){
 		glPushMatrix();
@@ -50,8 +50,9 @@ public:
 			s->render();
 		glPopMatrix();
 	}
-	vector<Solido*> getSolidos(){return solidos;}
+	template<class T=Solido>
+	vector<T*> getSolidos(){return solidos;}
 	void add(Solido *s){solidos.push_back(s);}
 };
 
-#endif /* COMPUESTO_H_ */
+#endif /* COMPOSITE_H_ */
