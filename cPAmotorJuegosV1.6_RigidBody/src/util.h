@@ -32,24 +32,19 @@ int : Represents the index of element in vector if its found else -1
 FROM: https://thispointer.com/c-how-to-find-an-element-in-vector-and-get-its-index/
 */
 template < typename T>
-std::pair<bool, int > findInVector(const std::vector<T>  & vecOfElements, const T  & element)
+pair<bool, int > findInVector(const std::vector<T>  & vecOfElements, const T  & element)
 {
-	std::pair<bool, int > result;
-
+	pair<bool, int > result;
 	// Find given element in vector
-	auto it = std::find(vecOfElements.begin(), vecOfElements.end(), element);
-
-	if (it != vecOfElements.end())
-	{
+	auto it = find(vecOfElements.begin(), vecOfElements.end(), element);
+	if (it != vecOfElements.end()){
 		result.second = distance(vecOfElements.begin(), it);
 		result.first = true;
 	}
-	else
-	{
+	else{
 		result.first = false;
 		result.second = -1;
 	}
-
 	return result;
 }
 
@@ -145,6 +140,7 @@ inline string getExtension(string &s){
 
 /* NUMBERS TOOLS */
 inline bool nearZero(double d){return fabs(d)<0.0001;}
+inline bool nearEquals(double d0,double d1){return nearZero(d1-d0);}
 inline double linearMap(double x,double i0,double i1,double o0,double o1){
 	double difi=i1-i0;
 	double difo=o1-o0;

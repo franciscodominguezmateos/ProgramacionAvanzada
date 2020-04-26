@@ -19,9 +19,11 @@ class Contact {
 	double mdf;//Mixed dynamic friction
 	double msf;//Mixed static friction
 public:
+	bool hasContactPoints(){return contactPoints.size()>0;}
 	Contact(SolidRigidBody* a,SolidRigidBody* b):a(a),b(b){}
 	void setNormal(Vector3D n){normal=n;}
 	void setPenetration(double p){penetration=p;}
+	double getPenetration(){return penetration;}
 	void addContactPoint(Vector3D cp){contactPoints.push_back(cp);}
 	void solve(){
 		//TODO: detectCollision(a,b);
@@ -33,12 +35,13 @@ public:
 		// Calculate static and dynamic friction
 		msf=sqrt(a->getStaticFriction() *b->getStaticFriction() );
 		mdf=sqrt(a->getDynamicFriction()*b->getDynamicFriction());
-		for(int i=0;i<contactCount;i++){
+/*		for(int i=0;i<contactCount;i++){
 			//Calculate radii from COM to contact
 			Vector3D ra=contactPoints[i]-a->getPos();
 			Vector3D rb=contactPoints[i]-b->getPos();
-			Vector3D rv=b->getVel()+b->getW().X(rb)-
-					    a->getVel()-b->getW().X(ra);
+			Vector3D va=a->getVel()+a->getW().X(ra);
+			Vector3D vb=b->getVel()-b->getW().X(rb);
+			Vector3D rv=vb-va;
 			// Determine if we should perform a resting collision or not
 			// The idea is if the only thing moving this object is gravity,
 			// then the collision should be performed without any restitution
@@ -48,6 +51,7 @@ public:
 			if(rv.lengthSquared()<(gravity*dt).lengthSquared()+EPSILON)
 				me=0.0;
 		}
+		*/
 	}
 	void applyImpulse(){
 		//Early out and positional correction if both objects have infinite mass
@@ -60,16 +64,18 @@ public:
 			//Calculate radii from COM to contact
 			Vector3D ra=contactPoints[i]-a->getPos();
 			Vector3D rb=contactPoints[i]-b->getPos();
-			Vector3D rv=b->getVel()+b->getW().X(rb)-
-					    a->getVel()-a->getW().X(ra);
+			Vector3D va=a->getVel()+a->getW().X(ra);
+			Vector3D vb=b->getVel()-b->getW().X(rb);
+			Vector3D rv=vb-va;
+
 			// Relative velocity along the normal
 			double contactVel=rv*normal;
 			// Do not resolve if velocities are separating
 			if(contactVel>0) return;
 			Vector3D raCrossN=ra.X(normal);
 			Vector3D rbCrossN=rb.X(normal);
-			Vector3D invIraxN=asVector3D(a->getInvI()*raCrossN.asMat());
-			Vector3D invIrbxN=asVector3D(b->getInvI()*rbCrossN.asMat());
+			Vector3D invIraxN=asVector3D(a->getInvI()*raCrossN);
+			Vector3D invIrbxN=asVector3D(b->getInvI()*rbCrossN);
 			double invMassSum=a->getInvM()+b->getInvM()+
 					          normal*invIraxN.X(ra)+
 							  normal*invIrbxN.X(rb);
@@ -82,17 +88,19 @@ public:
 			a->applyImpulse(-impulse,ra);
 			b->applyImpulse( impulse,rb);
 			// Friction impulse
-			rv=b->getVel()+b->getW().X(rb)-
-			   a->getVel()-a->getW().X(ra);
+			va=a->getVel()+a->getW().X(ra);
+			vb=b->getVel()-b->getW().X(rb);
+			rv=vb-va;
 			Vector3D t=rv-normal*(rv*normal);
+			// Don't appy tiny friction impulses
+			if(nearZero(t.length())) return;
 			t.normalize();
 			// j tangent magnitude
 			double jt= -rv*t;
 			jt/=invMassSum;
 			jt/=(double)contactCount;
 			// Don't appy tiny friction impulses
-			if(nearZero(jt))
-				return;
+			if(nearZero(jt)) return;
 			// Coulumb's law
 			Vector3D tangentImpulse;
 			if(abs(jt)<j*msf)
@@ -105,7 +113,7 @@ public:
 		}
 	}
 	void positionalCorrection(){
-		const double k_slop=0.01; //Penetration allowance
+		const double k_slop=0.001; //Penetration allowance
 		const double percent=0.4; //Penetration percentage to correct
 		Vector3D correction=normal*(max(penetration-k_slop,0.0)/(a->getInvM()+b->getInvM()))*percent;
 		a->setPos(a->getPos()-correction*a->getInvM());

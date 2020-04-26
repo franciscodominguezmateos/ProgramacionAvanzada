@@ -131,6 +131,9 @@ public:
 	//template <class S>  //this doesn't work
 	friend ostream &operator<<(ostream &os, const Vector3Dx<S> &v);
 };
+Mat operator*(Mat m,Vector3D v){return m*v.asMat();}
+Mat operator+(Mat m,Vector3D v){return m+v.asMat();}
+Mat operator-(Mat m,Vector3D v){return m-v.asMat();}
 /*
 template <class T>
 inline ostream &operator<<(ostream &os, const Vector3D<T> &v) {

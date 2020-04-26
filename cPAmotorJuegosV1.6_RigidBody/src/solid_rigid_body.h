@@ -42,6 +42,7 @@ public:
 		R=eulerAnglesToRotationMatrix(r);
 	}
 	void setRot(Mat r){R=r;}
+	//Pos is the COM location
 	void setPos(Vector3D p){Solido::setPos(p);}
 	void setPos(Mat p){setPos(Vector3D(p.at<double>(0,0),
 			                           p.at<double>(1,0),
@@ -52,11 +53,16 @@ public:
 			                           v.at<double>(1,0),
 									   v.at<double>(2,0)));
 	}
-	Vector3D getRot(){return rotationMatrixToEulerAngles(R);}
-	Mat &getRotMat(){return R;}
-	Vector3D getW(){return Vector3D(w.at<double>(0,0),w.at<double>(1,0),w.at<double>(2,0));}
-	Mat  getPosMat(){return getPos().asMat();}
-	Mat  getVelMat(){return getVel().asMat();}
+	inline Vector3D getRot(){return rotationMatrixToEulerAngles(R);}
+	inline Mat     &getRotMat(){return R;}
+	inline Vector3D getW(){return Vector3D(w.at<double>(0,0),w.at<double>(1,0),w.at<double>(2,0));}
+	inline 	Mat     getPosMat(){return getPos().asMat();}
+	inline Mat      getVelMat(){return getVel().asMat();}
+	inline Vector3D getVelAtPoint(Vector3D p){
+		Vector3D rp=p-getPos();
+		Vector3D vp=getVel()+getW().X(rp);
+		return vp;
+	}
 	SolidRigidBody(double w2,double h2,double d2){
 		R=Mat::eye(3,3,CV_64F);   // Identity matrix
 		//w=Mat:.zeros(3,1,CV_64F); // Not angular velocity yet
@@ -75,7 +81,7 @@ public:
 		updateWIinv();
 		staticFriction=0;
 		dynamicFriction=0;
-		restitution=0.9;
+		restitution=0.01;
 		// shape
 		double w=w2/2;
 		double h=h2/2;
@@ -112,10 +118,9 @@ public:
 		setCol(Vector3D(0.9,0.9,0));
 	}
 	inline Vector3D getCorner(int i){
-		Mat c=asMat(corners[i]);
-		Mat p;
-		p=R*c;
-		return asVector3D(p)+getPos();
+		Vector3D &c=corners[i];
+		Mat p=R*c+getPos();
+		return asVector3D(p);
 	}
 	void updateWIinv(){
 		w=getInvI()*L;
@@ -143,10 +148,12 @@ public:
 		// Update angular momentum
 		L=L+T*dt;
 		cout <<"F="<<getF()<<endl;
-		cout <<"V="<<getVel()<<endl;
 		cout <<"T="<< T.at<double>(0,0)<<","<< T.at<double>(1,0)<<","<< T.at<double>(2,0)<<endl;
 		cout <<"L="<< L.at<double>(0,0)<<","<< L.at<double>(1,0)<<","<< L.at<double>(2,0)<<endl;
+		cout <<"w="<<getW()<<endl;
+		cout <<"V="<<getVel()<<endl;
 		cout <<"R="<< getRot() <<endl;
+		cout <<"p="<< getPos() <<endl;
 		// Update Inverse inertia tensor with new orientation
 		// and Angular velocity with new inverse Inertia tensor
 		updateWIinv();
@@ -170,7 +177,8 @@ public:
 	void applyImpulse(Vector3D impulse,Vector3D contactVector){
 		setVel(getVel()+impulse*getInvM());
 		Vector3D cvi=contactVector.X(impulse);
-		w+=getInvI()*cvi.asMat();
+		L=L+cvi;
+		//w+=getInvI()*cvi;
 	}
 	//     5---1
 	//    /   /|
