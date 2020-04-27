@@ -73,6 +73,7 @@ public:
 		T=Mat::zeros(3,1,CV_64F); // Not torque yet
 		// Rectangular block Inertial tensor
 		Ib=Mat::zeros(3,3,CV_64F);
+		setM(1);
 		double m=getM();
 		Ib.at<double>(0,0)=m*(w2*w2+h2*h2)/12;;
 		Ib.at<double>(1,1)=m*(d2*d2+h2*h2)/12;;
@@ -81,7 +82,7 @@ public:
 		updateWIinv();
 		staticFriction=0;
 		dynamicFriction=0;
-		restitution=0.01;
+		restitution=0.0;
 		// shape
 		double w=w2/2;
 		double h=h2/2;
@@ -175,7 +176,8 @@ public:
 		T=T+tm;
 	}
 	void applyImpulse(Vector3D impulse,Vector3D contactVector){
-		setVel(getVel()+impulse*getInvM());
+		Vector3D vi=impulse*getInvM();
+		setVel(getVel()+vi);
 		Vector3D cvi=contactVector.X(impulse);
 		L=L+cvi;
 		//w+=getInvI()*cvi;

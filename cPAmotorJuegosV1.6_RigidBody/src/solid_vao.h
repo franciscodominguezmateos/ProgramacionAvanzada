@@ -112,8 +112,7 @@ public:
 			solidVAOs.push_back(svao);
 		}
 	}
-	void render(){
-		for(SolidVAO* &sv:solidVAOs) sv->render();
-	}
+	void setPos(Vector3D p){for(SolidVAO* &sv:solidVAOs) sv->setPos(p);}
+	void render(){for(SolidVAO* &sv:solidVAOs) sv->render();}
 };
 

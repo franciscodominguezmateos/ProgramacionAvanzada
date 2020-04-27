@@ -243,6 +243,19 @@ public:
 	    unbind();
 	    return img;
 	}
+	//27/04/2020
+	// TODO: test if it works fine
+	Mat toOpenCVdepth() {
+		bind();
+	    cv::Mat img(height, width, CV_32F);
+	    glPixelStorei(GL_PACK_ALIGNMENT, (img.step & 3)?1:4);
+	    glPixelStorei(GL_PACK_ROW_LENGTH, img.step/img.elemSize());
+	    glReadPixels(0, 0, img.cols, img.rows, GL_DEPTH_COMPONENT, GL_FLOAT, img.data);
+	    cv::Mat flipped(img);
+	    cv::flip(img, flipped, 0);
+	    unbind();
+	    return img;
+	}
 };
 class GLSLShader{
 	GLuint shaderID;

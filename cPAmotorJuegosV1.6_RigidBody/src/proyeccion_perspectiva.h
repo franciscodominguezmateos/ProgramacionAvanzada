@@ -17,7 +17,7 @@ public:
 	double campoDeVision;
 	double width;
 	double height;
-	double relacionDeAspecto;
+	double aspectRatio;
 	double zNear;
 	double zFar;
 	double fov;
@@ -25,20 +25,20 @@ public:
 	ProyeccionPerspectiva(double fov=30.0,double width=640,double height=480,double zNear=1.5,double zFar=2000):
 		campoDeVision(fov),
 		width(width),height(height),
-		relacionDeAspecto(width/height),
+		aspectRatio(width/height),
 		zNear(zNear),zFar(zFar),fov(fov){
 	}
 	virtual ~ProyeccionPerspectiva(){}
 	virtual void render(){
 		 glMatrixMode(GL_PROJECTION);
 		 glLoadIdentity();
-		 gluPerspective(fov,relacionDeAspecto,zNear,zFar);
+		 gluPerspective(fov,aspectRatio,zNear,zFar);
 		 glMatrixMode(GL_MODELVIEW);
 	}
 	inline double getHeight() const {return height;	}
-	inline void setHeight(double height) { relacionDeAspecto=width/height; this->height = height;}
+	inline void setHeight(double height) { aspectRatio=width/height; this->height = height;}
 	inline double getWidth() const { return width;	}
-	inline void setWidth(double width) { relacionDeAspecto=width/height; this->width = width;}
+	inline void setWidth(double width) { aspectRatio=width/height; this->width = width;}
 	virtual void reshape(double width,double height){setWidth(width),setHeight(height);}
 };
 class ProyeccionCamara: public ProyeccionPerspectiva{

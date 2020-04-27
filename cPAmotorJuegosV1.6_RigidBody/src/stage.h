@@ -5,24 +5,24 @@
  *      Author: francisco
  */
 
-#ifndef ESCENA_H_
-#define ESCENA_H_
+#ifndef STAGE_H_
+#define STAGE_H_
 #include <vector>
 #include "vector3d.h"
 #include "solido.h"
 #include "luz.h"
 using namespace std;
 
-class Escena {
+class Stage {
 	vector<Solido*> solidos;
 public:
-	Escena(){}
-	Escena(const Escena &e){
+	Stage(){}
+	Stage(const Stage &e){
 		for(Solido *s:e.solidos){
 			solidos.push_back(s->clone());
 		}
 	}
-	virtual ~Escena(){
+	virtual ~Stage(){
 		for(Solido *s:solidos){
 			delete s;
 		}
@@ -47,12 +47,12 @@ public:
 	Solido* getLastSolido(){int last=solidos.size()-1;return solidos[last];}
 	void setLastSolido(Solido *s){int last=solidos.size()-1;solidos[last]=s;}
 	void add(Solido *s){solidos.push_back(s);}
-	friend std::ostream &operator << (std::ostream &os, const Escena &v);
+	friend std::ostream &operator << (std::ostream &os, const Stage &v);
 };
-inline std::ostream &operator<<(std::ostream &os, const Escena &e){
+inline std::ostream &operator<<(std::ostream &os, const Stage &e){
 	for(Solido *s:e.solidos){
 		os << *s <<endl;
 	}
     return os;
 }
-#endif /* ESCENA_H_ */
+#endif /* STAGE_H_ */

@@ -27,18 +27,20 @@ public:
 			params[vp[0]]=vp[1];
 		}
 	}
-	map<string,string> &getParams(){return params;}
-	void add(string k,string v){params[k]=v;}
-	void add(string k,int v){params[k]=to_string(v);}
-	void add(string k,double v){params[k]=to_string(v);}
-	void add(string k,char v){params[k]=to_string(v);}
-	bool hasKey(string key){return params.count(key)>0;}
-	string &operator[](string key){return params[key];}
-	char   getChar  (string key){return (char)stoi(params[key]);}
-	int    getInt   (string key){return stoi(params[key]);}
-	float  getFloat (string key){return stof(params[key]);}
-	double getDouble(string key){return stod(params[key]);}
-	inline int size() const {return params.size();}
+	inline map<string,string> &getParams(){return params;}
+	inline void add(string k,string v){params[k]=v;}
+	inline void add(string k,int v)   {params[k]=to_string(v);}
+	inline void add(string k,double v){params[k]=to_string(v);}
+	inline void add(string k,char v)  {params[k]=to_string(v);}
+	inline string &operator[](string key){return params[key];}
+	inline char   getChar  (string key)  {return (char)stoi(params[key]);}
+	inline int    getInt   (string key)  {return stoi(params[key]);}
+	inline float  getFloat (string key)  {return stof(params[key]);}
+	inline double getDouble(string key)  {return stod(params[key]);}
+	inline bool isEmpty(){params.empty();}
+	inline void clear()  {params.clear();}
+	inline int  size()  const     {return params.size();}
+	inline bool hasKey(string key){return params.count(key)>0;}
 	friend ostream &operator<<(ostream &so,const CGI &m){
 		// Are there CGI parameters?
 		int cnt=0;
@@ -49,7 +51,6 @@ public:
 		}
 		return so;
 	}
-	int size(){return params.size();}
 	string toString(){
 		ostringstream oss;
 		oss << *this;

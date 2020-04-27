@@ -25,6 +25,7 @@ public:
 	void setPenetration(double p){penetration=p;}
 	double getPenetration(){return penetration;}
 	void addContactPoint(Vector3D cp){contactPoints.push_back(cp);}
+	vector<Vector3D> &getContactPoints(){return contactPoints;}
 	void solve(){
 		//TODO: detectCollision(a,b);
 	}
@@ -66,7 +67,7 @@ public:
 			Vector3D rb=contactPoints[i]-b->getPos();
 			Vector3D va=a->getVel()+a->getW().X(ra);
 			Vector3D vb=b->getVel()-b->getW().X(rb);
-			Vector3D rv=vb-va;
+			Vector3D rv=va-vb;
 
 			// Relative velocity along the normal
 			double contactVel=rv*normal;
@@ -85,12 +86,13 @@ public:
 			j/=(double)contactCount;
 			//Apply impulse
 			Vector3D impulse=normal*j;
-			a->applyImpulse(-impulse,ra);
-			b->applyImpulse( impulse,rb);
+			a->applyImpulse( impulse,ra);
+			b->applyImpulse(-impulse,rb);
+			/*
 			// Friction impulse
 			va=a->getVel()+a->getW().X(ra);
 			vb=b->getVel()-b->getW().X(rb);
-			rv=vb-va;
+			rv=va-vb;
 			Vector3D t=rv-normal*(rv*normal);
 			// Don't appy tiny friction impulses
 			if(nearZero(t.length())) return;
@@ -108,16 +110,18 @@ public:
 			else
 				tangentImpulse=t*-j*mdf;
 			// Apply friction impulse
-			a->applyImpulse(-tangentImpulse,ra);
-			b->applyImpulse( tangentImpulse,rb);
+			a->applyImpulse( tangentImpulse,ra);
+			b->applyImpulse(-tangentImpulse,rb);
+			*/
 		}
 	}
 	void positionalCorrection(){
 		const double k_slop=0.001; //Penetration allowance
 		const double percent=0.4; //Penetration percentage to correct
-		Vector3D correction=normal*(max(penetration-k_slop,0.0)/(a->getInvM()+b->getInvM()))*percent;
-		a->setPos(a->getPos()-correction*a->getInvM());
-		b->setPos(b->getPos()+correction*b->getInvM());
+		double   correctionMag=(max(penetration-k_slop,0.0)/(a->getInvM()+b->getInvM()));
+		Vector3D correction=normal*correctionMag*percent;
+		a->setPos(a->getPos()+correction*a->getInvM());
+		b->setPos(b->getPos()-correction*b->getInvM());
 	}
 	void infiniteMassCorrection(){
 		a->setVel(Vector3D());

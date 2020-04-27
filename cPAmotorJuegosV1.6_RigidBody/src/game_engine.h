@@ -10,17 +10,15 @@
 #include "vector3d.h"
 #include "camara.h"
 #include "view.h"
-#include "escena.h"
-//Declaration needed in next .h
-//Mat global_img;
 #include "sensors.h"
+#include "stage.h"
 
 using namespace cv;
 using namespace std;
 
-Mat opengl_default_frame_to_opencv() {
-	//cv::Mat img(480, 640*2, CV_8UC3);
-    cv::Mat img(1080, 1920, CV_8UC3);
+Mat opengl_default_frame_to_opencv(int width,int height) {
+	cv::Mat img(height, width, CV_8UC3);
+    //cv::Mat img(1080, 1920, CV_8UC3);
     glPixelStorei(GL_PACK_ALIGNMENT, (img.step & 3)?1:4);
     glPixelStorei(GL_PACK_ROW_LENGTH, img.step/img.elemSize());
     glReadPixels(0, 0, img.cols, img.rows, GL_BGR_EXT, GL_UNSIGNED_BYTE, img.data);
@@ -64,15 +62,16 @@ class Game{
 	string title;
 	vector<View*> views;
 	vector<Camara*> cameras;
-	vector<Escena*> scenes;
+	vector<Stage*> scenes;
 	SensorCGIProcessor sprocessor;
 	SocketMJPEGServer  sms;
 	Mat img;
+	int width,height;
 	double t;  // time in seconds
 	double dt; // time increment in seconds
 public:
 	Game(string t="PAGame default;-P",int port=8881):title(t),sprocessor(port),t(0),dt(0.1){}
-	void addStage(View* v,Camara* cam,Escena* e){
+	void addStage(View* v,Camara* cam,Stage* e){
 		views.push_back(v);
 		cameras.push_back(cam);
 		scenes.push_back(e);
@@ -85,7 +84,7 @@ public:
 		for(unsigned int i=0;i<views.size();i++){
 			View* &view=views[i];
 			Camara* &cam=cameras[i];
-			Escena* &e=scenes[i];
+			Stage* &e=scenes[i];
 			view->render();
 		    glLoadIdentity();
 			cam->render();
@@ -97,16 +96,18 @@ public:
 			drawBitmapText(title.c_str());
 		}
 		glutSwapBuffers();
-		img=opengl_default_frame_to_opencv();
+		img=opengl_default_frame_to_opencv(width,height);
 		sms.setImg(img);
 	}
 	virtual void onIdle(){
 		 t+=dt;
-		 for(Escena* &e:scenes)
+		 for(Stage* &e:scenes)
 			 e->update(dt);
 		 onDisplay();
 	}
 	virtual void onReshape(int width,int height){
+		this->width=width;
+		this->height=height;
 		for(View* &view:views)
 			view->reshape(width,height);
 	}

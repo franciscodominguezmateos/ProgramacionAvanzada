@@ -15,7 +15,7 @@ public:
 	StageRigidBody(){
 		rigidBodies.push_back(new SolidRigidBody(1,2,3));
 		rigidBodies[0]->setPos(Vector3D(0,2,0));
-		rigidBodies[0]->setRot(Vector3D(30,15,15));
+		//rigidBodies[0]->setRot(Vector3D(30,15,15));
 
 	}
 	void update(double dt){
@@ -24,14 +24,14 @@ public:
 		vector<Contact> contacts;
 		for(SolidRigidBody* &s:rigidBodies){
 			s->limpiaFuerza();
-			s->acumulaFuerza(Vector3D(0,-9.8/1.0,0));
+			s->acumulaFuerza(Vector3D(0,-9.8*s->getM(),0));
 			Contact c(s,dummy);
 			for(unsigned int i=0;i<8;i++){
 				Vector3D v=s->getCorner(i);
-				if(v.getY()<0){
-					c.addContactPoint(Vector3D(v.getX(),0,v.getZ()));
+				if(v.getY()<0.0){
+					c.addContactPoint(Vector3D(v.getX(),v.getY(),v.getZ()));
 					c.setPenetration(max(c.getPenetration(),-v.getY()));
-					c.setNormal(Vector3D(0,-1,0));
+					c.setNormal(Vector3D(0,1,0));
 				}
 			}
 			if(c.hasContactPoints()) contacts.push_back(c);
@@ -39,10 +39,11 @@ public:
 		// Initialize collision
 		for(unsigned int i = 0; i < contacts.size( ); ++i){
 			contacts[i].init( );
-		    contacts[i].applyImpulse( );
+			for(int j=0;j<1;j++) contacts[i].applyImpulse( );
 		}
 		for(SolidRigidBody* &s:rigidBodies)	s->update(dt);
 		for(unsigned int i = 0; i < contacts.size( ); ++i){
+			for(unsigned int j=0;j<contacts[i].getContactPoints().size();j++)
 		    contacts[i].positionalCorrection();
 		}
 	}

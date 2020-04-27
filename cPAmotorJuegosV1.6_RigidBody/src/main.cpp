@@ -1,4 +1,3 @@
-//#include <GL/glut.h>
 #include <stdlib.h>
 #include <iostream>
 #include <mutex>
@@ -9,10 +8,8 @@
 #include "cubo.h"
 #include "cilindro.h"
 #include "rosco.h"
-#include "escena.h"
 #include "pared.h"
 #include "camara.h"
-//#include "texture.h"
 #include "rectangulo.h"
 #include "pendulo.h"
 #include "cubo_elastico.h"
@@ -31,46 +28,10 @@
 #include "solid_rigid_body.h"
 #include "view.h"
 #include "contact.h"
+#include "stage.h"
 #include "stage_rigid_body.h"
 
-//Declaration needed in next .h
-Mat global_img;
-#include "socket_TCP_server.h"
-
 using namespace cv;
-
-CamaraFPSVR camVR;
-/* SENSOR */
-vector<CGI> sensorEvents;
-mutex mtxSensorEvents;
-class StringCGIProcessor:public StringProcessor{
-public:
-	string process(string &si){
-		CGI event(si);
-		mtxSensorEvents.lock();
-		sensorEvents.clear();
-		sensorEvents.push_back(si);
-		mtxSensorEvents.unlock();
-	    return "OK";
-	}
-};
-void updateSensors(){
-	if(!sensorEvents.empty()){
-		vector<CGI>::iterator pos=sensorEvents.begin();
-		mtxSensorEvents.lock();
-		CGI e=sensorEvents.front();
-		mtxSensorEvents.unlock();
-		//sensorEvents.clear();
-		//sensorEvents.erase(pos);
-		if(e.size()==4){
-			//cout << "e=" << e << endl;
-			double x=stod(e["y"]);
-			double y=stod(e["x"]);
-			double z=stod(e["z"]);
-			camVR.setRot(Vector3D(x, y, z));
-		}
-	}
-}
 
 double t=0.0;
 double dt=1.0/30;
@@ -81,12 +42,10 @@ Mat tablero;
 
 double vel;
 
-
-ModeloMaterial* circuit;
 ModeloMaterial* mariokart;
 LoaderOBJ *lo;
 
-Escena e;
+Stage e;
 Cubo *pc;
 ModeloMaterial* m;
 Texture tex,ladrillos,paredTex,texTv,texTablero,spiderTex,marioKartTex,minionTex,mariokartTex;
@@ -113,152 +72,31 @@ ProyeccionCamara pCam(K);
 PoseEstimationChessBoard peChessBoard(K,dist);
 
 ProyeccionPerspectiva proyeccion;
-///vector<Vista> vistas={{0.0,0.0,0.5,1,&proyeccion},{0.5,0.0,0.5,1,&pCam}};//,{0.0,0.5,0.5,0.5},{0.5,0.5,0.5,0.5}};
-vector<View> vistas={{0.0,0.0,1,1,&proyeccion},{0.5,0.0,0.5,1,&proyeccion}};
-vector<CamaraTPS> camaras(vistas.size());
+vector<View> vistas={{0.0,0.0,1,1,&proyeccion}};
+vector<Camara> camaras(vistas.size());
 
-Mat opengl_default_frame_to_opencv() {
-	//cv::Mat img(480, 640*2, CV_8UC3);
-    cv::Mat img(1080, 1920, CV_8UC3);
-    glPixelStorei(GL_PACK_ALIGNMENT, (img.step & 3)?1:4);
-    glPixelStorei(GL_PACK_ROW_LENGTH, img.step/img.elemSize());
-    glReadPixels(0, 0, img.cols, img.rows, GL_BGR_EXT, GL_UNSIGNED_BYTE, img.data);
-    cv::Mat flipped(img);
-    cv::flip(img, flipped, 0);
-    return img;
-}
 void displayMe(void){
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 	vistas[0].render();
 	fondo.render();
     glLoadIdentity();
     camaras[0].render();
-    //camVR.renderLeft();
+
     e.render();
-/*
-	vistas[1].render();
-	//fondoTablero.render();
-	fondo.render();
-    glLoadIdentity();
-    //camAR->render();
-    camVR.renderRight();
-    //camaras[1].render();
-    e.render();
-*/
+
     glutSwapBuffers();
-    global_img=opengl_default_frame_to_opencv();
 }
-void setPoseCamAR(Mat &tablero){
-	 if(peChessBoard.estimatePose(tablero)){
-		 camAR->setPose(peChessBoard.getRvec(),peChessBoard.getTvec());
-	 }
-	 else{
-		 cout << "Tablero no detectado!!!"<< endl;
-		 camAR->setPose(Mat::zeros(3,1,cv::DataType<double>::type),
-				        Mat::zeros(3,1,cv::DataType<double>::type));
-	 }
-	 texTablero.setImage(tablero);
-}
-Triangle* nearestTriangle(vector<Triangle*> &triangles,Vector3D p){
-	Vector3D up(0,1,0);
-	double min=1e40;
-	Triangle* nearest=nullptr;
-	for(Triangle* &t:triangles){
-		/* if triangle is up */
-		if(t->getNormal()*up>0.5){
-			if(t->isOver(p)){
-				double d=t->distancia(p);
-				if(fabs(d)<3)
-				if(d<min){
-					min=d;
-					nearest=t;
-				}
-			}
-		}
-	}
-    return nearest;
-}
-void upKart(){
-	Vector3D up(0,1,0);
-	circuit->setDrawNormals(false);
-	vector<Triangle*> &triangulos=circuit->getTriangulos();
-	Vector3D p=mariokart->getPos();
-	double min=1e40;
-	Triangle* nearest=nullptr;
-	for(Triangle* &t:triangulos){
-/*
-		 double d=t->getCenter().distancia(p);
-		 if(d<min){
-			 min=d;
-			 nearest=t;
-		 }
-		*/
-		if(t->getNormal()*up>0.5){
-			if(t->isOver(p)){
-				double d=t->distancia(p);
-				if(fabs(d)<3)
-				if(d<min){
-					min=d;
-					nearest=t;
-				}
-			}
-		}
-	}
-	nearest=nearestTriangle(triangulos,p);
-	if(nearest!=nullptr){
-		nearest->setDrawNormals(true);
-//		cout << nearest->isIn(p);
-
-		/*
-		//Show kart track
-		Esfera* ef=new Esfera();
-		ef->setCol(Vector3D(1,1,0));
-		ef->setR(0.2);
-		ef->hazFija();
-		ef->setPos(p);
-		e.add(ef);
-		*/
-
-		Vector3D f=nearest->getNormal();
-		//adapt kart orientation to road
-		double ry=deg2rad(nearest->getRot().getY());
-		Vector3D vel={-sin(ry),0,cos(ry)};
-		Vector3D vr=vel.X(f); vr.normalize();
-		//Vector3D vu=vr.X(vel);
-		double cosv=f*vel;
-		double cosr=f*vr;
-		double dv=rad2deg(M_PI/2-acos(cosv));
-		double dr=rad2deg(M_PI/2-acos(cosr));
-		//cout << "dv="<<dv<<" cosv="<<cosv<< "dr="<<dr<<" cosr="<<cosr<<endl;
-		mariokart->setRot(Vector3D(dv,mariokart->getRot().getY(),dr));
-		double dist=nearest->distancia(p);
-		//up fast down slow
-		if(dist<0)
-			dist*=0.95;
-		else
-			dist*=0.95;
-//		cout<<"dist="<<dist<<" p="<<p<<endl;
-		Vector3D newPos=p-f*dist;
-		mariokart->setPos(newPos);
-		//mariokart->aplicaFuerza(f*10);
-		//mariokart->update(dt);
-	}
-}
-
 void idle(){
  t+=dt;
  e.limpiaFuerzas();
- //upKart();
+
  Mat i;
  cap>>i;
  tex.setImage(i);
  texTv.setImage(i);
- //setPoseCamAR(i);
- //tex.update();
- CamaraTPS &cam=camaras[0];
- cam.update(dt*vel);
+
  e.update(dt);
- updateSensors();
+
  displayMe();
 }
 void keyPressed(unsigned char key,int x,int y){
@@ -273,63 +111,25 @@ void keyPressed(unsigned char key,int x,int y){
  }
  case 'o':
  case 'O':{
-	    //CamaraTPS &cam=camaras[0];
-		camVR.setRot(camVR.getRot() - Vector3D(0, 2, 0));
-		//cam.update(dt);
-	 /*axisZ=cme->getAxisZ();
-	 for(Solido *s:cme->getParticulas()){
-		 s->setVel(axisZ*5);
-	 }
-		axisX=cme->getAxisX();
-		for(int i=0;i<cme->getParticulas().size();i++){
-			Solido* s=cme->getParticula(i);
-		//for(Solido *s:cme->getParticulas()){
-			if (i==0 || i==4 || i==7 || i==3 )
-				s->setVel(s->getVel()+axisX);
-			//else
-				//s->setVel(s->getVel()-axisX);
-		}*/
 		break;
  }
  case 'p':
  case 'P':{
-	    //CamaraTPS &cam=camaras[0];
-		//s = cam.getSolido();
-		//s->setRot(s->getRot() - Vector3D(0, 2, 0));
-		//cam.update(dt);
-		camVR.setRot(camVR.getRot() + Vector3D(0, 2, 0));
-	 /*axisZ=cme->getAxisZ();
-	 for(Solido *s:cme->getParticulas()){
-		 s->setVel(axisZ*5);
-	 }
-	 axisX=cme->getAxisX();
-		for(int i=0;i<cme->getParticulas().size();i++){
-			Solido* s=cme->getParticula(i);
-		//for(Solido *s:cme->getParticulas()){
-			if (i==0 || i==4 || i==7 || i==3 )
-				s->setVel(s->getVel()-axisX);
-			//else
-				//s->setVel(s->getVel()-axisX);
-		}*/
 		break;
  }
  break;
  case 'q':
   case 'Q':
- 	 m->setPos(m->getPos()+Vector3D(0.25,0,0));
   break;
   case 'w':
   case 'W':
- 	 m->setPos(m->getPos()-Vector3D(0.25,0,0));
   break;
   case 'v':
-   case 'V':
-  	 camVR.setBaseline(camVR.getBaseline()-0.1);
-   break;
-   case 'B':
-   case 'b':
-  	 camVR.setBaseline(camVR.getBaseline()+0.1);
-   break;
+  case 'V':
+  break;
+  case 'B':
+  case 'b':
+  break;
  case ' ':
 	 Esfera *pf;
 	 pf=new Esfera();
@@ -341,46 +141,15 @@ void keyPressed(unsigned char key,int x,int y){
  break;
  case 't':
  case 'T':
-	 /*
- 	for(unsigned int i=0;i<vistas.size();i++){
- 		if(vistas[i].contain(x,y)){
- 			Vector3D r;
- 			CamaraTPS &cam=camaras[i];
- 			cam.update(dt*2);
- 		}
- 	}
- 	vel++;*/
-	 camVR.update(dt);
  break;
  case 'g':
  case 'G':
-	 /*
-	 	for(unsigned int i=0;i<vistas.size();i++){
-	 		if(vistas[i].contain(x,y)){
-	 			Vector3D r;
-	 			CamaraTPS &cam=camaras[i];
-	 			cam.update(-dt*2);
-	 		}
-	 	}
-	 vel--;*/
-	 camVR.update(-dt);
  break;
  case 'a':
  case 'A':
-	 axisZ=cme->getAxisZ();
-	 for(Solido *s:cme->getParticulas()){
-		 s->setVel(axisZ*5);
-	 }
-	 //for(Solido *s:cme->getParticulas()){
-		 //s->setVel(s->getVel()+Vector3D(getRand(1,-1),1,-1));
-	 //}
  break;
  case 's':
  case 'S':{
-	    Mat img;
-        img=opengl_default_frame_to_opencv();
-        //img=global_img;
-	    cv::imwrite("snapshot.png", img);
  }
  break;
  case 27:
@@ -450,19 +219,6 @@ int main(int argc, char** argv) try{
 	Quaternion q1(M_PI/2,Vector3D(0,0,1));
 	Vector3D v1=q1*Vector3D(1,0,0);
 	cout << "v1="<<v1<<endl;
-	/* THREADS */
-	//this thread stream the rendered game
-	bool stop=false;
-	//thread server_th(video_jpeg_stream_server,&stop,4097);
-	// wait a minute
-	//this_thread::sleep_for(chrono::milliseconds(100));
-	// Launch input sensor server thread
-	StringCGIProcessor scp;
-	//thread string_th(string_server,&stop,&scp,8881);
-	// wait a minute
-	//this_thread::sleep_for(chrono::milliseconds(100));
-
-	/*        PAGameVRLinusTrinusTest  */
  vel=0;
  //cout << t.isIn(Vector3D(0.25,0.25,0))<<endl;
  for(Camara &c:camaras){
@@ -474,16 +230,11 @@ int main(int argc, char** argv) try{
  e.add(l1);
  //e.add(new Luz(Vector3D(-50,50,15)));
 
- /*  M E N U  */
- //int ci=2;
- //cout << "Please enter the circuit number from 0 to 4: ";
- //cin >>ci;
-
  glutInit(&argc,argv);
  //glutInitDisplayMode(GLUT_SINGLE);
  glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
- glutInitWindowSize(640,480);
- //glutInitWindowSize(1920,1080);
+ //glutInitWindowSize(640,480);
+ glutInitWindowSize(1920,1080);
  //glutInitWindowPosition(0,0);
  glutCreateWindow("Hello wold :D");
  //glutFullScreen();
@@ -553,7 +304,7 @@ int main(int argc, char** argv) try{
  cme=new MarioKart();
  cme->setVel(Vector3D(1,0,1));
  e.add(cme);
- camaras[0].setSolido(cme);
+ //camaras[0].setSolido(cme);
 
  // Walking inverted pendulum
  // updated on idle
