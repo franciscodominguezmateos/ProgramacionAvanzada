@@ -25,7 +25,7 @@ class Uniform{
 	string name;
 	GLint location;
 public:
-	Uniform(string n):name(n),location(NOT_FOUND){}
+	Uniform(string n=""):name(n),location(NOT_FOUND){}
 	//void setLocation(GLSLShaderProgram &p){
 	//	setLocation(p.id());
 	//}
@@ -292,6 +292,7 @@ public:
 };
 class GLSLShaderProgram {
 	GLuint programID;
+	map<string,Uniform> uniforms;
 public:
 	GLSLShaderProgram(){}
 	void compileFromFileNames(string vertexFileName,string fragmentFileName){
@@ -326,9 +327,19 @@ public:
 		glDeleteShader(FragmentShaderID);
 	}
 	~GLSLShaderProgram(){stop();glDeleteProgram(programID);}
-	void setUniformsLocation(vector<Uniform> uniforms){for(Uniform &u:uniforms)u.setLocation(programID);}
+	void setUniformsLocation(vector<Uniform> &uniforms){for(Uniform &u:uniforms)u.setLocation(programID);}
 	// I don't know how this work jet. Any help out there?
 	//void setUniformsLocation(Uniform uniforms...){for(Uniform &u:uniforms)u.setLocation(programID);}
+    //void setUniforms(initializer_list<string> strings){
+    void setUniforms(vector<string> uniformNames){
+     	for(auto s:uniformNames){
+    		Uniform u(s);
+    		u.setLocation(programID);
+    		uniforms[s]=u;
+    	}
+    }
+    Uniform &getUniform(string s){return uniforms[s];}
+	Uniform &operator[](string s){return uniforms[s];}
 	void bindAttribute(GLuint attribID,string s){
 		glBindAttribLocation(programID,attribID,s.c_str());
 	}
