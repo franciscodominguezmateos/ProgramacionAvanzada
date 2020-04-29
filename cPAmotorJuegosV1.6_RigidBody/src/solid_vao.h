@@ -80,18 +80,25 @@ public:
 		vao->unbind();
 	}
 	void setMaterial(Material &m){material=m;}
+	Material &getMaterial(){return material;}
 	void render(){
 		material.bind();
 		shaderProgram->start();
 	    vao->bindAll();
 		T=posEulerAnglesToTransformationMatrix<float>(getPos(),getRot());
-		glDrawElements(GL_TRIANGLES, vao->getIndexCount(), GL_UNSIGNED_INT,0); // Empezar desde el vértice 0S; 3 vértices en total -> 1 triángulo
+		glDrawElements(GL_TRIANGLES, vao->getIndexCount(), GL_UNSIGNED_INT,0);
 		vao->unbindAll();
 		shaderProgram->stop();
 		material.unbind();
 	}
 	GLSLVAO* getPtrVAO(){return vao;}
 };
+//Some model have many textures
+//With the next class we solve the problem having many SolidVAO
+//one for each texture.
+//The first one own all vertex, normals and textcoord
+//TODO: differentiate from master and no master in order render
+//     many same objects in different locations.
 class SolidMultiVAO:Solido{
 	GLSLShaderProgram* shaderProgram;
 	vector<SolidVAO*> solidVAOs;
@@ -112,7 +119,8 @@ public:
 			solidVAOs.push_back(svao);
 		}
 	}
-	void setPos(Vector3D p){for(SolidVAO* &sv:solidVAOs) sv->setPos(p);}
+	void setPos(Vector3D p){Solido::setPos(p);for(SolidVAO* &sv:solidVAOs) sv->setPos(p);}
+	void setRot(Vector3D r){Solido::setRot(r);for(SolidVAO* &sv:solidVAOs) sv->setRot(r);}
 	void render(){for(SolidVAO* &sv:solidVAOs) sv->render();}
 };
 

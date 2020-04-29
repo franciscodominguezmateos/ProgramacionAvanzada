@@ -65,12 +65,13 @@ class Game{
 	vector<Stage*> scenes;
 	SensorCGIProcessor sprocessor;
 	SocketMJPEGServer  sms;
+	GLSLFBO screen;
 	Mat img;
 	int width,height;
 	double t;  // time in seconds
 	double dt; // time increment in seconds
 public:
-	Game(string t="PAGame default;-P",int port=8881):title(t),sprocessor(port),t(0),dt(0.1){}
+	Game(string t="PAGame default;-P",int port=8881):title(t),sprocessor(port),screen(640,480),t(0),dt(0.1){}
 	void addStage(View* v,Camara* cam,Stage* e){
 		views.push_back(v);
 		cameras.push_back(cam);
@@ -96,7 +97,8 @@ public:
 			drawBitmapText(title.c_str());
 		}
 		glutSwapBuffers();
-		img=opengl_default_frame_to_opencv(width,height);
+		//img=opengl_default_frame_to_opencv(width,height);
+		img=screen.toOpenCV();
 		sms.setImg(img);
 	}
 	virtual void onIdle(){
@@ -108,6 +110,8 @@ public:
 	virtual void onReshape(int width,int height){
 		this->width=width;
 		this->height=height;
+		screen.setWidth(width);
+		screen.setHeight(height);
 		for(View* &view:views)
 			view->reshape(width,height);
 	}

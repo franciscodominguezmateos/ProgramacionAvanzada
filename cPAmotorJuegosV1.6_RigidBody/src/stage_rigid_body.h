@@ -36,12 +36,13 @@ public:
 			}
 			if(c.hasContactPoints()) contacts.push_back(c);
 		}
+		for(SolidRigidBody* &s:rigidBodies)	s->workOutSpeeds(dt);
 		// Initialize collision
 		for(unsigned int i = 0; i < contacts.size( ); ++i){
 			contacts[i].init( );
 			for(int j=0;j<1;j++) contacts[i].applyImpulse( );
 		}
-		for(SolidRigidBody* &s:rigidBodies)	s->update(dt);
+		for(SolidRigidBody* &s:rigidBodies)	s->updatePose(dt);
 		for(unsigned int i = 0; i < contacts.size( ); ++i){
 			for(unsigned int j=0;j<contacts[i].getContactPoints().size();j++)
 		    contacts[i].positionalCorrection();

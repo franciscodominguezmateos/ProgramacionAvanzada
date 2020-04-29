@@ -230,6 +230,8 @@ public:
 		if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 			throw runtime_error("Error in GLSLFBO::init() not frame buffer complete.");
 	}
+	inline void setWidth(int w){width=w;}
+	inline void setHeight(int h){height=h;}
 	inline void bind()  {glBindFramebuffer(GL_FRAMEBUFFER, id);}
 	inline void unbind(){glBindFramebuffer(GL_FRAMEBUFFER, 0); }
 	Mat toOpenCV() {

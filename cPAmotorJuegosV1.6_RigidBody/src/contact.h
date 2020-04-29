@@ -88,7 +88,7 @@ public:
 			Vector3D impulse=normal*j;
 			a->applyImpulse( impulse,ra);
 			b->applyImpulse(-impulse,rb);
-			/*
+
 			// Friction impulse
 			va=a->getVel()+a->getW().X(ra);
 			vb=b->getVel()-b->getW().X(rb);
@@ -112,11 +112,11 @@ public:
 			// Apply friction impulse
 			a->applyImpulse( tangentImpulse,ra);
 			b->applyImpulse(-tangentImpulse,rb);
-			*/
+
 		}
 	}
 	void positionalCorrection(){
-		const double k_slop=0.001; //Penetration allowance
+		const double k_slop=0.01; //Penetration allowance
 		const double percent=0.4; //Penetration percentage to correct
 		double   correctionMag=(max(penetration-k_slop,0.0)/(a->getInvM()+b->getInvM()));
 		Vector3D correction=normal*correctionMag*percent;

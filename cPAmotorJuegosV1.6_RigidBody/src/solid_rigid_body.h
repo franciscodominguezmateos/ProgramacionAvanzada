@@ -126,19 +126,28 @@ public:
 	void updateWIinv(){
 		w=getInvI()*L;
 	}
-	void update(double dt){
-		// ground collision
-		Vector3D pcm=getPos();
+	inline void workOutLinearSpeed(double dt){
 		// LINEAR UPDATE
 		//Solido::update(dt);
 		Vector3D vel=getVel()+getF()*getInvM()*dt;
 		setVel(vel);
-		Vector3D pos=getPos()+vel*dt;
+	}
+	inline void workOutAngularMomentum(double dt){
+		// Update angular momentum
+		L=L+T*dt;
+	}
+	inline void workOutSpeeds(double dt){
+		workOutLinearSpeed(dt);
+		workOutAngularMomentum(dt);
+	}
+	inline void updatePose(double dt){
+		Vector3D pos=getPos()+getVel()*dt;
 		setPos(pos);
 
 		// ANGULAR UPDATE
 		// Update orientation
 		// Get the orientation increment in axis angle form
+		updateWIinv();
 		Mat dw;
 		dw=w*dt;
 		// Get the orientation increment in matrix form with Rodrigues formula
@@ -146,8 +155,12 @@ public:
 		Rodrigues(dw,dR);
 		// update orientation matrix
 		R=dR*R;
-		// Update angular momentum
-		L=L+T*dt;
+
+	}
+	void update(double dt){
+		// ground collision
+		Vector3D pcm=getPos();
+
 		cout <<"F="<<getF()<<endl;
 		cout <<"T="<< T.at<double>(0,0)<<","<< T.at<double>(1,0)<<","<< T.at<double>(2,0)<<endl;
 		cout <<"L="<< L.at<double>(0,0)<<","<< L.at<double>(1,0)<<","<< L.at<double>(2,0)<<endl;
@@ -157,7 +170,6 @@ public:
 		cout <<"p="<< getPos() <<endl;
 		// Update Inverse inertia tensor with new orientation
 		// and Angular velocity with new inverse Inertia tensor
-		updateWIinv();
 	}
 	virtual void limpiaTorque(){T=Mat::zeros(3,1,CV_64F);}
 	void limpiaFuerza(){
