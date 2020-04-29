@@ -20,7 +20,7 @@ public:
 
 typedef map<string,SensorEventData> TSensorEventIDs;
 typedef map<string,TSensorEventIDs> TSensorEventDevices;
-class SensorCGIProcessor:public StringProcessor{
+class SensorEventProcessor:public StringProcessor{
 	TSensorEventDevices sensorEvents;
 	mutex mtxSensorEvents;
 	vector<SensorObserver*> observers;
@@ -28,7 +28,7 @@ class SensorCGIProcessor:public StringProcessor{
 	chrono::time_point<chrono::system_clock> before;
 	int speed;//in milliseconds
 public:
-	SensorCGIProcessor(int port=8881):string_svr(this,port),before(chrono::system_clock::now()),speed(10){}
+	SensorEventProcessor(int port=8881):string_svr(this,port),before(chrono::system_clock::now()),speed(10){}
 	void addSensorObserver(SensorObserver* so){observers.push_back(so);}
 	void dispatchSensorObserverEvent(SensorEventData &e){
 		for(SensorObserver* &so:observers)

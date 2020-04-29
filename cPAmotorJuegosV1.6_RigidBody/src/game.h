@@ -47,20 +47,20 @@ class Game{
 	vector<View*> views;
 	vector<Camara*> cameras;
 	vector<Stage*> scenes;
-	SensorCGIProcessor sprocessor;
+	SensorEventProcessor seProcessor;
 	SocketMJPEGServer  sms;
 	GLSLFBO screen;
 	Mat img;
 	double t;  // time in seconds
 	double dt; // time increment in seconds
 public:
-	Game(string t="PAGame default;-P",int port=8881):title(t),sprocessor(port),screen(640,480),t(0),dt(0.1){}
+	Game(string t="PAGame default;-P",int port=8881):title(t),seProcessor(port),screen(640,480),t(0),dt(0.1){}
 	void addStage(View* v,Camara* cam,Stage* e){
 		views.push_back(v);
 		cameras.push_back(cam);
 		scenes.push_back(e);
 	}
-	void addSensorObserver(SensorObserver* so){sprocessor.addSensorObserver(so);}
+	void addSensorObserver(SensorObserver* so){seProcessor.addSensorObserver(so);}
 	string &getTitle(){return title;}
 	Mat &getImg(){return img;}
 	virtual void onDisplay(){
@@ -101,13 +101,13 @@ public:
 		e.add("key",key);
 		e.add("x",x);
 		e.add("y",y);
-		sprocessor.dispatchSensorObserverEvent(e);
+		seProcessor.dispatchSensorObserverEvent(e);
 	}
 	virtual void onMouseMoved(int x, int y){
 		SensorEventData e("device=mouse&event=MouseMoved&id=0");
 		e.add("x",x);
 		e.add("y",y);
-		sprocessor.dispatchSensorObserverEvent(e);
+		seProcessor.dispatchSensorObserverEvent(e);
 	}
 	virtual void onMousePress(int button, int state, int x, int y){
 		SensorEventData e("device=mouse&event=MousePress&id=0");
@@ -115,6 +115,6 @@ public:
 		e.add("state",state);
 		e.add("x",x);
 		e.add("y",y);
-		sprocessor.dispatchSensorObserverEvent(e);
+		seProcessor.dispatchSensorObserverEvent(e);
 	}
 };
