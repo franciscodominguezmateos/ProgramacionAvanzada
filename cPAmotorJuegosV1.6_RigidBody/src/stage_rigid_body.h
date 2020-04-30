@@ -17,7 +17,7 @@ public:
 		rigidBodies.push_back(new SolidRigidBody(1,2,3));
 		rigidBodies[0]->setPos(Vector3D(0,1,0));
 		//rigidBodies[0]->setRot(Vector3D(30,15,15));
-		rigidBodies[1]->setPos(Vector3D(0,5,1));
+		rigidBodies[1]->setPos(Vector3D(0,4.5,0));
 		rigidBodies[1]->setRot(Vector3D(30,15,15));
 	}
 	void update(double dt){
@@ -28,23 +28,17 @@ public:
 			for(SolidRigidBody* &st:rigidBodies)
 				if(sp!=st){
 					vector<Vector3D> vp=sp->getCorners();
-					vector<Triangle> vt=st->getTriangles();
-					for(Triangle &t:vt){
-						Contact c(sp,st);
-						try{
+					Contact c(sp,st);
+					c.setPenetration(0);
+					for(Vector3D &p:vp){
+						if(st->contain(p)){
+							c.addContactPoint(p);
+							Triangle t=st->nearestTriangle(p);
 							c.setNormal(t.getNormal());
-							c.setPenetration(0);
-							for(Vector3D &p:vp){
-								if(t.contact(p)){
-									c.addContactPoint(p);
-									c.setPenetration(max(c.getPenetration(),-t.distance(p)));
-								}
-							}
-						}catch(runtime_error &e){
-							cout << "????"<<e.what() <<endl;
+							c.setPenetration(max(c.getPenetration(),-t.distance(p)));
 						}
-						if(c.hasContactPoints()) contacts.push_back(c);
 					}
+					if(c.hasContactPoints()) contacts.push_back(c);
 				}
 		for(SolidRigidBody* &s:rigidBodies){
 			s->limpiaFuerza();
@@ -76,7 +70,6 @@ public:
 		for(SolidRigidBody* &s:rigidBodies)
 			s->render();
 	}
-
 };
 
 #endif /* STAGE_RIGID_BODY_H_ */

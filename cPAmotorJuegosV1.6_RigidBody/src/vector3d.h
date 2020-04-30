@@ -91,7 +91,7 @@ public:
 		S magnitude = length();
 		//assert(!equalsZero(magnitude));
 		if (nearZero(magnitude))
-			throw runtime_error("Normal muy pequeña en Vector3D::normalize()");
+			throw runtime_error(" in Vector3D::normalize(): magnitude near to zero.");
 		magnitude = 1.0f / magnitude;
 		x *= magnitude;
 		y *= magnitude;
@@ -105,7 +105,7 @@ public:
 		y*=d;
 		z*=d;
 	}
-	inline S distancia(Vector3Dx<S> v){
+	inline S distance(Vector3Dx<S> v){
 		Vector3Dx<S> &t=*this;
 		Vector3Dx<S> dif=t-v;
 		return dif.length();

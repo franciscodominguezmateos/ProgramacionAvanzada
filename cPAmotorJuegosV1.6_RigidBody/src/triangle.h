@@ -32,33 +32,7 @@ public:
         v01(p1-p0),v12(p2-p1),v20(p0-p2),
 		textura(nullptr),
 		drawNormals(false){
-		// VERY IMPORTANT triangles points order is uncounterclock
-		Vector3D vn=v01.X(v12);
-		//Area of a triangle is half the length of the cross product
-		area=vn.length()/2;
-		try{
-			vn.normalize();
-		}
-		catch (exception &e){
-			//not normalize
-			/*cout << "not normalizzing at Triangle constructor"<< endl;
-			cout << "p0="<<p0<<endl;
-			cout << "p1="<<p1<<endl;
-			cout << "p2="<<p2<<endl;
-			cout << "vn="<<vn<<endl;
-			cout << "v01="<<v01<<endl;
-			cout << "v12="<<v12<<endl;
-			cout << "v20="<<v20<<endl;*/
-		}
-		//Initial homogeneous vertex normals
-		n0=n1=n2=vn;
-		float d=vn*p2;
-		this->setA(vn.getX());
-		this->setB(vn.getY());
-		this->setC(vn.getZ());
-		this->setD(-d);
-		//center of the triangle is pos field
-		this->setPos((p0+p1+p2)/3);
+		init();
 	}
 	// after changing p0, p1 or p2 this method should be called
 	void init(){
@@ -75,6 +49,16 @@ public:
 		}
 		catch (exception &e){
 			//not normalize
+			//cout << "not normalizzing at Triangle constructor"<< endl;
+			/*
+			cout << "p0="<<p0<<endl;
+			cout << "p1="<<p1<<endl;
+			cout << "p2="<<p2<<endl;
+			cout << "vn="<<vn<<endl;
+			cout << "v01="<<v01<<endl;
+			cout << "v12="<<v12<<endl;
+			cout << "v20="<<v20<<endl;*/
+			throw runtime_error(" in Triangle::Triangle() :"+string(e.what()));
 		}
 		float d=vn*p2;
 		this->setA(vn.getX());
@@ -106,7 +90,7 @@ public:
 	inline void setT2(Vector3D &n){t2=n;}
 	inline void setTextura(Texture* &t){textura=t;}
 	inline Vector3D getCenter(){return getPos();}
-	inline void setDrawNormals(bool b){drawNormals=b;}
+	inline void setDrawNormals(bool b=true){drawNormals=b;}
 	inline void doScale(double s){
 		p0*=s;
 		p1*=s;
@@ -172,7 +156,7 @@ public:
 			glBegin(GL_LINE_LOOP);
 			  glVertex3f(p0.getX(),p0.getY(),p0.getZ());
 			  glVertex3f(p1.getX(),p1.getY(),p1.getZ());
-			  glVertex3f(p2.getX(),p1.getY(),p2.getZ());
+			  glVertex3f(p2.getX(),p2.getY(),p2.getZ());
 			glEnd();
 	    }
 	    if(textura!=nullptr) textura->desactivar();
@@ -191,15 +175,20 @@ public:
 		// p should be in the plane
 		// then this should be always true
 		double d=distance(p);
-		if(!nearZero(d))
-			assert(nearZero(d));
+		assert(nearZero(d));
 
 		//accumulated areas
 		double a=0;
+		Vector3D vn;
 		try {
-			Vector3D vn=getNormal();
+			vn=getNormal();
+		}
+		catch(runtime_error &e) {
+			throw runtime_error(" in Triangle::isOver:"+string(e.what()));
+		}
 
 			// C H E C K I N G Triangle(p0,p1,p)
+		try{
 			Triangle t01=Triangle(p0,p1,p);
 			//t01.area should be minor than triangle area
 			a=t01.getArea();
@@ -209,8 +198,13 @@ public:
 			//On the other hand  if p is out of triangle then dot product with plane normal should be negative
 			if(d0p<0)
 				return false;
+		}
+		catch(runtime_error &e) {
+			//throw runtime_error(" in Triangle::isOver:Triangle(p0,p1,p) "+string(e.what()));
+		}
 
 			// C H E C K I N G Triangle(p1,p2,p)
+		try{
 			Triangle t12=Triangle(p1,p2,p);
 			//t01.area+t12.area should be minor than triangle area
 			a+=t12.getArea();
@@ -220,8 +214,13 @@ public:
 			//On the other hand If p is out of triangle then dot product with plane normal should be negative
 			if(d1p<0)
 				return false;
+		}
+		catch(runtime_error &e) {
+			//throw runtime_error(" in Triangle::isOver:Triangle(p1,p2,p) "+string(e.what()));
+		}
 
 			// C H E C K I N G Triangle(p2,p0,p)
+		try{
 			Triangle t20=Triangle(p2,p0,p);
 			//t01.area+t12.area+t20.area should be EQUAL than triangle area
 			a+=t20.getArea();
@@ -233,7 +232,7 @@ public:
 				return false;
 		}
 		catch(runtime_error &e) {
-			throw runtime_error(" in Triangle::isOver:"+string(e.what()));
+			//throw runtime_error(" in Triangle::isOver:Triangle(p2,p0,p) "+string(e.what()));
 		}
 		//Here we have double check that p is in the triangle
 		return true;

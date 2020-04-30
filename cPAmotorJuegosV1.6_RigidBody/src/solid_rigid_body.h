@@ -211,10 +211,10 @@ public:
 	vector<Rectangle> getRectangles(){
 		vector<Rectangle> vr;
 		Rectangle r0(
-				getCorner(0),
-				getCorner(1),
+				getCorner(3),
 				getCorner(2),
-				getCorner(3));
+				getCorner(1),
+				getCorner(0));
 		Rectangle r1(
 				getCorner(4),
 				getCorner(5),
@@ -222,9 +222,9 @@ public:
 				getCorner(7));
 		Rectangle r2(
 				getCorner(0),
-				getCorner(3),
+				getCorner(4),
 				getCorner(7),
-				getCorner(4));
+				getCorner(3));
 		Rectangle r3(
 				getCorner(1),
 				getCorner(2),
@@ -232,9 +232,9 @@ public:
 				getCorner(5));
 		Rectangle r4(
 				getCorner(1),
-				getCorner(0),
+				getCorner(5),
 				getCorner(4),
-				getCorner(5));
+				getCorner(0));
 		Rectangle r5(
 				getCorner(3),
 				getCorner(7),
@@ -248,6 +248,26 @@ public:
 		vr.push_back(r5);
 		return vr;
 	}
+	bool contain(Vector3D pt){
+		for(Rectangle r:getRectangles()){
+			if(r.distance(pt)>0)
+				return false;
+		}
+		return true;
+	}
+	Triangle nearestTriangle(Vector3D pt){
+		vector<Triangle> vt=getTriangles();
+		double minDist=10e40;
+		double minIdx=-1;
+		for(unsigned int i=0;i<vt.size();i++){
+			double dist=vt[i].distance(pt);
+			if(abs(dist)<minDist){
+				minDist=dist;
+				minIdx=i;
+			}
+		}
+		return vt[minIdx];
+	}
 	vector<Triangle> getTriangles(){
 		vector<Rectangle> vr=getRectangles();
 		vector<Triangle> vt;
@@ -258,57 +278,11 @@ public:
 		return vt;
 	}
 	inline void render(){
-		glPushMatrix();
-		//glTranslatef(this->getPos().getX(),this->getPos().getY(),this->getPos().getZ());
-		Rectangle r0(
-				getCorner(0),
-				getCorner(1),
-				getCorner(2),
-				getCorner(3));
-		//r0.getTex()=tex;
-		r0.setCol(getCol());
-		r0.render();
-		Rectangle r1(
-				getCorner(4),
-				getCorner(5),
-				getCorner(6),
-				getCorner(7));
-		//r1.getTex()=tex;
-		r1.setCol(getCol());
-		r1.render();
-		Rectangle r2(
-				getCorner(0),
-				getCorner(3),
-				getCorner(7),
-				getCorner(4));
-		//r2.getTex()=tex;
-		r2.setCol(getCol());
-		r2.render();
-		Rectangle r3(
-				getCorner(1),
-				getCorner(2),
-				getCorner(6),
-				getCorner(5));
-		//r3.getTex()=tex;
-		r3.setCol(getCol());
-		r3.render();
-		Rectangle r4(
-				getCorner(1),
-				getCorner(0),
-				getCorner(4),
-				getCorner(5));
-		//r2.getTex()=tex;
-		r4.setCol(getCol());
-		r4.render();
-		Rectangle r5(
-				getCorner(3),
-				getCorner(7),
-				getCorner(6),
-				getCorner(2));
-		//r3.getTex()=tex;
-		r5.setCol(getCol());
-		r5.render();
-		glPopMatrix();
+		for(Rectangle &r:getRectangles()){
+			r.setCol(getCol());
+			r.setDrawNormals();
+			r.render();
+		}
 	}
 };
 

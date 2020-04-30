@@ -112,28 +112,28 @@ public:
 	double getWidth(){
 		auto &p=getParticulas();
 		double width=0;
-		width+=p[4]->getPos().distancia(p[0]->getPos());
-		width+=p[5]->getPos().distancia(p[1]->getPos());
-		width+=p[6]->getPos().distancia(p[2]->getPos());
-		width+=p[7]->getPos().distancia(p[3]->getPos());
+		width+=p[4]->getPos().distance(p[0]->getPos());
+		width+=p[5]->getPos().distance(p[1]->getPos());
+		width+=p[6]->getPos().distance(p[2]->getPos());
+		width+=p[7]->getPos().distance(p[3]->getPos());
 		return width/4;
 	}
 	double getHeight(){
 		auto &p=getParticulas();
 		double height=0;
-		height+=p[4]->getPos().distancia(p[7]->getPos());
-		height+=p[0]->getPos().distancia(p[3]->getPos());
-		height+=p[5]->getPos().distancia(p[6]->getPos());
-		height+=p[1]->getPos().distancia(p[2]->getPos());
+		height+=p[4]->getPos().distance(p[7]->getPos());
+		height+=p[0]->getPos().distance(p[3]->getPos());
+		height+=p[5]->getPos().distance(p[6]->getPos());
+		height+=p[1]->getPos().distance(p[2]->getPos());
 		return height/4;
 	}
 	double getDepth(){
 		auto &p=getParticulas();
 		double depth=0;
-		depth+=p[4]->getPos().distancia(p[5]->getPos());
-		depth+=p[0]->getPos().distancia(p[1]->getPos());
-		depth+=p[7]->getPos().distancia(p[6]->getPos());
-		depth+=p[3]->getPos().distancia(p[2]->getPos());
+		depth+=p[4]->getPos().distance(p[5]->getPos());
+		depth+=p[0]->getPos().distance(p[1]->getPos());
+		depth+=p[7]->getPos().distance(p[6]->getPos());
+		depth+=p[3]->getPos().distance(p[2]->getPos());
 		return depth/4;
 	}
 	//     5---1

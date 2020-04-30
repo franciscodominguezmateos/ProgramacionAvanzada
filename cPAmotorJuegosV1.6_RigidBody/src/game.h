@@ -85,7 +85,7 @@ public:
 			renderString((int)s->getPos().getX(),(int)s->getPos().getY(),title);
 			renderString(0,0,title);
 			e->render();
-			Mat cameraViewMat=posEulerAnglesToTransformationMatrix<float>(-cam->getPos(),cam->getRot());
+			Mat cameraViewMat=posEulerAnglesToTransformationMatrix<float>(s->getPos(),-s->getRot());
 			skyBox->setCameraView(cameraViewMat);
 			skyBox->render();
 			drawBitmapText(title.c_str());

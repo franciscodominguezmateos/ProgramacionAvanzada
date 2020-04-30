@@ -82,8 +82,16 @@ public:
 			t->setDrawNormals(b);
 	}
 	inline void doScale(double s){
-		for(Triangle* &t:triangulos)
+		vector<Triangle*> vt(triangulos);
+		triangulos.clear();
+		for(Triangle* &t:vt) try{
 			t->doScale(s);
+			triangulos.push_back(t);
+		}
+		catch(runtime_error &e){
+			//cout << "triangulo muy pequeño en ModeloMaterial::doScale :"+string(e.what())<<endl;
+			delete t;
+		}
 		minX*=s;
 		minY*=s;
 		minZ*=s;
@@ -192,12 +200,14 @@ public:
 					}
 				}
 				if (linea[0] == 'f'){
-					Triangle *t=parseTriangulos(linea);
-					if(t){//t!=nullptr
+					Triangle* t=parseTriangulos(linea);
+					if(t!=nullptr){
 						Texture* tex=materiales[currentMaterial].getMapKdTex();
 						t->setTextura(tex);
 						triangulos.push_back(t);
 					}
+					//else
+					//	cout << "null ptr"<<endl;
 				}
 				if(linea.find("mtllib")!=string::npos){
 					vector<string> vs=split(linea);
@@ -214,6 +224,14 @@ public:
 			cout << "Fichero "+nombreFichero+" no existe."<<endl;
 		}
 		cout<< "El modelo "<< name << " tiene "<< triangulos.size() << " triangulos."<<endl;
+		for(Triangle* &t:triangulos){
+			try{
+				Vector3D n=t->getNormal();
+			}
+			catch(runtime_error &e){
+				throw runtime_error(" in ModeloMaterial::load cheking getNormal() : "+string(e.what()));
+			}
+		}
 	}
  	Vector3D  *parseVector3D(string &linea){
  		float x,y,z;
@@ -234,7 +252,7 @@ public:
  		ss>>y;
  		return new Vector3D(x,y,0);
  	}
-	Triangle *parseTriangulo(string &linea){
+/*	Triangle *parseTriangulo(string &linea){
 		istringstream ss(linea);
 		int iv0,iv1,iv2;
 		ss>>iv0;
@@ -248,7 +266,7 @@ public:
 		Vector3D p2=*vertices[iv2];
 		Triangle *t=new Triangle(p0,p1,p2);
 		return t;
-	}
+	}*/
 	Triangle *parseTriangulos(string &linea){
 		vector<string> vs=split(linea);
 		if (vs.size()!=4){
@@ -309,6 +327,8 @@ public:
 		}
 		catch(runtime_error &e){
 			t=nullptr;
+			//cout<<"coño pasa"<<endl;
+			return nullptr;
 		}
 	return t;
 	}

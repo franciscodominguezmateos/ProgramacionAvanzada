@@ -34,7 +34,7 @@
 using namespace cv;
 
 double t=0.0;
-double dt=1.0/100;
+double dt=1.0/10000;
 
 int mx=-1,my=-1;        // Previous mouse coordinates
 
@@ -234,7 +234,7 @@ int main(int argc, char** argv) try{
  //glutInitDisplayMode(GLUT_SINGLE);
  glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
  //glutInitWindowSize(640,480);
- glutInitWindowSize(1920,1080);
+ glutInitWindowSize(640,480);
  //glutInitWindowPosition(0,0);
  glutCreateWindow("Hello wold :D");
  //glutFullScreen();
@@ -296,7 +296,7 @@ int main(int argc, char** argv) try{
  minion_golf->setPos(Vector3D(-4,0,0));
  minion_golf->setScale(4);
  minion_golf->setVel(Vector3D(getRand(10,-10),10,getRand(10,-10)));
- e.add(minion_golf);
+ //e.add(minion_golf);
 
 
  mariokart->doCenter();
