@@ -6,6 +6,7 @@
  */
 #pragma once
 #include "game_engine.h"
+#include "sky_box.h"
 
 using namespace cv;
 using namespace std;
@@ -49,13 +50,19 @@ class Game{
 	vector<Stage*> scenes;
 	SensorEventProcessor seProcessor;
 	SocketMJPEGServer  sms;
-	GLSLFBO screen;
+	GLSLFBO screen; //default frame buffer object is the screen if init() is not called
+	SkyBox *skyBox;
 	Mat img;
 	double t;  // time in seconds
 	double dt; // time increment in seconds
 public:
-	Game(string t="PAGame default;-P",int port=8881):title(t),seProcessor(port),screen(640,480),t(0),dt(0.1){}
+	Game(string t="PAGame default;-P",int port=8881):title(t),seProcessor(port),screen(640,480),t(0),dt(0.1),skyBox(nullptr){}
 	void addStage(View* v,Camara* cam,Stage* e){
+		if(skyBox==nullptr){
+			skyBox=new SkyBox();
+			Mat m=v->getProyeccion()->getMat();
+			skyBox->setProjection(m);
+		}
 		views.push_back(v);
 		cameras.push_back(cam);
 		scenes.push_back(e);
@@ -78,6 +85,9 @@ public:
 			renderString((int)s->getPos().getX(),(int)s->getPos().getY(),title);
 			renderString(0,0,title);
 			e->render();
+			Mat cameraViewMat=posEulerAnglesToTransformationMatrix<float>(-cam->getPos(),cam->getRot());
+			skyBox->setCameraView(cameraViewMat);
+			skyBox->render();
 			drawBitmapText(title.c_str());
 		}
 		glutSwapBuffers();

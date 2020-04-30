@@ -35,6 +35,9 @@ public:
 		 gluPerspective(fov,aspectRatio,zNear,zFar);
 		 glMatrixMode(GL_MODELVIEW);
 	}
+	Mat getMat(){
+		return Mat(4,4,CV_32F,getPerspectiveGLMatrix(fov,aspectRatio,zNear,zFar).data()).t();
+	}
 	inline double getHeight() const {return height;	}
 	inline void setHeight(double height) { aspectRatio=width/height; this->height = height;}
 	inline double getWidth() const { return width;	}

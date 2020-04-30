@@ -285,26 +285,30 @@ public:
 		Vector3D p0=*vertices[vid0[0]];
 		Vector3D p1=*vertices[vid1[0]];
 		Vector3D p2=*vertices[vid2[0]];
-		Triangle *t=new Triangle(p0,p1,p2);
-		if(nearZero(t->getNormal().lengthSquared()))
-			return nullptr;
-		if(vid0.size()>1){
-			if(vid0[1]!=-1){
-				Vector3D t0=*textures[vid0[1]];
-				Vector3D t1=*textures[vid1[1]];
-				Vector3D t2=*textures[vid2[1]];
-				t->setT0(t0);
-				t->setT1(t1);
-				t->setT2(t2);
+		Triangle* t=nullptr;
+		try{
+			t=new Triangle(p0,p1,p2);
+			if(vid0.size()>1){
+				if(vid0[1]!=-1){
+					Vector3D t0=*textures[vid0[1]];
+					Vector3D t1=*textures[vid1[1]];
+					Vector3D t2=*textures[vid2[1]];
+					t->setT0(t0);
+					t->setT1(t1);
+					t->setT2(t2);
+				}
+			}
+			if(vid0.size()==3){
+				Vector3D n0=*normals[vid0[2]];
+				Vector3D n1=*normals[vid1[2]];
+				Vector3D n2=*normals[vid2[2]];
+				t->setN0(n0);
+				t->setN1(n1);
+				t->setN2(n2);
 			}
 		}
-		if(vid0.size()==3){
-			Vector3D n0=*normals[vid0[2]];
-			Vector3D n1=*normals[vid1[2]];
-			Vector3D n2=*normals[vid2[2]];
-			t->setN0(n0);
-			t->setN1(n1);
-			t->setN2(n2);
+		catch(runtime_error &e){
+			t=nullptr;
 		}
 	return t;
 	}

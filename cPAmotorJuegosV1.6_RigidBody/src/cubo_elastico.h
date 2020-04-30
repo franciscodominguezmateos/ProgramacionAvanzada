@@ -7,8 +7,8 @@
 
 #ifndef CUBO_ELASTICO_H_
 #define CUBO_ELASTICO_H_
+#include "rectangle.h"
 #include "solido_elastico.h"
-#include "rectangulo.h"
 
 class CuboElastico: public SolidoElastico {
 	Texture tex;
@@ -55,28 +55,28 @@ public:
 	void setTexture(Texture t){tex=t;}
 	inline void render(){
 	    glColor3f(1.0f, 1.0f, 0.0f);
-		Rectangulo r0(
+		Rectangle r0(
 				getParticula(0)->getPos(),
 				getParticula(1)->getPos(),
 				getParticula(2)->getPos(),
 				getParticula(3)->getPos());
 		r0.getTex()=tex;
 		r0.render();
-		Rectangulo r1(
+		Rectangle r1(
 				getParticula(4)->getPos(),
 				getParticula(5)->getPos(),
 				getParticula(6)->getPos(),
 				getParticula(7)->getPos());
 		r1.getTex()=tex;
 		r1.render();
-		Rectangulo r2(
+		Rectangle r2(
 				getParticula(0)->getPos(),
 				getParticula(3)->getPos(),
 				getParticula(7)->getPos(),
 				getParticula(4)->getPos());
 		r2.getTex()=tex;
 		r2.render();
-		Rectangulo r3(
+		Rectangle r3(
 				getParticula(1)->getPos(),
 				getParticula(2)->getPos(),
 				getParticula(6)->getPos(),

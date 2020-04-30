@@ -177,6 +177,11 @@ public:
 	    }
 	    if(textura!=nullptr) textura->desactivar();
 	}
+	bool contact(Vector3D pt){
+		if(nearZero(distance(pt)))
+			return isOver(pt);
+		return false;
+	}
 	// I will use double check:
 	// - Area check
 	// - Normal check
@@ -185,46 +190,51 @@ public:
 		Vector3D p=project(pt);
 		// p should be in the plane
 		// then this should be always true
-		double d=distancia(p);
+		double d=distance(p);
 		if(!nearZero(d))
 			assert(nearZero(d));
 
 		//accumulated areas
 		double a=0;
-		Vector3D vn=getNormal();
+		try {
+			Vector3D vn=getNormal();
 
-		// C H E C K I N G Triangle(p0,p1,p)
-		Triangle t01=Triangle(p0,p1,p);
-		//t01.area should be minor than triangle area
-		a=t01.getArea();
-		if(a>area)
-			return false;
-		double d0p=t01.getNormal()*vn;
-		//On the other hand  if p is out of triangle then dot product with plane normal should be negative
-		if(d0p<0)
-			return false;
+			// C H E C K I N G Triangle(p0,p1,p)
+			Triangle t01=Triangle(p0,p1,p);
+			//t01.area should be minor than triangle area
+			a=t01.getArea();
+			if(a>area)
+				return false;
+			double d0p=t01.getNormal()*vn;
+			//On the other hand  if p is out of triangle then dot product with plane normal should be negative
+			if(d0p<0)
+				return false;
 
-		// C H E C K I N G Triangle(p1,p2,p)
-		Triangle t12=Triangle(p1,p2,p);
-		//t01.area+t12.area should be minor than triangle area
-		a+=t12.getArea();
-		if(a>area)
-			return false;
-		double d1p=t12.getNormal()*vn;
-		//On the other hand If p is out of triangle then dot product with plane normal should be negative
-		if(d1p<0)
-			return false;
+			// C H E C K I N G Triangle(p1,p2,p)
+			Triangle t12=Triangle(p1,p2,p);
+			//t01.area+t12.area should be minor than triangle area
+			a+=t12.getArea();
+			if(a>area)
+				return false;
+			double d1p=t12.getNormal()*vn;
+			//On the other hand If p is out of triangle then dot product with plane normal should be negative
+			if(d1p<0)
+				return false;
 
-		// C H E C K I N G Triangle(p2,p0,p)
-		Triangle t20=Triangle(p2,p0,p);
-		//t01.area+t12.area+t20.area should be EQUAL than triangle area
-		a+=t20.getArea();
-		if(!nearZero(a-area))
-			return true;
-		double d2p=t20.getNormal()*vn;
-		//On the other hand if p is out of triangle then dot product with plane normal should be negative
-		if(d2p<0)
-			return false;
+			// C H E C K I N G Triangle(p2,p0,p)
+			Triangle t20=Triangle(p2,p0,p);
+			//t01.area+t12.area+t20.area should be EQUAL than triangle area
+			a+=t20.getArea();
+			if(!nearZero(a-area))
+				return true;
+			double d2p=t20.getNormal()*vn;
+			//On the other hand if p is out of triangle then dot product with plane normal should be negative
+			if(d2p<0)
+				return false;
+		}
+		catch(runtime_error &e) {
+			throw runtime_error(" in Triangle::isOver:"+string(e.what()));
+		}
 		//Here we have double check that p is in the triangle
 		return true;
 	}

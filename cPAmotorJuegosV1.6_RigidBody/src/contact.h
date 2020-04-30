@@ -61,6 +61,8 @@ public:
 			return;
 		}
 		int contactCount=contactPoints.size();
+		vector<Vector3D> in,ran,rbn;
+		vector<Vector3D> it,rat,rbt;
 		for(int i=0;i<contactCount;i++){
 			//Calculate radii from COM to contact
 			Vector3D ra=contactPoints[i]-a->getPos();
@@ -73,6 +75,7 @@ public:
 			double contactVel=rv*normal;
 			// Do not resolve if velocities are separating
 			if(contactVel>0) return;
+			if(abs(contactVel)<0.01) return;
 			Vector3D raCrossN=ra.X(normal);
 			Vector3D rbCrossN=rb.X(normal);
 			Vector3D invIraxN=asVector3D(a->getInvI()*raCrossN);
@@ -86,23 +89,23 @@ public:
 			j/=(double)contactCount;
 			//Apply impulse
 			Vector3D impulse=normal*j;
-			a->applyImpulse( impulse,ra);
-			b->applyImpulse(-impulse,rb);
-
+			in.push_back(impulse);
+			ran.push_back(ra);
+			rbn.push_back(rb);
 			// Friction impulse
-			va=a->getVel()+a->getW().X(ra);
-			vb=b->getVel()-b->getW().X(rb);
-			rv=va-vb;
+			//va=a->getVel()+a->getW().X(ra);
+			//vb=b->getVel()-b->getW().X(rb);
+			//rv=va-vb;
 			Vector3D t=rv-normal*(rv*normal);
 			// Don't appy tiny friction impulses
-			if(nearZero(t.length())) return;
+			if(nearZero(t.length())) break;
 			t.normalize();
 			// j tangent magnitude
 			double jt= -rv*t;
 			jt/=invMassSum;
 			jt/=(double)contactCount;
 			// Don't appy tiny friction impulses
-			if(nearZero(jt)) return;
+			if(nearZero(jt)) break;
 			// Coulumb's law
 			Vector3D tangentImpulse;
 			if(abs(jt)<j*msf)
@@ -112,12 +115,18 @@ public:
 			// Apply friction impulse
 			a->applyImpulse( tangentImpulse,ra);
 			b->applyImpulse(-tangentImpulse,rb);
-
+		}
+		for(unsigned i=0;i<in.size();i++){
+			Vector3D &impulse=in[i];
+			Vector3D &ra=ran[i];
+			Vector3D &rb=rbn[i];
+			a->applyImpulse( impulse,ra);
+			b->applyImpulse(-impulse,rb);
 		}
 	}
 	void positionalCorrection(){
-		const double k_slop=0.01; //Penetration allowance
-		const double percent=0.4; //Penetration percentage to correct
+		const double k_slop=0.001; //Penetration allowance
+		const double percent=0.2; //Penetration percentage to correct
 		double   correctionMag=(max(penetration-k_slop,0.0)/(a->getInvM()+b->getInvM()));
 		Vector3D correction=normal*correctionMag*percent;
 		a->setPos(a->getPos()+correction*a->getInvM());

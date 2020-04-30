@@ -5,27 +5,35 @@
  *      Author: francisco
  */
 
-#ifndef RECTANGULO_H_
-#define RECTANGULO_H_
+#ifndef RECTANGLE_H_
+#define RECTANGLE_H_
 
 #include "texture.h"
 #include "triangle.h"
 
-class Rectangulo: public Triangle {
+class Rectangle: public Triangle {
 	Vector3D p3;
 	Texture tex;
 	unsigned int nu;
 	unsigned int nv;
 public:
-	Rectangulo(Vector3D p0,Vector3D p1,Vector3D p2,Vector3D p3):Triangle(p0,p1,p2),p3(p3),nu(1),nv(1){}
-	virtual ~Rectangulo(){}
-	Rectangulo(const Rectangulo &r):Triangle(r.p0,r.p1,r.p2),p3(r.p3),nu(1),nv(1){}
-	virtual Rectangulo *clone(){return new Rectangulo(*this);}
+	Rectangle(Vector3D p0,Vector3D p1,Vector3D p2,Vector3D p3):Triangle(p0,p1,p2),p3(p3),nu(1),nv(1){}
+	virtual ~Rectangle(){}
+	Rectangle(const Rectangle &r):Triangle(r.p0,r.p1,r.p2),p3(r.p3),nu(1),nv(1){}
+	virtual Rectangle *clone(){return new Rectangle(*this);}
 	inline Vector3D getP3(){return p3;}
 	inline Texture &getTex(){return tex;}
 	inline void setTextura(Texture t){tex=t;}
 	inline void setNU(unsigned int u){nu=u;}
 	inline void setNV(unsigned int v){nv=v;}
+	Triangle getTriangle0(){return *this;}
+	Triangle getTriangle1(){return Triangle(getP0(),getP2(),getP3());}
+	vector<Triangle> getTriangles(){
+		vector<Triangle> vt;
+		vt.push_back(getTriangle0());
+		vt.push_back(getTriangle1());
+		return vt;
+	}
 	void render(){	//Triangulo::render();
 		Vector3D c=this->getCol();
 		glColor3f(c.getX(),c.getY(),c.getZ());
@@ -52,4 +60,4 @@ public:
 	}
 };
 
-#endif /* RECTANGULO_H_ */
+#endif /* RECTANGLE_H_ */

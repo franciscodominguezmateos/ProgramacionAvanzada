@@ -6,8 +6,8 @@
  */
 
 #pragma once
+#include "rectangle.h"
 #include "solido_elastico.h"
-#include "rectangulo.h"
 
 class CajaElastica: public SolidoElastico {
 protected:

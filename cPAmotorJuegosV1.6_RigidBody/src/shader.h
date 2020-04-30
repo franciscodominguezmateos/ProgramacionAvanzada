@@ -230,7 +230,7 @@ public:
 		if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 			throw runtime_error("Error in GLSLFBO::init() not frame buffer complete.");
 	}
-	inline void setWidth(int w){width=w;}
+	inline void setWidth(int w) {width=w;}
 	inline void setHeight(int h){height=h;}
 	inline void bind()  {glBindFramebuffer(GL_FRAMEBUFFER, id);}
 	inline void unbind(){glBindFramebuffer(GL_FRAMEBUFFER, 0); }
@@ -261,8 +261,18 @@ public:
 };
 class GLSLShader{
 	GLuint shaderID;
+    //30/04/2020
+	//TODO: automatic extraction of uniform name variables
+	//      just parse lines and extract names the ones that begin with uniform
+	vector<string> uniformNames;
 public:
 	GLSLShader(GLuint shaderType):shaderID(glCreateShader(shaderType)){	}
+	void parseUniformNames(string sourceCode){
+	    //30/04/2020
+		//TODO: automatic extraction of uniform name variables
+		//      just parse lines and extract names the ones that begin with uniform
+
+	}
 	GLuint compileFromFileName(string fileName){
 		cout << "Compiling shader: "<<fileName<<endl;
 		string sourceCode;
@@ -292,24 +302,38 @@ public:
 };
 class GLSLShaderProgram {
 	GLuint programID;
+	GLuint vertexShaderID;
+	GLuint fragmentShaderID;
 	map<string,Uniform> uniforms;
 public:
 	GLSLShaderProgram(){}
 	void compileFromFileNames(string vertexFileName,string fragmentFileName){
 		// Compiling vertes shader
 		GLSLShader vs(GL_VERTEX_SHADER);
-	    GLuint VertexShaderID=vs.compileFromFileName(vertexFileName);
+	    vertexShaderID=vs.compileFromFileName(vertexFileName);
 	    // Compiling frame shader
 		GLSLShader fs(GL_FRAGMENT_SHADER);
-		GLuint FragmentShaderID=fs.compileFromFileName(fragmentFileName);
+		fragmentShaderID=fs.compileFromFileName(fragmentFileName);
+		link();
+	}
+	void compileFromStrings(string vertexSourceCode,string fragmentSourceCode){
+		// Compiling vertes shader
+		GLSLShader vs(GL_VERTEX_SHADER);
+	    vertexShaderID=vs.compile(vertexSourceCode);
+	    // Compiling frame shader
+		GLSLShader fs(GL_FRAGMENT_SHADER);
+		fragmentShaderID=fs.compile(fragmentSourceCode);
+		link();
+	}
+	void link(){
 		GLint Result = GL_FALSE;
 		int InfoLogLength;
 
 		// Vincular el programa por medio del ID
 		printf("Linking program\n");
 		programID = glCreateProgram();
-		glAttachShader(programID, VertexShaderID);
-		glAttachShader(programID, FragmentShaderID);
+		glAttachShader(programID, vertexShaderID);
+		glAttachShader(programID, fragmentShaderID);
 		glLinkProgram(programID);
 
 		// Revisar el programa
@@ -320,15 +344,19 @@ public:
 			glGetProgramInfoLog(programID, InfoLogLength, NULL, &ProgramErrorMessage[0]);
 			throw runtime_error(&ProgramErrorMessage[0]);
 		}
-		glDetachShader(programID, VertexShaderID);
-		glDetachShader(programID, FragmentShaderID);
+		glDetachShader(programID, vertexShaderID);
+		glDetachShader(programID, fragmentShaderID);
 
-		glDeleteShader(VertexShaderID);
-		glDeleteShader(FragmentShaderID);
+		glDeleteShader(vertexShaderID);
+		glDeleteShader(fragmentShaderID);
 	}
 	~GLSLShaderProgram(){stop();glDeleteProgram(programID);}
 	void setUniformsLocation(vector<Uniform> &uniforms){for(Uniform &u:uniforms)u.setLocation(programID);}
-	// I don't know how this work jet. Any help out there?
+	// I don't know how this work jet. Any help out there? ->
+	//           Old->       https://docs.microsoft.com/en-us/cpp/cpp/functions-with-variable-argument-lists-cpp?view=vs-2019
+	//           C++11       https://en.cppreference.com/w/cpp/utility/initializer_list
+	//           C++11       https://en.cppreference.com/w/cpp/language/parameter_pack
+	//                       https://thispointer.com/c11-variadic-template-function-tutorial-examples/
 	//void setUniformsLocation(Uniform uniforms...){for(Uniform &u:uniforms)u.setLocation(programID);}
     //void setUniforms(initializer_list<string> strings){
     void setUniforms(vector<string> uniformNames){

@@ -326,7 +326,7 @@ public:
 		minY=fmin(minY,y);
 		minZ=fmin(minZ,z);
 	}
-};	static string model_base_path;
+};
 
 //must finish on slash '/'
 string LoaderOBJ::model_base_path="modelos/";

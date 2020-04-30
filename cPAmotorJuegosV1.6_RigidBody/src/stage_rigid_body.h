@@ -14,14 +14,38 @@ class StageRigidBody:public Solido {
 public:
 	StageRigidBody(){
 		rigidBodies.push_back(new SolidRigidBody(1,2,3));
-		rigidBodies[0]->setPos(Vector3D(0,2,0));
+		rigidBodies.push_back(new SolidRigidBody(1,2,3));
+		rigidBodies[0]->setPos(Vector3D(0,1,0));
 		//rigidBodies[0]->setRot(Vector3D(30,15,15));
-
+		rigidBodies[1]->setPos(Vector3D(0,5,1));
+		rigidBodies[1]->setRot(Vector3D(30,15,15));
 	}
 	void update(double dt){
 		SolidRigidBody* dummy=new SolidRigidBody(1,1,1);
 		dummy->hazFija();
 		vector<Contact> contacts;
+		for(SolidRigidBody* &sp:rigidBodies)
+			for(SolidRigidBody* &st:rigidBodies)
+				if(sp!=st){
+					vector<Vector3D> vp=sp->getCorners();
+					vector<Triangle> vt=st->getTriangles();
+					for(Triangle &t:vt){
+						Contact c(sp,st);
+						try{
+							c.setNormal(t.getNormal());
+							c.setPenetration(0);
+							for(Vector3D &p:vp){
+								if(t.contact(p)){
+									c.addContactPoint(p);
+									c.setPenetration(max(c.getPenetration(),-t.distance(p)));
+								}
+							}
+						}catch(runtime_error &e){
+							cout << "????"<<e.what() <<endl;
+						}
+						if(c.hasContactPoints()) contacts.push_back(c);
+					}
+				}
 		for(SolidRigidBody* &s:rigidBodies){
 			s->limpiaFuerza();
 			s->acumulaFuerza(Vector3D(0,-9.8*s->getM(),0));
@@ -29,7 +53,7 @@ public:
 			for(unsigned int i=0;i<8;i++){
 				Vector3D v=s->getCorner(i);
 				if(v.getY()<0.0){
-					c.addContactPoint(Vector3D(v.getX(),v.getY(),v.getZ()));
+					c.addContactPoint(Vector3D(v.getX(),0,v.getZ()));
 					c.setPenetration(max(c.getPenetration(),-v.getY()));
 					c.setNormal(Vector3D(0,1,0));
 				}

@@ -10,7 +10,6 @@
 #include "rosco.h"
 #include "pared.h"
 #include "camara.h"
-#include "rectangulo.h"
 #include "pendulo.h"
 #include "cubo_elastico.h"
 #include "fondo_textura.h"
@@ -28,13 +27,14 @@
 #include "solid_rigid_body.h"
 #include "view.h"
 #include "contact.h"
+#include "rectangle.h"
 #include "stage.h"
 #include "stage_rigid_body.h"
 
 using namespace cv;
 
 double t=0.0;
-double dt=1.0/30;
+double dt=1.0/100;
 
 int mx=-1,my=-1;        // Previous mouse coordinates
 
@@ -317,8 +317,8 @@ int main(int argc, char** argv) try{
  Vector3D p1(-80,0, 80);
  Vector3D p2( 80,0, 80);
  Vector3D p3( 80,0,-80);
- Rectangulo *ret;
- ret=new Rectangulo(p0,p1,p2,p3);
+ Rectangle *ret;
+ ret=new Rectangle(p0,p1,p2,p3);
  ret->setCol(Vector3D(1,2.5,1));
  ladrillos.setImage(imread("mario_kart_circuit.jpg"));
  ret->getTex()=ladrillos;
@@ -330,8 +330,8 @@ int main(int argc, char** argv) try{
  p1=Vector3D( 20, 0,-10);
  p2=Vector3D( 20,10,-10);
  p3=Vector3D(  0,10,-10);
- Rectangulo *pared;
- pared=new Rectangulo(p0,p1,p2,p3);
+ Rectangle *pared;
+ pared=new Rectangle(p0,p1,p2,p3);
  ret->setCol(Vector3D(1,1,1));
  paredTex.setImage(imread("brown_brick_texture_map.jpg"));
  pared->getTex()=paredTex;
@@ -343,8 +343,8 @@ int main(int argc, char** argv) try{
  p1=Vector3D( 11, 2,-9.9);
  p2=Vector3D( 11, 3,-9.9);
  p3=Vector3D(  9, 3,-9.9);
- Rectangulo *tv;
- tv=new Rectangulo(p0,p1,p2,p3);
+ Rectangle *tv;
+ tv=new Rectangle(p0,p1,p2,p3);
  tv->setCol(Vector3D(1,1,1));
  Mat i;
  cap>>i;

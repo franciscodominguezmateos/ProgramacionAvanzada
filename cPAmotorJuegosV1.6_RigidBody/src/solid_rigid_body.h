@@ -75,14 +75,14 @@ public:
 		Ib=Mat::zeros(3,3,CV_64F);
 		setM(1);
 		double m=getM();
-		Ib.at<double>(0,0)=m*(w2*w2+h2*h2)/12;;
-		Ib.at<double>(1,1)=m*(d2*d2+h2*h2)/12;;
-		Ib.at<double>(2,2)=m*(w2*w2+d2*d2)/12;;
+		Ib.at<double>(0,0)=m*(d2*d2+h2*h2)/12;;
+		Ib.at<double>(1,1)=m*(w2*w2+d2*d2)/12;;
+		Ib.at<double>(2,2)=m*(w2*w2+h2*h2)/12;;
 		Ibinv=Ib.inv();
 		updateWIinv();
-		staticFriction=0;
-		dynamicFriction=0;
-		restitution=0.0;
+		staticFriction=0.1;
+		dynamicFriction=0.1;
+		restitution=0.6;
 		// shape
 		double w=w2/2;
 		double h=h2/2;
@@ -117,6 +117,12 @@ public:
 		p=Vector3D(-w,-h, d);
 		corners.push_back(p);
 		setCol(Vector3D(0.9,0.9,0));
+	}
+	inline vector<Vector3D> getCorners(){
+		vector<Vector3D> vc;
+		for(unsigned int i=0;i<corners.size();i++)
+			vc.push_back(getCorner(i));
+		return vc;
 	}
 	inline Vector3D getCorner(int i){
 		Vector3D &c=corners[i];
@@ -202,10 +208,59 @@ public:
 	//   7---3
 	//square of the right
 	//right/up/front point
+	vector<Rectangle> getRectangles(){
+		vector<Rectangle> vr;
+		Rectangle r0(
+				getCorner(0),
+				getCorner(1),
+				getCorner(2),
+				getCorner(3));
+		Rectangle r1(
+				getCorner(4),
+				getCorner(5),
+				getCorner(6),
+				getCorner(7));
+		Rectangle r2(
+				getCorner(0),
+				getCorner(3),
+				getCorner(7),
+				getCorner(4));
+		Rectangle r3(
+				getCorner(1),
+				getCorner(2),
+				getCorner(6),
+				getCorner(5));
+		Rectangle r4(
+				getCorner(1),
+				getCorner(0),
+				getCorner(4),
+				getCorner(5));
+		Rectangle r5(
+				getCorner(3),
+				getCorner(7),
+				getCorner(6),
+				getCorner(2));
+		vr.push_back(r0);
+		vr.push_back(r1);
+		vr.push_back(r2);
+		vr.push_back(r3);
+		vr.push_back(r4);
+		vr.push_back(r5);
+		return vr;
+	}
+	vector<Triangle> getTriangles(){
+		vector<Rectangle> vr=getRectangles();
+		vector<Triangle> vt;
+		for(Rectangle &r:vr){
+			vt.push_back(r.getTriangle0());
+			vt.push_back(r.getTriangle1());
+		}
+		return vt;
+	}
 	inline void render(){
 		glPushMatrix();
 		//glTranslatef(this->getPos().getX(),this->getPos().getY(),this->getPos().getZ());
-		Rectangulo r0(
+		Rectangle r0(
 				getCorner(0),
 				getCorner(1),
 				getCorner(2),
@@ -213,35 +268,39 @@ public:
 		//r0.getTex()=tex;
 		r0.setCol(getCol());
 		r0.render();
-		Rectangulo r1(
+		Rectangle r1(
 				getCorner(4),
 				getCorner(5),
 				getCorner(6),
 				getCorner(7));
 		//r1.getTex()=tex;
+		r1.setCol(getCol());
 		r1.render();
-		Rectangulo r2(
+		Rectangle r2(
 				getCorner(0),
 				getCorner(3),
 				getCorner(7),
 				getCorner(4));
 		//r2.getTex()=tex;
+		r2.setCol(getCol());
 		r2.render();
-		Rectangulo r3(
+		Rectangle r3(
 				getCorner(1),
 				getCorner(2),
 				getCorner(6),
 				getCorner(5));
 		//r3.getTex()=tex;
+		r3.setCol(getCol());
 		r3.render();
-		Rectangulo r4(
+		Rectangle r4(
 				getCorner(1),
 				getCorner(0),
 				getCorner(4),
 				getCorner(5));
 		//r2.getTex()=tex;
+		r4.setCol(getCol());
 		r4.render();
-		Rectangulo r5(
+		Rectangle r5(
 				getCorner(3),
 				getCorner(7),
 				getCorner(6),

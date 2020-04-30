@@ -7,11 +7,11 @@
 
 #ifndef FONDO_TEXTURA_H_
 #define FONDO_TEXTURA_H_
-#include "rectangulo.h"
 #include "fondo.h"
+#include "rectangle.h"
 
 class FondoTextura: public Fondo {
-	Rectangulo fondo;
+	Rectangle fondo;
 public:
 	FondoTextura():FondoTextura(640,480){}
 	FondoTextura(unsigned int ancho,unsigned int alto):fondo(

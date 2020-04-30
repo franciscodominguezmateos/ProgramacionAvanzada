@@ -35,10 +35,15 @@ public:
 	//bool colision(Solido *s);
 	inline Vector3D getNormal(){
 		Vector3D v(a,b,c);
-		//v.normalize();
+		try{
+			v.normalize();
+		}
+		catch(runtime_error &e){
+			throw runtime_error(" in Plane::getNormal(): "+string(e.what()));
+		}
 		return v;
 	}
-	double distancia(Vector3D p){
+	double distance(Vector3D p){
 		double x=p.getX();
 		double y=p.getY();
 		double z=p.getZ();
@@ -48,7 +53,7 @@ public:
 	Vector3D project(Vector3D p){
 		Vector3D vn=getNormal();
 		// distance vector perpendicular to plane and parallel to vn
-		double d=this->distancia(p);
+		double d=this->distance(p);
 		Vector3D vp=vn*d;
 		// p=vt+vp then vt=p-vp
 		Vector3D vt=p-vp;

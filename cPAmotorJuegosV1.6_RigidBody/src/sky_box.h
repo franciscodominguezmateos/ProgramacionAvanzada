@@ -25,9 +25,16 @@ public:
 		tcube->addImage(imread("modelos/skybox/bottom.jpg"));
 		tcube->addImage(imread("modelos/skybox/front.jpg"));
 		tcube->addImage(imread("modelos/skybox/back.jpg"));
+/*		tcube->addImage(imread("modelos/skybox/Hogwarts_Sky_Rt.png"));
+		tcube->addImage(imread("modelos/skybox/Hogwarts_Sky_Lf.png"));
+		tcube->addImage(imread("modelos/skybox/Hogwarts_Sky_Up.png"));
+		tcube->addImage(imread("modelos/skybox/Hogwarts_Sky_Dn.png"));
+		tcube->addImage(imread("modelos/skybox/Hogwarts_Sky_Bk.png"));
+		tcube->addImage(imread("modelos/skybox/Hogwarts_Sky_Fr.png"));*/
 		tcube->init();
-		spSkyBox.compileFromFileNames("src/SimpleSkyBoxVertex.glsl",
-				                      "src/SimpleSkyBoxFragment.glsl");
+		//spSkyBox.compileFromFileNames("src/SimpleSkyBoxVertex.glsl",
+		//		                      "src/SimpleSkyBoxFragment.glsl");
+		spSkyBox.compileFromStrings(vertexShader,fragmentShader);
 		spSkyBox.setUniforms({"cameraView","projection"});
 		spSkyBox.start();
 		//spsProjection=projectionMat;
@@ -51,6 +58,38 @@ public:
 		glDepthMask(GL_TRUE);
 	}
 };
+string SkyBox::vertexShader=
+"#version 330 core\n"
+"in vec3 position;\n"
+"\n"
+"out vec3 pass_textureCoords;\n"
+"\n"
+"uniform mat4 cameraView;\n"
+"uniform mat4 projection;\n"
+"\n"
+"void main(){\n"
+"\n"
+" mat4 cv=cameraView;\n"
+" cv[0][3]=0;\n"
+" cv[1][3]=0;\n"
+" cv[2][3]=0;\n"
+" vec3 p=position;\n"
+" p*=1000;\n"
+" gl_Position=projection*cv*vec4(p,1);\n"
+" pass_textureCoords=position;\n"
+""
+"}";
+string SkyBox::fragmentShader=
+"#version 330 core\n"
+"in vec3 pass_textureCoords;\n"
+"\n"
+"out vec4 out_color;\n"
+"\n"
+"uniform samplerCube cubeMap;\n"
+"\n"
+"void main(){\n"
+"out_color = texture(cubeMap,pass_textureCoords);\n"
+"}\n";
 vector<GLfloat> SkyBox::skyboxVertices = {
     // positions
     -1.0f,  1.0f, -1.0f,

@@ -15,15 +15,16 @@ class LoaderDAE: public Loader {
 	int idxGeo;
 	AnimationSkeleton animSkeleton;
 public:
-	LoaderDAE(string name,int idx=0):Loader(name),idxGeo(idx){}
+	LoaderDAE(string name,int idx=0):Loader(name),idxGeo(idx),CORRECTION(Mat::eye(4,4,CV_32F)){}
 	AnimationSkeleton &getAnimationSkeleton(){return animSkeleton;}
 	void load(){
+
 		//ifstream ifdae("model.dae");
 		string fileName=getName();
 		cout << "fileName="<<fileName <<endl;
 		ifstream ifdae(fileName.c_str());
-	  XMLNode root;
-	  ifdae >> root;
+	    XMLNode root;
+	    ifdae >> root;
 
 	  // COLLADA FILE FORMAT
 	  //Geometry loader

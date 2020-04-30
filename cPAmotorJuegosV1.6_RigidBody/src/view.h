@@ -27,6 +27,7 @@ public:
 		height=h*(double)windowHeight;
 	}
 	inline void setProyeccion(ProyeccionPerspectiva *py){p=py;}
+	inline ProyeccionPerspectiva* getProyeccion(){return p;}
 	inline void reshape(int pwindowWidth,int pwindowHeight){
 		windowWidth =pwindowWidth;
 		windowHeight=pwindowHeight;
