@@ -76,10 +76,10 @@ public:
 			  glVertex3f(p2.getX(),p2.getY(),p2.getZ());
 			  glVertex3f(p3.getX(),p3.getY(),p3.getZ());
 			glEnd();
+		    Triangle t=getTriangle1();
+		    t.setDrawNormals();
+		    t.render();
 	    }
-	    Triangle t=getTriangle1();
-	    t.setDrawNormals();
-	    t.render();
 	}
 };
 

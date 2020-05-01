@@ -23,8 +23,12 @@ class SolidRigidBody: public Solido {
 	double dynamicFriction;
 	double restitution;
 	vector<Vector3D> corners;
+	//this is the radius of a sphere where is embedded the object
+	double r;
+	bool showSphere;
 public:
 	Texture tex;
+	inline double getRadius(){return r;}
 	inline double getRestitution()    {return restitution;}
 	inline double getStaticFriction() {return staticFriction;}
 	inline double getDynamicFriction(){return dynamicFriction;}
@@ -82,11 +86,14 @@ public:
 		updateWIinv();
 		staticFriction=0.1;
 		dynamicFriction=0.1;
-		restitution=0.6;
+		restitution=0.1;
 		// shape
 		double w=w2/2;
 		double h=h2/2;
 		double d=d2/2;
+		//r=max(max(w,h),d);
+		r=sqrt(w*w+h*h+d*d);
+		showSphere=false;
 		//     5---1
 		//    /   /|
 		//   4---0 |
@@ -127,7 +134,8 @@ public:
 	inline Vector3D getCorner(int i){
 		Vector3D &c=corners[i];
 		Mat p=R*c+getPos();
-		return asVector3D(p);
+		Vector3D vp=asVector3D(p);
+		return vp;
 	}
 	void updateWIinv(){
 		w=getInvI()*L;
@@ -248,6 +256,11 @@ public:
 		vr.push_back(r5);
 		return vr;
 	}
+	bool colisionEsphere(SolidRigidBody* sr){
+		double rr=r+sr->r;
+		double dist=getPos().distance(sr->getPos());
+		return dist<rr;
+	}
 	bool contain(Vector3D pt){
 		for(Rectangle r:getRectangles()){
 			if(r.distance(pt)>0)
@@ -261,7 +274,7 @@ public:
 		double minIdx=-1;
 		for(unsigned int i=0;i<vt.size();i++){
 			double dist=vt[i].distance(pt);
-			if(abs(dist)<minDist){
+			if(abs(dist)<abs(minDist)){
 				minDist=dist;
 				minIdx=i;
 			}
@@ -277,11 +290,21 @@ public:
 		}
 		return vt;
 	}
+	void setShowSphere(bool b=true){showSphere=b;}
 	inline void render(){
 		for(Rectangle &r:getRectangles()){
 			r.setCol(getCol());
-			r.setDrawNormals();
+			//r.setDrawNormals();
 			r.render();
+		}
+		if(showSphere){
+		 glPushMatrix();
+		   //glColor3f(this->getCol().getX(),this->getCol().getY(),this->getCol().getZ());
+		   glColor3f(1,0,0);
+		   glTranslatef(this->getPos().getX(),this->getPos().getY(),this->getPos().getZ());
+		   //glutSolidSphere(r,10,10);
+		   glutWireSphere(r,10,10);
+		 glPopMatrix();
 		}
 	}
 };

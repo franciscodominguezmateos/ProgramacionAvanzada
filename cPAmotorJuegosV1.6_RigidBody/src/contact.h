@@ -19,6 +19,8 @@ class Contact {
 	double mdf;//Mixed dynamic friction
 	double msf;//Mixed static friction
 public:
+	inline SolidRigidBody* getA(){return a;}
+	inline SolidRigidBody* getB(){return b;};
 	bool hasContactPoints(){return contactPoints.size()>0;}
 	Contact(SolidRigidBody* a,SolidRigidBody* b):a(a),b(b){}
 	void setNormal(Vector3D n){normal=n;}
@@ -126,7 +128,7 @@ public:
 	}
 	void positionalCorrection(){
 		const double k_slop=0.001; //Penetration allowance
-		const double percent=0.2; //Penetration percentage to correct
+		const double percent=0.9; //Penetration percentage to correct
 		double   correctionMag=(max(penetration-k_slop,0.0)/(a->getInvM()+b->getInvM()));
 		Vector3D correction=normal*correctionMag*percent;
 		a->setPos(a->getPos()+correction*a->getInvM());

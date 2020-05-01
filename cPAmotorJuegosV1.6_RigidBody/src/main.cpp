@@ -34,7 +34,7 @@
 using namespace cv;
 
 double t=0.0;
-double dt=1.0/10000;
+double dt=1.0/100;
 
 int mx=-1,my=-1;        // Previous mouse coordinates
 
@@ -222,7 +222,7 @@ int main(int argc, char** argv) try{
  vel=0;
  //cout << t.isIn(Vector3D(0.25,0.25,0))<<endl;
  for(Camara &c:camaras){
-	 c.setPos(Vector3D(0,1.65,10));
+	 c.setPos(Vector3D(0,1.65,20));
 	 c.setRot(Vector3D(0,90,0));
  }
  Luz* l1=new Luz(Vector3D( 50,50,15));
