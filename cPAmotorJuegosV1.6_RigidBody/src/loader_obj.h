@@ -282,32 +282,37 @@ public:
 		Vector3D &p0=getVertices()[vid0[0]];
 		Vector3D &p1=getVertices()[vid1[0]];
 		Vector3D &p2=getVertices()[vid2[0]];
-		Triangle *t=new Triangle(p0,p1,p2);
-		Vector3D normal=t->getNormal();
-		if(nearZero(normal.lengthSquared()))
-			return nullptr;
-		if(vid0.size()>1){
-			if(vid0[1]!=-1){
-				Vector3D &t0=getTextures()[vid0[1]];
-				Vector3D &t1=getTextures()[vid1[1]];
-				Vector3D &t2=getTextures()[vid2[1]];
-				t->setT0(t0);
-				t->setT1(t1);
-				t->setT2(t2);
+		Triangle *t=nullptr;
+		try{
+			t=new Triangle(p0,p1,p2);
+			Vector3D normal=t->getNormal();
+			if(vid0.size()>1){
+				if(vid0[1]!=-1){
+					Vector3D &t0=getTextures()[vid0[1]];
+					Vector3D &t1=getTextures()[vid1[1]];
+					Vector3D &t2=getTextures()[vid2[1]];
+					t->setT0(t0);
+					t->setT1(t1);
+					t->setT2(t2);
+				}
+			}
+			if(vid0.size()==3){
+				Vector3D &n0=getNormals()[vid0[2]];
+				Vector3D &n1=getNormals()[vid1[2]];
+				Vector3D &n2=getNormals()[vid2[2]];
+				t->setN0(n0);
+				t->setN1(n1);
+				t->setN2(n2);
+			}
+			else{
+				t->setN0(normal);
+				t->setN1(normal);
+				t->setN2(normal);
 			}
 		}
-		if(vid0.size()==3){
-			Vector3D &n0=getNormals()[vid0[2]];
-			Vector3D &n1=getNormals()[vid1[2]];
-			Vector3D &n2=getNormals()[vid2[2]];
-			t->setN0(n0);
-			t->setN1(n1);
-			t->setN2(n2);
-		}
-		else{
-			t->setN0(normal);
-			t->setN1(normal);
-			t->setN2(normal);
+		catch(runtime_error &e){
+			//Problem creating the triangle
+			t=nullptr;
 		}
 		addVTNindex(vid0[0],vid0[1],vid0[2]);
 		addVTNindex(vid1[0],vid1[1],vid1[2]);

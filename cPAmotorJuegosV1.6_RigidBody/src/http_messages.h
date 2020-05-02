@@ -37,7 +37,7 @@ public:
 	inline int    getInt   (string key)  {return stoi(params[key]);}
 	inline float  getFloat (string key)  {return stof(params[key]);}
 	inline double getDouble(string key)  {return stod(params[key]);}
-	inline bool isEmpty(){params.empty();}
+	inline bool isEmpty(){return params.empty();}
 	inline void clear()  {params.clear();}
 	inline int  size()  const     {return params.size();}
 	inline bool hasKey(string key){return params.count(key)>0;}

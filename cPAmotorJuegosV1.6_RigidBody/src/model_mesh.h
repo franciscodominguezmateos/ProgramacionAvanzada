@@ -31,8 +31,8 @@ class ModelMesh {
 	vector<unsigned int> ivertices;
 	vector<unsigned int> itextures;
 	vector<unsigned int> inormals;
-	vector<string>       iMaterialNames;
 	//this vector size is above ones divided by 3 since are triangles
+	vector<string>       iMaterialNames;
 	vector<Triangle> triangles;
 	vector<string>   triangleMaterialNames;
 	map<string,Material> materials;
@@ -188,10 +188,22 @@ public:
 		}
 	}
 	void doScale(double s){
-		for(Triangle &t:triangles){
-			t.doScale(s);
-		}
 		for(Vector3D &v:vertices)
 			v*=s;
+		vector<Triangle> vt(triangles);
+		triangles.clear();
+		for(Triangle &t:vt) try{
+			t.doScale(s);
+			triangles.push_back(t);
+		}
+		catch(runtime_error &e){
+			//cout << "triangulo muy pequeño en ModeloMaterial::doScale :"+string(e.what())<<endl;
+		}
+		minX*=s;
+		minY*=s;
+		minZ*=s;
+		maxX*=s;
+		maxY*=s;
+		maxZ*=s;
 	}
 };

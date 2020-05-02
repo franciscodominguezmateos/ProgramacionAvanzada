@@ -53,7 +53,9 @@ public:
 		//cout << "render..."<< endl;
 		//int i=0;
 		ax=1;ay=1,az=1;
-		for(Mat &m:jointTransforms){
+		for(unsigned int i=0;i<jointTransforms.size();i++){
+			Mat &m=jointTransforms[i];
+			string &text=jointNames[i];
 			float x=m.at<float>(0,3);
 			float y=m.at<float>(1,3);
 			float z=m.at<float>(2,3);
@@ -62,26 +64,29 @@ public:
 			//i++;
 			Solido::render();
 			glPushMatrix();
-			//cout << getPos() << endl;
-			glMultTransposeMatrixf((GLfloat*)m.data);
-			glPushMatrix();
-			glColor3f(1,0,0);
-			glScalef(ax,ax/20.0,ax/20.0);
-			glTranslatef(0.5,0,0);
-			glutSolidCube(1);
-			glPopMatrix();
-			glPushMatrix();
-			glColor3f(0,1,0);
-			glScalef(ay/20.0,ay,ay/20.0);
-			glTranslatef(0,0.5,0);
-			glutSolidCube(1);
-			glPopMatrix();
-			glPushMatrix();
-			glColor3f(0,0,1);
-			glScalef(az/20.0,az/20.0,az);
-			glTranslatef(0.0,0,0.5);
-			glutSolidCube(1);
-			glPopMatrix();
+				//cout << getPos() << endl;
+				glMultTransposeMatrixf((GLfloat*)m.data);
+				glColor3f(1,1,1);
+				for(char c:text)
+				    glutBitmapCharacter( GLUT_BITMAP_9_BY_15, c );
+				glPushMatrix();
+				glColor3f(1,0,0);
+				glScalef(ax,ax/20.0,ax/20.0);
+				glTranslatef(0.5,0,0);
+				glutSolidCube(1);
+				glPopMatrix();
+				glPushMatrix();
+				glColor3f(0,1,0);
+				glScalef(ay/20.0,ay,ay/20.0);
+				glTranslatef(0,0.5,0);
+				glutSolidCube(1);
+				glPopMatrix();
+				glPushMatrix();
+				glColor3f(0,0,1);
+				glScalef(az/20.0,az/20.0,az);
+				glTranslatef(0.0,0,0.5);
+				glutSolidCube(1);
+				glPopMatrix();
 			glPopMatrix();
 		}
 		//cout << "endl..."<< endl;

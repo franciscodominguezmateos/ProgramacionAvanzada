@@ -224,14 +224,6 @@ public:
 			cout << "Fichero "+nombreFichero+" no existe."<<endl;
 		}
 		cout<< "El modelo "<< name << " tiene "<< triangulos.size() << " triangulos."<<endl;
-		for(Triangle* &t:triangulos){
-			try{
-				Vector3D n=t->getNormal();
-			}
-			catch(runtime_error &e){
-				throw runtime_error(" in ModeloMaterial::load cheking getNormal() : "+string(e.what()));
-			}
-		}
 	}
  	Vector3D  *parseVector3D(string &linea){
  		float x,y,z;

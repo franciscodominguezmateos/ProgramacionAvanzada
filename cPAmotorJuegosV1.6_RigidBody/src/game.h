@@ -56,7 +56,7 @@ class Game{
 	double t;  // time in seconds
 	double dt; // time increment in seconds
 public:
-	Game(string t="PAGame default;-P",int port=8881):title(t),seProcessor(port),screen(640,480),t(0),dt(0.1),skyBox(nullptr){}
+	Game(string t="PAGame default;-P",int port=8881):title(t),seProcessor(port),screen(640,480),skyBox(nullptr),t(0),dt(0.1){}
 	void addStage(View* v,Camara* cam,Stage* e){
 		if(skyBox==nullptr){
 			skyBox=new SkyBox();

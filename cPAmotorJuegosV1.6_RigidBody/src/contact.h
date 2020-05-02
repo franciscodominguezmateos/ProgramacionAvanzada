@@ -10,7 +10,9 @@
 #pragma once
 #include "solid_rigid_body.h"
 class Contact {
+	// A has the vertex to collide
 	SolidRigidBody* a;
+	// B has the plane of collision
 	SolidRigidBody* b;
 	double penetration;
 	Vector3D normal;
@@ -22,7 +24,7 @@ public:
 	inline SolidRigidBody* getA(){return a;}
 	inline SolidRigidBody* getB(){return b;};
 	bool hasContactPoints(){return contactPoints.size()>0;}
-	Contact(SolidRigidBody* a,SolidRigidBody* b):a(a),b(b){}
+	Contact(SolidRigidBody* a,SolidRigidBody* b):a(a),b(b),penetration(0){}
 	void setNormal(Vector3D n){normal=n;}
 	void setPenetration(double p){penetration=p;}
 	double getPenetration(){return penetration;}
@@ -94,6 +96,7 @@ public:
 			in.push_back(impulse);
 			ran.push_back(ra);
 			rbn.push_back(rb);
+
 			// Friction impulse
 			//va=a->getVel()+a->getW().X(ra);
 			//vb=b->getVel()-b->getW().X(rb);

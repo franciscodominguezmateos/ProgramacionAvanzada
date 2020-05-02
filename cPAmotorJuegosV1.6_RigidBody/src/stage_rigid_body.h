@@ -16,26 +16,35 @@ public:
 		rigidBodies.push_back(new SolidRigidBody(1,2,3));
 		rigidBodies.push_back(new SolidRigidBody(1,2,3));
 		rigidBodies[0]->setPos(Vector3D(0,1,0));
-		rigidBodies[0]->setRot(Vector3D(30,15,15));
-		rigidBodies[1]->setPos(Vector3D(0,3.5,0));
+		//rigidBodies[0]->setRot(Vector3D(30,15,15));
+		rigidBodies[1]->setPos(Vector3D(0,3.75,0));
 		rigidBodies[1]->setRot(Vector3D(30,15,15));
-		for(int i=0;i<30;i++){
-			double L=50;
-			SolidRigidBody* s=new SolidRigidBody(1,2,3);
+		for(int i=0;i<100;i++){
+			double L=25;
+			SolidRigidBody* s=new SolidRigidBody(getRand(3,0.25),getRand(3,0.25),getRand(3,0.25));
 			s->setPos(Vector3D(getRand(  L, -L),getRand( 10)    ,getRand(  L, -L)));
 			s->setRot(Vector3D(getRand( 30,-30),getRand( 30,-30),getRand( 30,-30)));
 			rigidBodies.push_back(s);
 		}
 	}
-	void solveColision(SolidRigidBody* sp,SolidRigidBody* st,Contact &c){
+	void solveColisionNoSure(vector<Contact> &contactsNoSure){
+		for(unsigned int i=0;i<rigidBodies.size();i++)
+			for(unsigned int j=i+1;j<rigidBodies.size();j++)
+				if(rigidBodies[i]->colisionEsphere(rigidBodies[j]))
+					contactsNoSure.push_back(Contact(rigidBodies[i],rigidBodies[j]));
+	}
+	void solveColision(Contact &c){
+		SolidRigidBody* sp=c.getA();
+		SolidRigidBody* st=c.getB();
 		vector<Vector3D> vp=sp->getCorners();
-		c.setPenetration(0);
 		for(Vector3D &p:vp){
 			if(st->contain(p)){
 				c.addContactPoint(p);
 				Triangle t=st->nearestTriangle(p);
-				c.setNormal(t.getNormal());
-				c.setPenetration(max(c.getPenetration(),-t.distance(p)));
+				Vector3D vn=t.getNormal();
+				c.setNormal(vn);
+				double dist=t.distance(p);
+				c.setPenetration(max(c.getPenetration(),-dist));
 			}
 		}
 	}
@@ -44,16 +53,16 @@ public:
 		dummy->hazFija();
 		vector<Contact> contacts;
 		vector<Contact> contactsNoSure;
-		for(unsigned int i=0;i<rigidBodies.size();i++)
-			for(unsigned int j=i+1;j<rigidBodies.size();j++)
-				if(rigidBodies[i]->colisionEsphere(rigidBodies[j]))
-					contactsNoSure.push_back(Contact(rigidBodies[i],rigidBodies[j]));
+		solveColisionNoSure(contactsNoSure);
+		//check corners of A in triangles of B
 		for(Contact &c:contactsNoSure){
-			solveColision(c.getA(),c.getB(),c);
+			solveColision(c);
 			if(c.hasContactPoints()) contacts.push_back(c);
 		}
-		for(Contact &c:contactsNoSure){
-			solveColision(c.getB(),c.getA(),c);
+		//check corners of B in triangles of A
+		for(Contact &c0:contactsNoSure){
+			Contact c(c0.getB(),c0.getA());
+			solveColision(c);
 			if(c.hasContactPoints()) contacts.push_back(c);
 		}
 		//Collision with ground
@@ -77,7 +86,7 @@ public:
 			c.setPenetration(0);
 			Vector3D v;
 			for(unsigned int i=0;i<8;i++){
-				double L=50;
+				double L=25;
 				v=s->getCorner(i);
 				if(abs(v.getX())>L){
 					c.getA()->setShowSphere();
@@ -96,7 +105,7 @@ public:
 			c.setPenetration(0);
 			Vector3D v;
 			for(unsigned int i=0;i<8;i++){
-				double L=50;
+				double L=25;
 				v=s->getCorner(i);
 				if(abs(v.getZ())>L){
 					c.getA()->setShowSphere();

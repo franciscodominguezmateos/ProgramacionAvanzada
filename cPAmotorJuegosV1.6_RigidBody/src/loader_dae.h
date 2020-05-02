@@ -15,7 +15,7 @@ class LoaderDAE: public Loader {
 	int idxGeo;
 	AnimationSkeleton animSkeleton;
 public:
-	LoaderDAE(string name,int idx=0):Loader(name),idxGeo(idx),CORRECTION(Mat::eye(4,4,CV_32F)){}
+	LoaderDAE(string name,int idx=0):Loader(name),idxGeo(idx){}
 	AnimationSkeleton &getAnimationSkeleton(){return animSkeleton;}
 	void load(){
 
