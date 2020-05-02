@@ -12,11 +12,11 @@ using namespace cv;
 using namespace std;
 
 //24/04/2020 this doesn't work yet
-void renderString( int x, int y, string ss )
+void renderString( int x, int y, int z, string ss )
 {
   glColor3f( 0.9f, 0.9f, 0.0f );
   //glRasterPos2i( x, y );
-  glRasterPos3f( x, y , 0);
+  glRasterPos3f( x, y , z);
   //glWindowPos3f(10, 10, 0);
   for(char c:ss)
     glutBitmapCharacter( GLUT_BITMAP_9_BY_15, c );
@@ -82,8 +82,8 @@ public:
 			//TESTING drawBitmapText
 			CamaraTPS* ctps=(CamaraTPS*)cam;
 			Solido* s=ctps->getSolido();
-			renderString((int)s->getPos().getX(),(int)s->getPos().getY(),title);
-			renderString(0,0,title);
+			renderString((int)s->getPos().getX(),(int)s->getPos().getY(),(int)s->getPos().getZ(),title);
+			renderString(0,0,0,title);
 			e->render();
 			Mat cameraViewMat=posEulerAnglesToTransformationMatrix<float>(s->getPos(),-s->getRot());
 			skyBox->setCameraView(cameraViewMat);

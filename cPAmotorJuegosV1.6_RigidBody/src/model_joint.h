@@ -37,6 +37,7 @@ public:
 		name(name),
 		localBindTransform(pLocalBindTransform.clone()){}
 	void addChild(Joint child){children.push_back(child);}
+	void setInverseBindTransform(Mat &m){inverseBindTransform=m;bindTransform=m.inv();}
 	void calcInverseBindTransform(Mat parentBindTransform){
 		bindTransform=parentBindTransform*localBindTransform;
 		inverseBindTransform=bindTransform.inv();
@@ -46,7 +47,7 @@ public:
 	}
 	vector<Mat> getJointTransforms(){
 		//TODO: FIX this 100 should be the number of articulations
-		vector<Mat> vm(100);
+		vector<Mat> vm(200);
 		for(Mat &m:vm) m=Mat::eye(4,4,CV_32F);
 		addJoints(*this,vm);
 		return vm;
@@ -68,12 +69,12 @@ public:
 			addLocalJoint(j,sp);
 		}
 	}
-	inline vector<Joint> &getChildren(){return children;}
-	inline GLuint getIdx(){return idx;}
-	inline string &getName(){return name;}
-	inline Mat &getAnimatedTransform(){return animatedTransform;}
+	inline vector<Joint> &getChildren()  {return children;}
+	inline GLuint getIdx()               {return idx;}
+	inline string &getName()             {return name;}
+	inline Mat &getAnimatedTransform()   {return animatedTransform;}
 	inline Mat &getInverseBindTransform(){return inverseBindTransform;}
-	inline Mat &getBindTransform(){return bindTransform;}
-	inline Mat &getLocalBindTransform(){return localBindTransform;}
+	inline Mat &getBindTransform()       {return bindTransform;}
+	inline Mat &getLocalBindTransform()  {return localBindTransform;}
 	inline void setAnimatedTransform(Mat &m){animatedTransform=m;}
 };

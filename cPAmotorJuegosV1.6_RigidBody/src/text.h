@@ -22,6 +22,7 @@ public:
 	 glPushMatrix();
 	  glColor3f(this->getCol().getX(),this->getCol().getY(),this->getCol().getZ());
 	  glTranslatef(this->getPos().getX(),this->getPos().getY(),this->getPos().getZ());
+	  glRasterPos3f(0,0,0);
 	  for(char c:text)
 	    glutBitmapCharacter( GLUT_BITMAP_9_BY_15, c );
 	 glPopMatrix();

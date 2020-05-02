@@ -74,6 +74,7 @@ public:
 	  }
 	  cout << "END COLLADA"<<endl;
 	}
+	/*                          A N I M A T I O N S                    */
 	void loadJointAnimations(XMLNode &animations){
 		animSkeleton.setJointNames(getJointNames());
 		for(XMLNode &n:animations["animation"])
@@ -84,7 +85,7 @@ public:
 		XMLNode &channel=animation("channel");
 		string jointName=getJointName(channel);
 		XMLNode &iInput=sampler("input","semantic","INPUT");
-		vector<GLfloat> times=colladaSourceNumbers<GLfloat>(iInput,animation);
+		vector<GLfloat> times=colladaSourceNumbers(iInput,animation);
 		XMLNode &iOutput=sampler("input","semantic","OUTPUT");
 		vector<Mat> localTransformations=colladaSourceMatrices4x4(iOutput,animation);
 		assert(times.size()==localTransformations.size());
@@ -99,6 +100,7 @@ public:
 		assert(vs.size()==2);
 		return vs[0];
 	}
+	/*                         S K I N                */
 	void loadSkin(XMLNode &skin){
 		cout<<"loadSkin"<<endl;
 		XMLNode &vertex_weights=skin("vertex_weights");
@@ -106,8 +108,14 @@ public:
 		vector<string>jointNames=colladaSourceStrings(iJoint,skin,"Name_array");
 		setJointNames(jointNames);
 
+		XMLNode &joints=skin("joints");
+		XMLNode &iInvBindMat=joints("input","semantic","INV_BIND_MATRIX");
+		vector<Mat> invBindMats=colladaSourceMatrices4x4(iInvBindMat,skin);
+		//cout<<"ibm 65="<<invBindMats.size()<<endl;
+		setInverseBindTransforms(invBindMats);
+
 		XMLNode &iWeight=vertex_weights("input","semantic","WEIGHT");
-	    vector<GLfloat> weights=colladaSourceNumbers<GLfloat>(iWeight,skin);
+	    vector<GLfloat> weights=colladaSourceNumbers(iWeight,skin);
 
 	    vector<GLint> counts=split_numbers<GLint>(vertex_weights("vcount").getText());
 	    vector<GLint> data  =split_numbers<GLint>(vertex_weights("v").getText());
@@ -124,6 +132,7 @@ public:
 	        addVertexSkinData(vskin);
 	    }
 	}
+	/*                          J O I N T S                      */
 	Joint loadJoints(XMLNode &jointNode){
 		Joint joint=getJoint(jointNode);
 		if(jointNode.hasChild("node")){
@@ -145,22 +154,23 @@ public:
 		//cout << m <<endl;
 		return Joint(idx,name,m);
 	}
+	/*                       M E S H                             */
 	void loadVertices(XMLNode &mesh){
 		XMLNode &vertices=mesh("vertices");
 		XMLNode &iPosition=vertices("input","semantic","POSITION");
-		vector<GLfloat> vf=colladaSourceNumbers<GLfloat>(iPosition,mesh);
+		vector<GLfloat> vf=colladaSourceNumbers(iPosition,mesh);
 		setVerticesFromFloats(vf);
 	}
 	void loadNormals(XMLNode &mesh){
         XMLNode &polylist=mesh("polylist");
 		XMLNode &iNormal=polylist("input","semantic","NORMAL");
-		vector<GLfloat> vn=colladaSourceNumbers<GLfloat>(iNormal,mesh);
+		vector<GLfloat> vn=colladaSourceNumbers(iNormal,mesh);
 		setNormalsFromFloats(vn);
 	}
 	void loadTextures(XMLNode &mesh){
 		XMLNode &polylist=mesh("polylist");
 		XMLNode &iTextcoord=polylist("input","semantic","TEXCOORD");
-		vector<GLfloat> vt=colladaSourceNumbers<GLfloat>(iTextcoord,mesh);
+		vector<GLfloat> vt=colladaSourceNumbers(iTextcoord,mesh);
 		setTexturesFromFloats(vt);
 	}
 	void loadIndixes(XMLNode &mesh){
@@ -176,6 +186,7 @@ public:
 		  }
 		  //TODO: check count
 	}
+	/*                   C O L A D A   U T I L                   */
 	string &colladaSourceData(XMLNode &nodeID,XMLNode &nodeData,string source){
 		// find in nodeID a source id
 		  string dataSourceID=nodeID.getAttribute("source");
@@ -201,7 +212,7 @@ public:
 			  }
 			  return vs;
 		}
-	template<class T>
+	template<class T=GLfloat>
 	vector<T> colladaSourceNumbers(XMLNode &nodeID,XMLNode &nodeData,string source="float_array"){
 		// find in nodeID a source id
 		  string dataSourceID=nodeID.getAttribute("source");

@@ -81,6 +81,7 @@ class ModelMeshArticulated:public ModelMesh {
 	Joint jointsRoot;
 	vector<string>  jointNames;
 	map<string,int> jointIdx;
+	vector<Mat> inverseBindTransforms;
 public:
 	inline void setJointNames(vector<string> &jn){
 		jointNames=jn;
@@ -90,7 +91,9 @@ public:
 	inline int getJointIdx(string name){return jointIdx[name];}
 	inline void addVertexSkinData (VertexSkinData &vsd){vertexSkinData.push_back(vsd);}
 	inline void setJointsRoot(Joint j){jointsRoot=j;}
+	inline void setInverseBindTransforms(vector<Mat> &ivt){inverseBindTransforms=ivt;}
 	inline Joint &getJointsRoot(){return jointsRoot;}
+	inline vector<Mat> &getInverseBindTransforms(){return inverseBindTransforms;}
 	inline vector<GLuint> getJoints(int max=3){
 		vector<GLuint> vj;
 		for(VertexSkinData &v:vertexSkinData){

@@ -18,6 +18,7 @@ class SolidArticulated: public Solido{
 	vector<Mat> jointTransforms;
 	float ax=1,ay=1,az=1;
 public:
+	float L;
 	void setJointNames(vector<string> &jn){
 		jointNames=jn;
 		jointTransforms=vector<Mat>(jn.size());
@@ -36,23 +37,36 @@ public:
 		return jointTransforms;
 	}
 	void addJoints(Joint &joint,vector<Mat> &jm){
-		jm[joint.getIdx()]=joint.getAnimatedTransform()*joint.getBindTransform();
+		jm[joint.getIdx()]=joint.getAnimatedTransform()* joint.getBindTransform();
 		for(Joint &j:joint.getChildren()){
 			addJoints(j,jm);
 		}
 	}
+	inline void loadInverseBindTransforms(Joint &joint,vector<Mat> &ibt){
+		joint.setInverseBindTransform(ibt[joint.getIdx()]);
+		for(Joint &j:joint.getChildren())
+			loadInverseBindTransforms(j,ibt);
+	}
 	void init(ModelMeshArticulated &ma){
+		L=1;
 		jointsRoot=ma.getJointsRoot();
-		Mat I=Mat::eye(4,4,CV_32F);
+		Mat upf=Mat::eye(4,4,CV_32F);
 		//Mat upf=posEulerAnglesToTransformationMatrix<float>(Vector3D(),Vector3D(-90,0,0));
-		jointsRoot.calcInverseBindTransform(I);
+		jointsRoot.calcInverseBindTransform(upf);
+		loadInverseBindTransforms(jointsRoot,ma.getInverseBindTransforms());
 		setJointNames(ma.getJointNames());
 		buildJointTransforms();
+		/*vector<Mat> jt;
+		for(Mat &m:ma.getInverseBindTransforms()){
+			cout<<"m="<<m.inv()<<endl;
+			jt.push_back(m.inv());
+		}
+		jointTransforms=jt;*/
 	}
 	void render(){
 		//cout << "render..."<< endl;
 		//int i=0;
-		ax=1;ay=1,az=1;
+		ax=L;ay=L,az=L;
 		for(unsigned int i=0;i<jointTransforms.size();i++){
 			Mat &m=jointTransforms[i];
 			string &text=jointNames[i];
@@ -67,6 +81,8 @@ public:
 				//cout << getPos() << endl;
 				glMultTransposeMatrixf((GLfloat*)m.data);
 				glColor3f(1,1,1);
+				//glRasterPos3f( x, y , z);
+				glRasterPos3f( 0, 0 , 0);
 				for(char c:text)
 				    glutBitmapCharacter( GLUT_BITMAP_9_BY_15, c );
 				glPushMatrix();

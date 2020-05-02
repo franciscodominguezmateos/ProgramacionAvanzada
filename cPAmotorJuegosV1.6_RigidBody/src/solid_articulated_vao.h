@@ -52,7 +52,7 @@ public:
 		shaderProgram->stop();
 	}
 	void render(){
-		SolidArticulated::render();
+		//SolidArticulated::render();
 
 		shaderProgram->start();
 	    vao->bindAll();

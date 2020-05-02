@@ -9,8 +9,10 @@
 
 using namespace std;
 
+//for now SensorEventData is just a CGI http protocol parameter wrapper
 typedef CGI SensorEventData;
 
+//This class abstract the information sent from a wiimote as SensorEventData
 class SensorWiiMoteEventData{
 	static const int CWIID_BTN_2    =   1;
 	static const int CWIID_BTN_1    =   2;
@@ -66,6 +68,7 @@ public:
 	bool isDOWNdown() {return isDown(CWIID_BTN_DOWN);}
 	bool isUPdown()   {return isDown(CWIID_BTN_UP);}
 	bool isPLUSdown() {return isDown(CWIID_BTN_PLUS);}
+	//TODO same with idUp
 	int    getId(){return id;}
 	double getX() {return  x;}
 	double getY() {return  y;}

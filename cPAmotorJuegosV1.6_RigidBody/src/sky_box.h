@@ -31,6 +31,19 @@ public:
 		tcube->addImage(imread("modelos/skybox/Hogwarts_Sky_Dn.png"));
 		tcube->addImage(imread("modelos/skybox/Hogwarts_Sky_Bk.png"));
 		tcube->addImage(imread("modelos/skybox/Hogwarts_Sky_Fr.png"));*/
+		 /* Test TextureCube with a colour at each face
+		Mat mat0(16, 16, CV_8UC3, Scalar(255,0,0));
+		tcube->addImage(mat0);
+		Mat mat1(16, 16, CV_8UC3, Scalar(0,255,0));
+		tcube->addImage(mat1);
+		Mat mat2(16, 16, CV_8UC3, Scalar(255,255,0));
+		tcube->addImage(mat2);
+		Mat mat3(16, 16, CV_8UC3, Scalar(0,0,255));
+		tcube->addImage(mat3);
+		Mat mat4(16, 16, CV_8UC3, Scalar(255,0,255));
+		tcube->addImage(mat4);
+		Mat mat5(16, 16, CV_8UC3, Scalar(0,128,255));*/
+
 		tcube->init();
 		//spSkyBox.compileFromFileNames("src/SimpleSkyBoxVertex.glsl",
 		//		                      "src/SimpleSkyBoxFragment.glsl");

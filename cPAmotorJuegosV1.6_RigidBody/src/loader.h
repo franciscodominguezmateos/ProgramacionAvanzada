@@ -58,6 +58,7 @@ public:
 	inline void setTexturesFromFloats(vector<GLfloat> &vf){m.setTexturesFromFloats(vf);}
 	inline void setNormalsFromFloats (vector<GLfloat> &vf){m.setNormalsFromFloats(vf) ;}
 	inline void setJointsRoot(Joint j){m.setJointsRoot(j);}
+	inline void setInverseBindTransforms(vector<Mat> &ivt){m.setInverseBindTransforms(ivt);}
 	inline Joint &getJointsRoot(){return m.getJointsRoot();}
 	inline void addVertexSkinData(VertexSkinData &vsd){m.addVertexSkinData(vsd);}
 };
