@@ -42,10 +42,13 @@ public:
 			addJoints(j,jm);
 		}
 	}
-	inline void loadInverseBindTransforms(Joint &joint,vector<Mat> &ibt){
-		joint.setInverseBindTransform(ibt[joint.getIdx()]);
+	inline void loadInverseBindTransforms(Joint &joint,vector<Mat> &ibts,Mat &parentBindTransform){
+		Mat &ibt=ibts[joint.getIdx()];
+		joint.setInverseBindTransform(ibt);
+		Mat lbt=ibt*parentBindTransform;
+		joint.setLocalBindTransform(lbt);
 		for(Joint &j:joint.getChildren())
-			loadInverseBindTransforms(j,ibt);
+			loadInverseBindTransforms(j,ibts,joint.getBindTransform());
 	}
 	void init(ModelMeshArticulated &ma){
 		L=1;
@@ -53,7 +56,7 @@ public:
 		Mat upf=Mat::eye(4,4,CV_32F);
 		//Mat upf=posEulerAnglesToTransformationMatrix<float>(Vector3D(),Vector3D(-90,0,0));
 		jointsRoot.calcInverseBindTransform(upf);
-		loadInverseBindTransforms(jointsRoot,ma.getInverseBindTransforms());
+		loadInverseBindTransforms(jointsRoot,ma.getInverseBindTransforms(),upf);
 		setJointNames(ma.getJointNames());
 		buildJointTransforms();
 		/*vector<Mat> jt;

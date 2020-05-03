@@ -57,7 +57,8 @@ public:
 		  jointsRoot=loadJoints(torso);
 	  }
 	  else{
-		  XMLNode &hips=library_visual_scenes("visual_scene")("node","id","Hips");
+		  //XMLNode &hips=library_visual_scenes("visual_scene")("node","id","Hips");
+		  XMLNode &hips=library_visual_scenes("visual_scene")("node","id","Zombie_Hips");
 		  jointsRoot=loadJoints(hips);
 	  }
 	  cout <<"********************************************** DAE *********************"<< endl;
@@ -86,7 +87,6 @@ public:
 		string jointName=getJointName(channel);
 		XMLNode &iInput=sampler("input","semantic","INPUT");
 		vector<GLfloat> times=colladaSourceNumbers(iInput,animation);
-		cout << "time.size()="<<times.size()<<endl;
 		XMLNode &iOutput=sampler("input","semantic","OUTPUT");
 		vector<Mat> localTransformations=colladaSourceMatrices4x4(iOutput,animation);
 		assert(times.size()==localTransformations.size());
@@ -112,7 +112,6 @@ public:
 		XMLNode &joints=skin("joints");
 		XMLNode &iInvBindMat=joints("input","semantic","INV_BIND_MATRIX");
 		vector<Mat> invBindMats=colladaSourceMatrices4x4(iInvBindMat,skin);
-		//cout<<"ibm 65="<<invBindMats.size()<<endl;
 		setInverseBindTransforms(invBindMats);
 
 		XMLNode &iWeight=vertex_weights("input","semantic","WEIGHT");
@@ -188,47 +187,49 @@ public:
 		  //TODO: check count
 	}
 	/*                   C O L A D A   U T I L                   */
+	inline string getSourceId(XMLNode &nodeID){
+		string dataSourceID=nodeID.getAttribute("source");
+		ltrim(dataSourceID,"#");
+		return dataSourceID;
+	}
 	string &colladaSourceData(XMLNode &nodeID,XMLNode &nodeData,string source){
-		// find in nodeID a source id
-		  string dataSourceID=nodeID.getAttribute("source");
-		  ltrim(dataSourceID,"#");
-		  // in nodeData there is a source node with id dataSourceID then get the source node
-		  XMLNode &sourceNode=nodeData("source","id",dataSourceID)(source);
-		  string &text=sourceNode.getText();
-		  return text;
+	    // find in nodeID a source id
+		string dataSourceID=getSourceId(nodeID);
+		// in nodeData there is a source node with id dataSourceID then get the source node
+		XMLNode &sourceNode=nodeData("source","id",dataSourceID)(source);
+		string &text=sourceNode.getText();
+		return text;
 	}
 	vector<string> colladaSourceStrings(XMLNode &nodeID,XMLNode &nodeData,string source){
-			// find in nodeID a source id
-			  string dataSourceID=nodeID.getAttribute("source");
-			  ltrim(dataSourceID,"#");
-			  // in nodeData there is a source node with id dataSourceID then get the source node
-			  XMLNode &sourceNode=nodeData("source","id",dataSourceID)(source);
-			  string &text=sourceNode.getText();
-			  replaceChars(text);
-			  vector<string> vs=split(text);
-			  if(sourceNode.hasAttribute("count")){
-				  unsigned int count=sourceNode.getAttributeInt("count");
-				  if(count!=vs.size())
-					  runtime_error("Error LoaderDAE::colladaSourceStrings() vector size doesn't seem to be correct");
-			  }
-			  return vs;
-		}
+		// find in nodeID a source id
+		string dataSourceID=getSourceId(nodeID);
+		// in nodeData there is a source node with id dataSourceID then get the source node
+		XMLNode &sourceNode=nodeData("source","id",dataSourceID)(source);
+		string &text=sourceNode.getText();
+ 	    replaceChars(text);
+	    vector<string> vs=split(text);
+	    if(sourceNode.hasAttribute("count")){
+	    	unsigned int count=sourceNode.getAttributeInt("count");
+	    	if(count!=vs.size())
+			  runtime_error("Error LoaderDAE::colladaSourceStrings() vector size doesn't seem to be correct");
+	    }
+	    return vs;
+	}
 	template<class T=GLfloat>
 	vector<T> colladaSourceNumbers(XMLNode &nodeID,XMLNode &nodeData,string source="float_array"){
 		// find in nodeID a source id
-		  string dataSourceID=nodeID.getAttribute("source");
-		  ltrim(dataSourceID,"#");
-		  // in nodeData there is a source node with id dataSourceID then get the source node
-		  XMLNode &sourceNode=nodeData("source","id",dataSourceID)(source);
-		  string &text=sourceNode.getText();
-		  replaceChars(text);
-		  vector<T> vf=split_numbers<T>(text);
-		  if(sourceNode.hasAttribute("count")){
-			  unsigned int count=sourceNode.getAttributeInt("count");
-			  if(count!=vf.size())
-				  runtime_error("Error LoaderDAE::colladaSourceNumbers() vector size doesn't seem to be correct");
-		  }
-		  return vf;
+		string dataSourceID=getSourceId(nodeID);
+		// in nodeData there is a source node with id dataSourceID then get the source node
+		XMLNode &sourceNode=nodeData("source","id",dataSourceID)(source);
+		string &text=sourceNode.getText();
+		replaceChars(text);
+		vector<T> vf=split_numbers<T>(text);
+		if(sourceNode.hasAttribute("count")){
+			unsigned int count=sourceNode.getAttributeInt("count");
+			if(count!=vf.size())
+			    runtime_error("Error LoaderDAE::colladaSourceNumbers() vector size doesn't seem to be correct");
+		}
+		return vf;
 	}
 	vector<Mat> colladaSourceMatrices4x4(XMLNode &nodeID,XMLNode &nodeData,string source="float_array"){
 		vector<Mat> vm;

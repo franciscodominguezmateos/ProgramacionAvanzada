@@ -12,17 +12,18 @@ class KeyFrameJoint{
 	Mat localJointTransform;
 public:
 	KeyFrameJoint(float t,Mat &m):timeStamp(t),localJointTransform(m.clone()){}
-	inline float getTimeStamp(){return timeStamp;}
+	inline double getTimeStamp(){return timeStamp;}
 	inline Mat getT(){return localJointTransform.clone();}
 };
 class AnimationJoint{
 	string jointName;
 	int currentFrame;
 	vector<KeyFrameJoint> keyFrames;
+	double duration;
 public:
-	AnimationJoint(){}//needed for default containers constructor
-	AnimationJoint(string name):jointName(name),currentFrame(0){}
-	inline void addKeyFrameJoint(KeyFrameJoint kfj){keyFrames.push_back(kfj);}
+	AnimationJoint():duration(0){}//needed for default containers constructor
+	AnimationJoint(string name):jointName(name),currentFrame(0),duration(0){}
+	inline void addKeyFrameJoint(KeyFrameJoint kfj){keyFrames.push_back(kfj);duration=max(duration,kfj.getTimeStamp());}
 	inline KeyFrameJoint &getKeyFrameJoint(int idx){return keyFrames[idx];}
 	Mat getTransformation(KeyFrameJoint c,KeyFrameJoint n,float t){
 		float di=n.getTimeStamp()-c.getTimeStamp();
@@ -43,6 +44,7 @@ public:
 		return r;
 	}
 	string &getName(){return jointName;}
+	double getDuration(){return duration;}
 };
 class AnimationSkeleton:public Animation{
 	vector<string> jointNames;
@@ -55,7 +57,7 @@ public:
 				animationJoints[n].resetCurrentFrame();
 		}
 	}
-	void addKeyFramesJoint(AnimationJoint kfj){animationJoints[kfj.getName()]=kfj;}
+	void addKeyFramesJoint(AnimationJoint kfj){animationJoints[kfj.getName()]=kfj;setDuration(max(getDuration(),kfj.getDuration()));}
 	void setJointNames(vector<string> vs){jointNames=vs;}
 	SkeletonPose getCurrentPose(float t){
 		SkeletonPose mm;

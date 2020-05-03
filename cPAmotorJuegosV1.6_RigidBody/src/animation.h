@@ -14,7 +14,7 @@
 class Animation{
 	float duration;
 public:
-	float getDuration() const {return duration;}
+	double getDuration() const {return duration;}
 	void setDuration(float duration) {this->duration = duration;}
 	virtual void resetCurrentFrame()=0;
 	virtual SkeletonPose getCurrentPose(float currentTime)=0;

@@ -37,7 +37,6 @@ public:
 		name(name),
 		localBindTransform(pLocalBindTransform.clone()){}
 	void addChild(Joint child){children.push_back(child);}
-	void setInverseBindTransform(Mat &m){inverseBindTransform=m;bindTransform=m.inv();}
 	void calcInverseBindTransform(Mat parentBindTransform){
 		bindTransform=parentBindTransform*localBindTransform;
 		inverseBindTransform=bindTransform.inv();
@@ -77,4 +76,7 @@ public:
 	inline Mat &getBindTransform()       {return bindTransform;}
 	inline Mat &getLocalBindTransform()  {return localBindTransform;}
 	inline void setAnimatedTransform(Mat &m){animatedTransform=m;}
+	inline void setInverseBindTransform(Mat &m){inverseBindTransform=m;bindTransform=m.inv();}
+	inline void setBindTransform(Mat &m){bindTransform=m;inverseBindTransform=m.inv();}
+	inline void setLocalBindTransform(Mat &m){localBindTransform=m;}
 };
