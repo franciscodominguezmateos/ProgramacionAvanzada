@@ -44,23 +44,17 @@ public:
 	}
 	void applyPose2Joints(SkeletonPose &pose,Joint &joint,Mat &currentParentTransform){
 		//not all articulations have to be animated
-		if(pose.count(joint.getName())>0){
-			Mat &currentLocalTransform=pose[joint.getName()];
-			Mat currentTransform=currentParentTransform*currentLocalTransform;
-			for(Joint &j:joint.getChildren())
-				applyPose2Joints(pose,j,currentTransform);
-			Mat animationTransform=currentTransform*joint.getInverseBindTransform();
-			joint.setAnimatedTransform(animationTransform);
-		}
+		Mat currentLocalTransform;
+		if(pose.count(joint.getName())>0)
+			currentLocalTransform=pose[joint.getName()];
 		//if not articulation on pose just take the default localBindTransform
-		else{
-			Mat &currentLocalTransform=joint.getLocalBindTransform();
-			Mat currentTransform=currentParentTransform*currentLocalTransform;
-			for(Joint &j:joint.getChildren())
-				applyPose2Joints(pose,j,currentTransform);
-			Mat animationTransform=currentTransform*joint.getInverseBindTransform();
-			//cout <<joint.getName()<<endl<<animationTransform<<endl;
-			joint.setAnimatedTransform(animationTransform);
-		}
+		else
+			currentLocalTransform=joint.getLocalBindTransform();
+		Mat currentTransform=currentParentTransform*currentLocalTransform;
+		for(Joint &j:joint.getChildren())
+			applyPose2Joints(pose,j,currentTransform);
+		Mat animationTransform=currentTransform*joint.getInverseBindTransform();
+		//cout <<joint.getName()<<endl<<animationTransform<<endl;
+		joint.setAnimatedTransform(animationTransform);
 	}
 };

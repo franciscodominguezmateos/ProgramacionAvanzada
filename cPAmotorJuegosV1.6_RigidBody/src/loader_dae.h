@@ -86,6 +86,7 @@ public:
 		string jointName=getJointName(channel);
 		XMLNode &iInput=sampler("input","semantic","INPUT");
 		vector<GLfloat> times=colladaSourceNumbers(iInput,animation);
+		cout << "time.size()="<<times.size()<<endl;
 		XMLNode &iOutput=sampler("input","semantic","OUTPUT");
 		vector<Mat> localTransformations=colladaSourceMatrices4x4(iOutput,animation);
 		assert(times.size()==localTransformations.size());

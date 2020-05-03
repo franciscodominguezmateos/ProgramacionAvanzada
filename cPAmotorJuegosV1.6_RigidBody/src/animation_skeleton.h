@@ -50,7 +50,9 @@ class AnimationSkeleton:public Animation{
 public:
 	void resetCurrentFrame(){
 		for(string &n:jointNames){
-			animationJoints[n].resetCurrentFrame();
+			//some articulation could not be animated
+			if(animationJoints.count(n)>0)
+				animationJoints[n].resetCurrentFrame();
 		}
 	}
 	void addKeyFramesJoint(AnimationJoint kfj){animationJoints[kfj.getName()]=kfj;}
