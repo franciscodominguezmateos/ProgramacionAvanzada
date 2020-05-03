@@ -88,6 +88,10 @@ public:
 		for(unsigned int i=0;i<jn.size();i++) jointIdx[jn[i]]=i;
 	}
 	inline vector<string> &getJointNames(){return jointNames;}
+	inline void doUniformScale(float s){
+		ModelMesh::scale(s);
+		jointsRoot.doUniformScale(s);
+	}
 	inline int getJointIdx(string name){return jointIdx[name];}
 	inline void addVertexSkinData (VertexSkinData &vsd){vertexSkinData.push_back(vsd);}
 	inline void setJointsRoot(Joint j){jointsRoot=j;}
@@ -111,6 +115,14 @@ public:
 			}
 		}
 		return vw;
+	}
+	void initFromInverseBindTransforms(){
+		Mat upf=Mat::eye(4,4,CV_32F);
+		jointsRoot.loadInverseBindTransforms(getInverseBindTransforms(),upf);
+	}
+	void initFromLocalBindTransforms(){
+		Mat upf=Mat::eye(4,4,CV_32F);
+		jointsRoot.calcInverseBindTransform(upf);
 	}
 };
 

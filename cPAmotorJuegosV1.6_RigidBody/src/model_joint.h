@@ -37,12 +37,30 @@ public:
 		name(name),
 		localBindTransform(pLocalBindTransform.clone()){}
 	void addChild(Joint child){children.push_back(child);}
+	void doUniformScale(float s){
+		localBindTransform=uniformScaleTransform(localBindTransform,s);
+		bindTransform=uniformScaleTransform(bindTransform,s);
+		inverseBindTransform=bindTransform.inv();
+		for(Joint &j:children)
+			j.doUniformScale(s);
+	}
+	//localBindTransform are fine work out other transformations
 	void calcInverseBindTransform(Mat parentBindTransform){
 		bindTransform=parentBindTransform*localBindTransform;
 		inverseBindTransform=bindTransform.inv();
 		animatedTransform=Mat::eye(4,4,CV_32F);
 		for(Joint &j:children)
 			j.calcInverseBindTransform(bindTransform);
+	}
+	//given InverseBindTransforms (from DAEs files) work out all other transforms
+	void loadInverseBindTransforms(vector<Mat> &ibts,Mat &parentBindTransform){
+		Mat &ibt=ibts[getIdx()];
+		setInverseBindTransform(ibt);
+		Mat lbt=ibt*parentBindTransform;
+		setLocalBindTransform(lbt);
+		animatedTransform=Mat::eye(4,4,CV_32F);
+		for(Joint &j:getChildren())
+			j.loadInverseBindTransforms(ibts,getBindTransform());
 	}
 	vector<Mat> getJointTransforms(){
 		//TODO: FIX this 100 should be the number of articulations
@@ -59,13 +77,13 @@ public:
 	}
 	SkeletonPose getLocalBindPose(){
 		SkeletonPose sp;
-		addLocalJoint(*this,sp);
+		addLocalJoint(sp);
 		return sp;
 	}
-	void addLocalJoint(Joint &joint,SkeletonPose &sp){
-		sp[joint.getName()]=joint.getLocalBindTransform().clone();
-		for(Joint &j:joint.getChildren()){
-			addLocalJoint(j,sp);
+	void addLocalJoint(SkeletonPose &sp){
+		sp[getName()]=getLocalBindTransform();
+		for(Joint &j:getChildren()){
+			j.addLocalJoint(sp);
 		}
 	}
 	inline vector<Joint> &getChildren()  {return children;}

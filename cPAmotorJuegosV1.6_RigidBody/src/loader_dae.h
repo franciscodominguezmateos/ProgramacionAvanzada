@@ -55,16 +55,21 @@ public:
 		  XMLNode &torso=armature("node","id","Torso");
 		  //cout << torso <<endl;
 		  jointsRoot=loadJoints(torso);
+		  //Mat I=Mat::eye(4,4,CV_32F);
+		  //jointsRoot.calcInverseBindTransform(I);
+		  setJointsRoot(jointsRoot);
+		  getModelArticulated().initFromLocalBindTransforms();
 	  }
 	  else{
 		  //XMLNode &hips=library_visual_scenes("visual_scene")("node","id","Hips");
 		  XMLNode &hips=library_visual_scenes("visual_scene")("node","id","Zombie_Hips");
 		  jointsRoot=loadJoints(hips);
+		  //Mat I=Mat::eye(4,4,CV_32F);
+		  //jointsRoot.calcInverseBindTransform(I);
+		  setJointsRoot(jointsRoot);
+		  getModelArticulated().initFromInverseBindTransforms();
 	  }
 	  cout <<"********************************************** DAE *********************"<< endl;
-	  //Mat I=Mat::eye(4,4,CV_32F);
-	  //jointsRoot.calcInverseBindTransform(I);
-	  setJointsRoot(jointsRoot);
 
 	  //Load Animations
 	  loadJointAnimations(library_animations);

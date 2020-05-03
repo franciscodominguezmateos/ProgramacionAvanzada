@@ -14,6 +14,7 @@ public:
 	KeyFrameJoint(float t,Mat &m):timeStamp(t),localJointTransform(m.clone()){}
 	inline double getTimeStamp(){return timeStamp;}
 	inline Mat getT(){return localJointTransform.clone();}
+	inline void doUniformScale(float s){localJointTransform=uniformScaleTransform(localJointTransform,s);}
 };
 class AnimationJoint{
 	string jointName;
@@ -43,13 +44,23 @@ public:
 		Mat r=getTransformation(keyFrames[currentFrame],keyFrames[nextFrame],t);
 		return r;
 	}
-	string &getName(){return jointName;}
-	double getDuration(){return duration;}
+	inline void doUniformScale(float s){
+		for(KeyFrameJoint &kfj:keyFrames) kfj.doUniformScale(s);
+	}
+	inline string &getName(){return jointName;}
+	inline double getDuration(){return duration;}
 };
 class AnimationSkeleton:public Animation{
 	vector<string> jointNames;
 	map<string,AnimationJoint> animationJoints;
 public:
+	inline void doUniformScale(float s){
+		for(string &n:jointNames){
+			//some articulation could not be animated
+			if(animationJoints.count(n)>0)
+				animationJoints[n].doUniformScale(s);
+		}
+	}
 	void resetCurrentFrame(){
 		for(string &n:jointNames){
 			//some articulation could not be animated

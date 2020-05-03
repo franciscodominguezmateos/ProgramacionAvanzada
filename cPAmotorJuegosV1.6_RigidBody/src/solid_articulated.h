@@ -30,6 +30,9 @@ public:
 		return jointTransforms;
 	}
 	inline Joint &getJointsRoot(){return jointsRoot;}
+	virtual void loadJointTransforms(vector<Mat> transforms){
+		buildJointTransforms();
+	}
 	vector<Mat> &buildJointTransforms(){
 		addJoints(jointsRoot,jointTransforms);
 		//for(Mat &m:jointTransforms)	cout << m << endl;
@@ -42,7 +45,7 @@ public:
 			addJoints(j,jm);
 		}
 	}
-	inline void loadInverseBindTransforms(Joint &joint,vector<Mat> &ibts,Mat &parentBindTransform){
+/*	inline void loadInverseBindTransforms(Joint &joint,vector<Mat> &ibts,Mat &parentBindTransform){
 		Mat &ibt=ibts[joint.getIdx()];
 		joint.setInverseBindTransform(ibt);
 		Mat lbt=ibt*parentBindTransform;
@@ -50,13 +53,13 @@ public:
 		for(Joint &j:joint.getChildren())
 			loadInverseBindTransforms(j,ibts,joint.getBindTransform());
 	}
-	void init(ModelMeshArticulated &ma){
+*/	void init(ModelMeshArticulated &ma){
 		L=1;
 		jointsRoot=ma.getJointsRoot();
 		Mat upf=Mat::eye(4,4,CV_32F);
 		//Mat upf=posEulerAnglesToTransformationMatrix<float>(Vector3D(),Vector3D(-90,0,0));
-		jointsRoot.calcInverseBindTransform(upf);
-		loadInverseBindTransforms(jointsRoot,ma.getInverseBindTransforms(),upf);
+		//jointsRoot.calcInverseBindTransform(upf);
+		//loadInverseBindTransforms(jointsRoot,ma.getInverseBindTransforms(),upf);
 		setJointNames(ma.getJointNames());
 		buildJointTransforms();
 		/*vector<Mat> jt;

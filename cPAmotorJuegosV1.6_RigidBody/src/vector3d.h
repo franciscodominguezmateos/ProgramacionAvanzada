@@ -244,6 +244,19 @@ Mat buildTransformation(Mat R,Mat t){
 	r.at<float>(3,3)=1;
 	return r;
 }
+Mat uniformScaleTransform(Mat t,float s){
+	Mat r=Mat_<float>(4,4,CV_32F);
+	//copy rotation
+	for(int i=0;i<3;i++){
+		for(int j=0;j<3;j++)
+			r.at<float>(i,j)=t.at<float>(i,j);
+		//scale translation
+		r.at<float>(i,3)=t.at<float>(i,3)*s;
+		r.at<float>(3,i)=0;
+	}
+	r.at<float>(3,3)=1;
+	return r;
+}
 // this interpolated by right-> dm in on the right and update is r=T0*Tt
 // m1=m0*dm->dm=m0.inv()*m1;
 Mat interpolate(Mat T0,Mat T1,float t){

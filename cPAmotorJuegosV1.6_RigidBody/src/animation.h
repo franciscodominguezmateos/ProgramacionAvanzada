@@ -32,6 +32,8 @@ public:
 		Mat I=Mat::eye(4,4,CV_32F);
 	    //Mat up32f=posEulerAnglesToTransformationMatrix<float>(Vector3D(),Vector3D(-90,0,0));
 		applyPose2Joints(currentPose,sa->getJointsRoot(),I);
+		vector<Mat> jT=sa->getJointsRoot().getJointTransforms();
+		sa->loadJointTransforms(jT);
 	}
 	void incrementTime(float dt){
 		currentTime+=dt;
