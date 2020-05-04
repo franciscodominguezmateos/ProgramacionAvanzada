@@ -12,6 +12,10 @@ class KeyFrameJoint{
 	Mat localJointTransform;
 public:
 	KeyFrameJoint(float t,Mat &m):timeStamp(t),localJointTransform(m.clone()){}
+	/*KeyFrameJoint(const KeyFrameJoint &c):
+		timeStamp(c.timeStamp)//,
+		//localJointTransform(c.localJointTransform.clone())
+	{c.localJointTransform.copyTo(localJointTransform);}*/
 	inline double getTimeStamp(){return timeStamp;}
 	inline Mat getT(){return localJointTransform.clone();}
 	inline void doUniformScale(float s){localJointTransform=uniformScaleTransform(localJointTransform,s);}
@@ -102,7 +106,7 @@ public:
 			cout << i++ << "="<<n << "=="<<aJointNth.getName()<<endl;
 		}
 		cout <<"jointNames="<< jointNames.size()<<endl;
-		for(int i=0;i<jointNames.size();i++){
+		for(unsigned int i=0;i<jointNames.size();i++){
 			cout << i<<"="<<jointNames[i]<<endl;
 		}
 		return mm;

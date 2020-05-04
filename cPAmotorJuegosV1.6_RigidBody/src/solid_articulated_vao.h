@@ -12,10 +12,14 @@ class SolidArticulatedVAO:public SolidArticulated{
 	GLSLShaderProgram* shaderProgram;
 	GLSLVAO *vao;
 	Uniform jointTransforms;
+	Uniform T;
 	bool isMaster;
 public:
-	SolidArticulatedVAO(GLSLShaderProgram* p,GLSLVAO *pvao=nullptr):shaderProgram(p),vao(pvao),jointTransforms("jointT"),isMaster(false){
-		jointTransforms.setLocation(shaderProgram->id());
+	SolidArticulatedVAO(GLSLShaderProgram* p=nullptr,GLSLVAO *pvao=nullptr):shaderProgram(p),vao(pvao),jointTransforms("jointT"),T("T"),isMaster(false){
+		if(shaderProgram){
+			jointTransforms.setLocation(shaderProgram->id());
+			T.setLocation(shaderProgram->id());
+		}
 		if(vao==nullptr){
 			//this is the master instance the owner of vao
 			vao=new GLSLVAO();
@@ -25,10 +29,18 @@ public:
 	virtual ~SolidArticulatedVAO(){
 		if(isMaster) delete vao;
 	}
+	SolidArticulatedVAO *clone(){
+		SolidArticulatedVAO *r=new SolidArticulatedVAO(*this);
+		r->isMaster=false;
+		return r;
+	}
 	void setShaderProgram(GLSLShaderProgram *p){shaderProgram=p;}
 	void buildLocationUniforms(){
 		//I don't know where this should be done
-		jointTransforms.setLocation(shaderProgram->id());
+		if(shaderProgram){
+			jointTransforms.setLocation(shaderProgram->id());
+			T.setLocation(shaderProgram->id());
+		}
 	}
 	void init(ModelMeshArticulated &pm){
 		SolidArticulated::init(pm);
@@ -53,10 +65,9 @@ public:
 	}
 	void render(){
 		//SolidArticulated::render();
-
 		shaderProgram->start();
 	    vao->bindAll();
-		//T=posEulerAnglesToTransformationMatrix<float>(getPos(),getRot());
+		T=posEulerAnglesToTransformationMatrix<float>(getPos(),getRot());
 		glDrawElements(GL_TRIANGLES, vao->getIndexCount(), GL_UNSIGNED_INT,0); // Empezar desde el vértice 0S; 3 vértices en total -> 1 triángulo
 		vao->unbindAll();
 		shaderProgram->stop();
