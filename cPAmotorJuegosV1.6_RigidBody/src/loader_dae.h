@@ -18,49 +18,47 @@ public:
 	LoaderDAE(string name,int idx=0):Loader(name),idxGeo(idx){}
 	AnimationSkeleton &getAnimationSkeleton(){return animSkeleton;}
 	void load(){
-
 		//ifstream ifdae("model.dae");
-		string fileName=getName();
-		cout << "fileName="<<fileName <<endl;
-		ifstream ifdae(fileName.c_str());
+	    string fileName=getName();
+	    ifstream ifdae(fileName.c_str());
 	    XMLNode root;
 	    ifdae >> root;
 
-	  // COLLADA FILE FORMAT
-	  //Geometry loader
-	  XMLNode &collada=root("COLLADA");
-	  XMLNode &library_geometries   =collada("library_geometries");
-	  XMLNode &library_controllers  =collada("library_controllers");
-	  XMLNode &library_animations   =collada("library_animations");
-	  XMLNode &library_visual_scenes=collada("library_visual_scenes");
+	    // COLLADA FILE FORMAT
+	    //Geometry loader
+	    XMLNode &collada=root("COLLADA");
+	    XMLNode &library_geometries   =collada("library_geometries");
+	    XMLNode &library_controllers  =collada("library_controllers");
+	    XMLNode &library_animations   =collada("library_animations");
+	    XMLNode &library_visual_scenes=collada("library_visual_scenes");
 
-	  //for the moment this only load the idxGeo geometry
-	  XMLNode &geometry=library_geometries["geometry"][idxGeo];
-	  XMLNode &mesh=geometry("mesh");
-	  loadVertices(mesh);
-	  loadNormals (mesh);
-	  loadTextures(mesh);
-	  loadIndixes (mesh);
+	    //for the moment this only load the idxGeo geometry
+	    XMLNode &geometry=library_geometries["geometry"][idxGeo];
+	    XMLNode &mesh=geometry("mesh");
+	    loadVertices(mesh);
+	    loadNormals (mesh);
+	    loadTextures(mesh);
+	    loadIndixes (mesh);
 
-	  //Load skin
-	  XMLNode &skin=library_controllers("controller")("skin");
-	  cout << "skin"<<endl;
-	  loadSkin(skin);
+	    // SkeletonLoader
+	    //Load skin
+	    XMLNode &skin=library_controllers("controller")("skin");
+	    loadSkin(skin);
 
-	  //Load joints
-	  Joint jointsRoot;
-	  //TODO: fix this trick, if dae it mean from blender and z-up, if xml mean y-up
-	  if(getExtension(getName())=="dae"){
-		  XMLNode &armature=library_visual_scenes("visual_scene")("node","id","Armature");
-		  XMLNode &torso=armature("node","id","Torso");
-		  //cout << torso <<endl;
-		  jointsRoot=loadJoints(torso);
-		  //Mat I=Mat::eye(4,4,CV_32F);
-		  //jointsRoot.calcInverseBindTransform(I);
-		  setJointsRoot(jointsRoot);
-		  getModelArticulated().initFromLocalBindTransforms();
-	  }
-	  else{
+	    //Load joints
+	    Joint jointsRoot;
+	    //TODO: fix this trick, if dae it mean from blender and z-up, if xml mean y-up
+	    if(getExtension(getName())=="dae"){
+	    	XMLNode &armature=library_visual_scenes("visual_scene")("node","id","Armature");
+	    	XMLNode &torso=armature("node","id","Torso");
+	    	//cout << torso <<endl;
+	    	jointsRoot=loadJoints(torso);
+	    	//Mat I=Mat::eye(4,4,CV_32F);
+	    	//jointsRoot.calcInverseBindTransform(I);
+	    	setJointsRoot(jointsRoot);
+	    	getModelArticulated().initFromLocalBindTransforms();
+	    }
+	    else{
 		  //XMLNode &hips=library_visual_scenes("visual_scene")("node","id","Hips");
 		  XMLNode &hips=library_visual_scenes("visual_scene")("node","id","Zombie_Hips");
 		  jointsRoot=loadJoints(hips);
@@ -68,17 +66,15 @@ public:
 		  //jointsRoot.calcInverseBindTransform(I);
 		  setJointsRoot(jointsRoot);
 		  getModelArticulated().initFromInverseBindTransforms();
-	  }
-	  cout <<"********************************************** DAE *********************"<< endl;
+	    }
 
-	  //Load Animations
-	  loadJointAnimations(library_animations);
+	    //Load Animations
+	    loadJointAnimations(library_animations);
 
-	  // SkeletonLoader
-	  for(auto &pair:collada.getChildren()){
-		  cout << pair.first << endl;
-	  }
-	  cout << "END COLLADA"<<endl;
+	    //for(auto &pair:collada.getChildren()){
+	    //	cout << pair.first << endl;
+	    //}
+		cout<< "Model '"<< getName() << "' has "<< getModel().getIvertices().size()/3 << " triangles."<<endl;
 	}
 	/*                          A N I M A T I O N S                    */
 	void loadJointAnimations(XMLNode &animations){
@@ -108,7 +104,6 @@ public:
 	}
 	/*                         S K I N                */
 	void loadSkin(XMLNode &skin){
-		cout<<"loadSkin"<<endl;
 		XMLNode &vertex_weights=skin("vertex_weights");
 		XMLNode &iJoint=vertex_weights("input","semantic","JOINT");
 		vector<string>jointNames=colladaSourceStrings(iJoint,skin,"Name_array");
