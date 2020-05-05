@@ -1,5 +1,5 @@
 /*
- * model_vao.h
+ * solid_articulated_vao.h
  *
  *  Created on: 30 Mar 2020
  *      Author: Francisco Dominguez
@@ -11,15 +11,12 @@
 class SolidArticulatedVAO:public SolidArticulated{
 	GLSLShaderProgram* shaderProgram;
 	GLSLVAO *vao;
-	Uniform jointTransforms;
-	Uniform T;
+	//increment transform from
+	// global bind pose to current global pose
+	vector<Mat> animatedTransforms;
 	bool isMaster;
 public:
-	SolidArticulatedVAO(GLSLShaderProgram* p=nullptr,GLSLVAO *pvao=nullptr):shaderProgram(p),vao(pvao),jointTransforms("jointT"),T("T"),isMaster(false){
-		if(shaderProgram){
-			jointTransforms.setLocation(shaderProgram->id());
-			T.setLocation(shaderProgram->id());
-		}
+	SolidArticulatedVAO(GLSLShaderProgram* p=nullptr,GLSLVAO *pvao=nullptr):shaderProgram(p),vao(pvao),isMaster(false){
 		if(vao==nullptr){
 			//this is the master instance the owner of vao
 			vao=new GLSLVAO();
@@ -35,15 +32,9 @@ public:
 		return r;
 	}
 	void setShaderProgram(GLSLShaderProgram *p){shaderProgram=p;}
-	void buildLocationUniforms(){
-		//I don't know where this should be done
-		if(shaderProgram){
-			jointTransforms.setLocation(shaderProgram->id());
-			T.setLocation(shaderProgram->id());
-		}
-	}
 	void init(ModelMeshArticulated &pm){
 		SolidArticulated::init(pm);
+		animatedTransforms=vector<Mat>(getJointNames().size());
 		ModelMesh m=pm.buildShaderReadyMeshModel();
 		vao->init();
 		vao->createIndexBuffer(m.getIvertices());
@@ -58,19 +49,35 @@ public:
 		vector<GLfloat> vw=pm.getWeights();
 		vao->createAttribute(4,vw,3);
 	}
-	void loadJointTransforms(vector<Mat> transforms){
-		shaderProgram->start();
-		jointTransforms=transforms;
-		shaderProgram->stop();
+	void setPose(SkeletonPose &currentPose){
+		GLSLShaderProgram &sp=*shaderProgram;
+		SolidArticulated::setPose(currentPose);
+		getJointsRoot().fillAnimatedTransforms(animatedTransforms);
+	}
+	void applyPose2Joints(SkeletonPose &pose,Joint &joint,Mat &currentParentTransform){
+		//not all articulations have to be animated
+		Mat currentLocalTransform;
+		if(pose.count(joint.getName())>0)
+			currentLocalTransform=pose[joint.getName()];
+		//if not articulation on pose just take the default localBindTransform
+		else
+			currentLocalTransform=joint.getLocalBindTransform();
+		Mat currentTransform  =currentParentTransform*currentLocalTransform;
+		Mat animationTransform=currentTransform*joint.getInverseBindTransform();
+		joint.setAnimatedTransform(animationTransform);
+		for(Joint &j:joint.getChildren())
+			applyPose2Joints(pose,j,currentTransform);
 	}
 	void render(){
 		//SolidArticulated::render();
-		shaderProgram->start();
+		GLSLShaderProgram &sp=*shaderProgram;
+		sp.start();
 	    vao->bindAll();
-		T=posEulerAnglesToTransformationMatrix<float>(getPos(),getRot());
+	    sp["jointT"]=animatedTransforms;
+		sp["T"]=posEulerAnglesToTransformationMatrix<float>(getPos(),getRot());
 		glDrawElements(GL_TRIANGLES, vao->getIndexCount(), GL_UNSIGNED_INT,0); // Empezar desde el vértice 0S; 3 vértices en total -> 1 triángulo
 		vao->unbindAll();
-		shaderProgram->stop();
+		sp.stop();
 	}
 	GLSLVAO* getPtrVAO(){return vao;}
 };

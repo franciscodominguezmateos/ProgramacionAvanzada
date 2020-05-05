@@ -62,17 +62,18 @@ public:
 		for(Joint &j:getChildren())
 			j.loadInverseBindTransforms(ibts,getBindTransform());
 	}
-	vector<Mat> getJointTransforms(){
-		//TODO: FIX this 100 should be the number of articulations
-		vector<Mat> vm(200);
-		for(Mat &m:vm) m=Mat::eye(4,4,CV_32F);
-		addJoints(*this,vm);
-		return vm;
-	}
-	void addJoints(Joint &joint,vector<Mat> &jm){
+	void fillAnimatedTransforms(vector<Mat> &jm){
+		Joint &joint=*this;
 		jm[joint.getIdx()]=joint.getAnimatedTransform();
 		for(Joint &j:joint.getChildren()){
-			addJoints(j,jm);
+			j.fillAnimatedTransforms(jm);
+		}
+	}
+	void fillJointTransforms(vector<Mat> &jm){
+		Joint &joint=*this;
+		jm[joint.getIdx()]=joint.getAnimatedTransform()* joint.getBindTransform();
+		for(Joint &j:joint.getChildren()){
+			j.fillJointTransforms(jm);
 		}
 	}
 	SkeletonPose getLocalBindPose(){
@@ -86,6 +87,27 @@ public:
 			j.addLocalJoint(sp);
 		}
 	}
+	void applyPose(SkeletonPose &pose){
+		Joint &thisJoint=*this;
+		Mat I=Mat::eye(4,4,CV_32F);
+		thisJoint.applyPose2Joints(pose,I);
+	}
+	void applyPose2Joints(SkeletonPose &pose,Mat &currentParentTransform){
+		Joint &joint=*this;
+		//not all articulations have to be animated
+		Mat currentLocalTransform;
+		if(pose.count(joint.getName())>0)
+			currentLocalTransform=pose[joint.getName()];
+		//if not articulation on pose just take the default localBindTransform
+		else
+			currentLocalTransform=joint.getLocalBindTransform();
+		Mat currentTransform  =currentParentTransform*currentLocalTransform;
+		Mat animationTransform=currentTransform*joint.getInverseBindTransform();
+		joint.setAnimatedTransform(animationTransform);
+		for(Joint &j:joint.getChildren())
+			j.applyPose2Joints(pose,currentTransform);
+	}
+
 	inline vector<Joint> &getChildren()  {return children;}
 	inline GLuint getIdx()               {return idx;}
 	inline string &getName()             {return name;}

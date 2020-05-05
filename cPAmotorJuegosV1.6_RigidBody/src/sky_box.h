@@ -71,38 +71,42 @@ public:
 		glDepthMask(GL_TRUE);
 	}
 };
-string SkyBox::vertexShader=
-"#version 330 core\n"
-"in vec3 position;\n"
-"\n"
-"out vec3 pass_textureCoords;\n"
-"\n"
-"uniform mat4 cameraView;\n"
-"uniform mat4 projection;\n"
-"\n"
-"void main(){\n"
-"\n"
-" mat4 cv=cameraView;\n"
-" cv[0][3]=0;\n"
-" cv[1][3]=0;\n"
-" cv[2][3]=0;\n"
-" vec3 p=position;\n"
-" p*=1000;\n"
-" gl_Position=projection*cv*vec4(p,1);\n"
-" pass_textureCoords=position;\n"
-""
-"}";
-string SkyBox::fragmentShader=
-"#version 330 core\n"
-"in vec3 pass_textureCoords;\n"
-"\n"
-"out vec4 out_color;\n"
-"\n"
-"uniform samplerCube cubeMap;\n"
-"\n"
-"void main(){\n"
-"out_color = texture(cubeMap,pass_textureCoords);\n"
-"}\n";
+string SkyBox::vertexShader=R"glsl(
+#version 330 core
+in vec3 position;
+
+out vec3 pass_textureCoords;
+
+uniform mat4 cameraView;
+uniform mat4 projection;
+
+void main(){
+
+ mat4 cv=cameraView;
+ cv[0][3]=0;
+ cv[1][3]=0;
+ cv[2][3]=0;
+ vec3 p=position;
+ p*=1000;
+ gl_Position=projection*cv*vec4(p,1);
+ pass_textureCoords=position;
+}
+)glsl";
+
+string SkyBox::fragmentShader=R"glsl(
+#version 330 core
+
+in vec3 pass_textureCoords;
+
+out vec4 out_color;
+
+uniform samplerCube cubeMap;
+
+void main(){
+out_color = texture(cubeMap,pass_textureCoords);
+}
+)glsl";
+
 vector<GLfloat> SkyBox::skyboxVertices = {
     // positions
     -1.0f,  1.0f, -1.0f,

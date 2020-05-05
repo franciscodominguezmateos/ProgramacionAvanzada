@@ -139,8 +139,8 @@ inline string getExtension(string &s){
 	vector<string> vs=split(s,'.');	return vs[vs.size()-1];}
 
 /* NUMBERS TOOLS */
-inline bool nearZero(double d){return fabs(d)<0.0001;}
-inline bool nearEquals(double d0,double d1){return nearZero(d1-d0);}
+inline bool nearZero(double d,double threshold=0.0001){return fabs(d)<threshold;}
+inline bool nearEquals(double d0,double d1,double threshold=0.0001){return nearZero(d1-d0,threshold);}
 inline double linearMap(double x,double i0,double i1,double o0,double o1){
 	double difi=i1-i0;
 	double difo=o1-o0;

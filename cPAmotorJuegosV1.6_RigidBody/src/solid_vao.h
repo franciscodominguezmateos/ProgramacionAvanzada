@@ -24,15 +24,13 @@
 class SolidVAO: public Solido {
 	GLSLShaderProgram* shaderProgram;
 	GLSLVAO* vao;
-	Uniform T;
 	bool isMaster;
 	//23/04/2020 added one material per VAO
 	//it is used only for texturing
 	//This attribute has to be set in all kind of SolidVAO, not only in master
 	Material material;
 public:
-	SolidVAO(GLSLShaderProgram* p,GLSLVAO *pvao=nullptr):shaderProgram(p),vao(pvao),T("T"),isMaster(false){
-		T.setLocation(shaderProgram->id());
+	SolidVAO(GLSLShaderProgram* p,GLSLVAO *pvao=nullptr):shaderProgram(p),vao(pvao),isMaster(false){
 		if(vao==nullptr){
 			//this is the master instance the owner of vao
 			vao=new GLSLVAO();
@@ -40,7 +38,7 @@ public:
 		}
 	}
 	//This copy constructor is a standard one but with isMaster to false, because is not a master SolidVAO
-	SolidVAO(const SolidVAO &s):shaderProgram(s.shaderProgram),vao(s.vao),T(s.T),isMaster(false),material(s.material){}
+	SolidVAO(const SolidVAO &s):shaderProgram(s.shaderProgram),vao(s.vao),isMaster(false),material(s.material){}
 	virtual ~SolidVAO(){
 		if(isMaster) delete vao;
 	}
@@ -82,13 +80,14 @@ public:
 	void setMaterial(Material &m){material=m;}
 	Material &getMaterial(){return material;}
 	void render(){
+		GLSLShaderProgram &sp=*shaderProgram;
 		material.bind();
-		shaderProgram->start();
+		sp.start();
 	    vao->bindAll();
-		T=posEulerAnglesToTransformationMatrix<float>(getPos(),getRot());
+		sp["T"]=posEulerAnglesToTransformationMatrix<float>(getPos(),getRot());
 		glDrawElements(GL_TRIANGLES, vao->getIndexCount(), GL_UNSIGNED_INT,0);
 		vao->unbindAll();
-		shaderProgram->stop();
+		sp.stop();
 		material.unbind();
 	}
 	GLSLVAO* getPtrVAO(){return vao;}

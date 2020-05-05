@@ -5,6 +5,7 @@
  *      Author: Francisco Dominguez
  */
 #pragma once
+#include "animation_skeleton.h"
 #include "solid_articulated_vao.h"
 
 class SolidArticulatedAnimatedVAO:public SolidArticulatedVAO {

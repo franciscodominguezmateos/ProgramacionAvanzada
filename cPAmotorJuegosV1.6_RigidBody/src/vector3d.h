@@ -39,8 +39,6 @@ public:
 	inline Vector3Dx<S> operator-() {return	Vector3Dx<S>(-x,-y,-z);}
 	inline Vector3Dx<S> operator-(const Vector3Dx<S> &b) {return Vector3Dx<S>(x-b.x,y-b.y,z-b.z);}
 	inline Vector3Dx<S> operator-=(const Vector3Dx<S> &v){x-=v.x;y-=v.y;z-=v.z;}
-	inline Vector3Dx<S> operator*(const S &d) {return Vector3Dx<S>(x * d, y * d, z * d);}
-	inline Vector3Dx<S> operator*=(const S &d){	x*=d; y*=d;	z*=d; return *this;	}
 	inline Vector3Dx<S> operator/=(const S &d){	x/=d; y/=d;	z/=d; return *this;	}
 		inline Vector3Dx<S> operator/(S d) {return 	Vector3Dx<S>(x / d, y / d, z / d);}
 	inline S getX() { return x; }
@@ -55,6 +53,9 @@ public:
 		if (i==2) return z;
 		throw runtime_error("Error in Vector3Dx::operator[] index must be 0..2");
 	}
+	/*             P R O D U C T S            */
+	inline Vector3Dx<S> operator*(const S &d) {return Vector3Dx<S>(x * d, y * d, z * d);}
+	inline Vector3Dx<S> operator*=(const S &d){	x*=d; y*=d;	z*=d; return *this;	}
 	// outer product
 	inline Mat O(Vector3Dx<S> v){
 		S &x0=x,&y0=y,&z0=z;
@@ -84,6 +85,10 @@ public:
 				v1.y*v2.z - v1.z*v2.y,
 			    v1.z*v2.x - v1.x*v2.z,
 			    v1.x*v2.y - v1.y*v2.x);
+	}
+	inline S mix(Vector3Dx<S> v2,Vector3Dx<S> v3){
+		Vector3Dx<S> &v1=*this;
+		return v1*v2.X(v3);
 	}
 	inline S lengthSquared() {return x * x + y * y + z * z;}
 	inline S length() {return sqrt(lengthSquared());}

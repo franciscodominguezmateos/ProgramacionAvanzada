@@ -119,7 +119,7 @@ public:
 		Mat I=Mat::eye(3,3,CV_64F);
 		return I;
 	}
-	// Parameter derivateve of quaterion action on p aka Jacobian of action/application
+	// Parameter derivative of quaterion action on p aka Jacobian of action/application
 	Mat Ja(Vector3D a){
 		Mat I=Mat::eye(3,3,CV_64F);
 		Vector3D v0=a*w+v.X(a);

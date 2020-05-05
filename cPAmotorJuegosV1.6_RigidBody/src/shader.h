@@ -367,7 +367,10 @@ public:
     	}
     }
     Uniform &getUniform(string s){return uniforms[s];}
-	Uniform &operator[](string s){return uniforms[s];}
+	Uniform &operator[](string s){
+		if(uniforms.count(s)>0) return uniforms[s];
+		else runtime_error(" in GLSLShaderProgram::operataor[] uniform name="+s+ "doesn't exist.");
+	}
 	void bindAttribute(GLuint attribID,string s){
 		glBindAttribLocation(programID,attribID,s.c_str());
 	}
