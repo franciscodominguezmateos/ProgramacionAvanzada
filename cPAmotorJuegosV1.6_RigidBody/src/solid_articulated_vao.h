@@ -1,7 +1,7 @@
 /*
  * solid_articulated_vao.h
  *
- *  Created on: 30 Mar 2020
+ *  Created on: 8 Apr 2020
  *      Author: Francisco Dominguez
  */
 #pragma once
@@ -50,7 +50,6 @@ public:
 		vao->createAttribute(4,vw,3);
 	}
 	void setPose(SkeletonPose &currentPose){
-		GLSLShaderProgram &sp=*shaderProgram;
 		SolidArticulated::setPose(currentPose);
 		getJointsRoot().fillAnimatedTransforms(animatedTransforms);
 	}

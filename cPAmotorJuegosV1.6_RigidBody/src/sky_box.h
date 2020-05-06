@@ -12,12 +12,10 @@ class SkyBox {
 	static string vertexShader;
 	static string fragmentShader;
 	GLSLShaderProgram spSkyBox;
-	Uniform spsCameraView;
-	Uniform spsProjection;
 	GLSLVAO* pskVao;
 	TextureCube* tcube;
 public:
-	SkyBox():spsCameraView("cameraView"),spsProjection("projection"){
+	SkyBox(){
 		tcube=new TextureCube();
 		tcube->addImage(imread("modelos/skybox/right.jpg"));
 		tcube->addImage(imread("modelos/skybox/left.jpg"));
@@ -43,15 +41,10 @@ public:
 		Mat mat4(16, 16, CV_8UC3, Scalar(255,0,255));
 		tcube->addImage(mat4);
 		Mat mat5(16, 16, CV_8UC3, Scalar(0,128,255));*/
-
 		tcube->init();
-		//spSkyBox.compileFromFileNames("src/SimpleSkyBoxVertex.glsl",
-		//		                      "src/SimpleSkyBoxFragment.glsl");
+
 		spSkyBox.compileFromStrings(vertexShader,fragmentShader);
-		spSkyBox.setUniforms({"cameraView","projection"});
-		spSkyBox.start();
-		//spsProjection=projectionMat;
-		spSkyBox.stop();
+
 		pskVao=new GLSLVAO();
 		pskVao->init();
 		pskVao->createAttribute(0,skyboxVertices,3);
@@ -61,7 +54,6 @@ public:
 	void render(){
 		glDepthMask(GL_FALSE);
 		spSkyBox.start();
-	    //spsCameraView=cameraViewMat;
 		tcube->bind();
 		pskVao->bindAll();
 		glDrawArrays(GL_TRIANGLES, 0, 36);

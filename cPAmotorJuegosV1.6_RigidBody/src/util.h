@@ -131,6 +131,11 @@ void operator>>(ifstream &f,vector<string> &v){
 		throw runtime_error("File not opened in util.h::operator>> to vector<string>");
 	}
 }
+void operator>>(stringstream &f,vector<string> &v){
+	string s;
+	while(getline(f,s))
+		v.push_back(s);
+}
 
 /* EXTENSIONS */
 inline string takeAwayExtension(string &s){

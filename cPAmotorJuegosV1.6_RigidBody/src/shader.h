@@ -267,11 +267,28 @@ class GLSLShader{
 	vector<string> uniformNames;
 public:
 	GLSLShader(GLuint shaderType):shaderID(glCreateShader(shaderType)){	}
+    vector<string> &getUniformNames(){return uniformNames;}
 	void parseUniformNames(string sourceCode){
 	    //30/04/2020
-		//TODO: automatic extraction of uniform name variables
+		//06/05/2020: automatic extraction of uniform name variables
 		//      just parse lines and extract names the ones that begin with uniform
-
+		stringstream sstr(sourceCode);
+		vector<string> lines;
+		sstr>>lines;
+		for(string line:lines){
+			trim(line);
+			trim(line,";");
+			vector<string> words=split(line);
+			if(words.size()>0)
+			if(words[0]=="uniform"){
+				string uniformName=words[2];
+				vector<string> vs=split(uniformName,'[');
+				if(vs.size()==1)
+					uniformNames.push_back(uniformName);
+				else
+					uniformNames.push_back(vs[0]);
+			}
+		}
 	}
 	GLuint compileFromFileName(string fileName){
 		cout << "Compiling shader: "<<fileName<<endl;
@@ -297,6 +314,7 @@ public:
 			glGetShaderInfoLog(shaderID, InfoLogLength, NULL, &shaderErrorMessage[0]);
 			throw runtime_error(&shaderErrorMessage[0]);
 		}
+		parseUniformNames(sourceCode);
 		return shaderID;
 	}
 };
@@ -311,18 +329,22 @@ public:
 		// Compiling vertes shader
 		GLSLShader vs(GL_VERTEX_SHADER);
 	    vertexShaderID=vs.compileFromFileName(vertexFileName);
+	    addUniformsNames(vs.getUniformNames());
 	    // Compiling frame shader
 		GLSLShader fs(GL_FRAGMENT_SHADER);
 		fragmentShaderID=fs.compileFromFileName(fragmentFileName);
+	    addUniformsNames(fs.getUniformNames());
 		link();
 	}
 	void compileFromStrings(string vertexSourceCode,string fragmentSourceCode){
 		// Compiling vertes shader
 		GLSLShader vs(GL_VERTEX_SHADER);
 	    vertexShaderID=vs.compile(vertexSourceCode);
+	    addUniformsNames(vs.getUniformNames());
 	    // Compiling frame shader
 		GLSLShader fs(GL_FRAGMENT_SHADER);
 		fragmentShaderID=fs.compile(fragmentSourceCode);
+	    addUniformsNames(fs.getUniformNames());
 		link();
 	}
 	void link(){
@@ -349,6 +371,7 @@ public:
 
 		glDeleteShader(vertexShaderID);
 		glDeleteShader(fragmentShaderID);
+		setUniformLocations();
 	}
 	~GLSLShaderProgram(){stop();glDeleteProgram(programID);}
 	void setUniformsLocation(vector<Uniform> &uniforms){for(Uniform &u:uniforms)u.setLocation(programID);}
@@ -366,10 +389,23 @@ public:
     		uniforms[s]=u;
     	}
     }
+    void setUniformLocations(){
+    	for(auto pair:uniforms){
+    		uniforms[pair.first].setLocation(programID);
+    	}
+    }
+    void addUniformsNames(vector<string> uniformNames){
+         	for(auto s:uniformNames){
+        		Uniform u(s);
+        		//u.setLocation(programID);
+        		uniforms[s]=u;
+        	}
+    }
     Uniform &getUniform(string s){return uniforms[s];}
 	Uniform &operator[](string s){
-		if(uniforms.count(s)>0) return uniforms[s];
-		else runtime_error(" in GLSLShaderProgram::operataor[] uniform name="+s+ "doesn't exist.");
+		if(uniforms.count(s)==0)
+			runtime_error(" in GLSLShaderProgram::operataor[] uniform name="+s+ "doesn't exist.");
+		return uniforms[s];
 	}
 	void bindAttribute(GLuint attribID,string s){
 		glBindAttribLocation(programID,attribID,s.c_str());

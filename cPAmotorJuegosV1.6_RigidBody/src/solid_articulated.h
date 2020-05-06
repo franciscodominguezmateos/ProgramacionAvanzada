@@ -40,8 +40,8 @@ public:
 	vector<Mat> &getJointTransforms(){
 		return jointTransforms;
 	}
-	void init(ModelMeshArticulated &ma){
-		L=1;
+	void init(ModelMeshArticulated &ma, float l=1){
+		L=l;
 		jointsRoot=ma.getJointsRoot();
 		setJointNames(ma.getJointNames());
 		getJointsRoot().fillJointTransforms(jointTransforms);
