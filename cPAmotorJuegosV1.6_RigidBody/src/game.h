@@ -48,6 +48,7 @@ class Game{
 	vector<View*> views;
 	vector<Camara*> cameras;
 	vector<Stage*> scenes;
+	vector<GLSLShaderProgram*> shaders;
 	SensorEventProcessor seProcessor;
 	SocketMJPEGServer  sms;
 	GLSLFBO screen; //default frame buffer object is the screen if init() is not called
@@ -57,6 +58,7 @@ class Game{
 	double dt; // time increment in seconds
 public:
 	Game(string t="PAGame default;-P",int port=8881):title(t),seProcessor(port),screen(640,480),skyBox(nullptr),t(0),dt(0.1){}
+	void addShader(GLSLShaderProgram* sp){shaders.push_back(sp);}
 	void addStage(View* v,Camara* cam,Stage* e){
 		if(skyBox==nullptr){
 			skyBox=new SkyBox();
@@ -73,22 +75,23 @@ public:
 	virtual void onDisplay(){
 		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 		for(unsigned int i=0;i<views.size();i++){
-			View* &view=views[i];
+			View*   &view=views[i];
 			Camara* &cam=cameras[i];
-			Stage* &e=scenes[i];
+			Stage*  &e=scenes[i];
+			Solido* s=cam;//->getSolido();
+			Mat cameraViewMat=posEulerAnglesToTransformationMatrix<float>(s->getPos(),-s->getRot());
+			for(GLSLShaderProgram* &sp:shaders){
+				GLSLShaderProgram &spAnimation=*sp;
+				spAnimation.start();
+				spAnimation["cameraView"]=cameraViewMat;
+				spAnimation.stop();
+			}
 			view->render();
 		    glLoadIdentity();
 			cam->render();
-			//TESTING drawBitmapText
-			CamaraTPS* ctps=(CamaraTPS*)cam;
-			Solido* s=ctps->getSolido();
-			renderString((int)s->getPos().getX(),(int)s->getPos().getY(),(int)s->getPos().getZ(),title);
-			renderString(0,0,0,title);
 			e->render();
-			Mat cameraViewMat=posEulerAnglesToTransformationMatrix<float>(s->getPos(),-s->getRot());
 			skyBox->setCameraView(cameraViewMat);
 			skyBox->render();
-			drawBitmapText(title.c_str());
 		}
 		glutSwapBuffers();
 		img=screen.toOpenCV();

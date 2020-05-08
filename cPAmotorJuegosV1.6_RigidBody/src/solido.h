@@ -25,6 +25,7 @@ public:
 	 Solido():Solido(0,0,0) {suelo=floorAll;}
 	 Solido(const Solido &s):pos(s.pos),vel(s.vel),color(s.color),f(s.f),m(s.m),fija(s.fija){}
 	 void setSuelo(double s){suelo=s;}
+	 double getSuelo(){return suelo;}
 	 static void setFloorAll(double s){floorAll=s;}
 	 Solido& operator=(const Solido &s){
 		 pos=s.pos;

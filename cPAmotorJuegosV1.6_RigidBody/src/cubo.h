@@ -16,8 +16,11 @@ public:
  void render(){
 	 glPushMatrix();
 	  glColor3f(this->getCol().getX(),this->getCol().getY(),this->getCol().getZ());
-	  glTranslatef(this->getPos().getX(),this->getPos().getY(),this->getPos().getZ());
-	  glutSolidCube(s);
+		glTranslatef(getPos().getX(),getPos().getY(),getPos().getZ());
+		glRotatef(getRot().getX(), 1, 0, 0);
+		glRotatef(getRot().getY(), 0, 1, 0);
+		glRotatef(getRot().getZ(), 0, 0, 1);
+		glutSolidCube(s);
 	 glPopMatrix();
 
  }

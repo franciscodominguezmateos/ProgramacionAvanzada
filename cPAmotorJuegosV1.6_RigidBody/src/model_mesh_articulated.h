@@ -92,7 +92,11 @@ public:
 		ModelMesh::scale(s);
 		jointsRoot.doUniformScale(s);
 	}
-	inline int getJointIdx(string name){return jointIdx[name];}
+	inline int getJointIdx(string name){
+		if(jointIdx.count(name)==0)
+			return -1;
+		return jointIdx[name];
+	}
 	inline void addVertexSkinData (VertexSkinData &vsd){vertexSkinData.push_back(vsd);}
 	inline void setJointsRoot(Joint j){jointsRoot=j;}
 	inline void setInverseBindTransforms(vector<Mat> &ivt){inverseBindTransforms=ivt;}

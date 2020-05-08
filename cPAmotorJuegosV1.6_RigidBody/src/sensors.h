@@ -41,7 +41,6 @@ public:
 		//cout << si << endl;
 		mtxSensorEvents.lock();
 		sensorEvents[device][id]=si;
-		mtxSensorEvents.unlock();
 	    chrono::time_point<chrono::system_clock> now = chrono::system_clock::now();
 	    int elapsed_milliseconds = chrono::duration_cast<chrono::milliseconds>(now-before).count();
 	    if(elapsed_milliseconds>speed){
@@ -51,6 +50,7 @@ public:
 	    			//dispatchSensorObserverEvent(sensorEvents[device][id]);
 	    	        dispatchSensorObserverEvent(pi.second);
 	    }
+		mtxSensorEvents.unlock();
 	    return "OK";
 	}
 };

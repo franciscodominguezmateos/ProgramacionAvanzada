@@ -227,7 +227,7 @@ inline Mat posEulerAnglesToTransformationMatrix(Vector3D pos,Vector3D theta){
                0,    0,      1, pos[2],
                0,    0,      0, 1);
     // Combined rotation matrix
-    Mat R (T*R_x * R_y * R_z);
+    Mat_<S> R (T*R_x * R_y * R_z);
     return R;
 }
 Mat getRotation(Mat &t){

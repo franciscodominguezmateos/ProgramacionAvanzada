@@ -11,10 +11,8 @@
 class SolidArticulatedVAO:public SolidArticulated{
 	GLSLShaderProgram* shaderProgram;
 	GLSLVAO *vao;
-	//increment transform from
-	// global bind pose to current global pose
-	vector<Mat> animatedTransforms;
 	bool isMaster;
+	Material material;
 public:
 	SolidArticulatedVAO(GLSLShaderProgram* p=nullptr,GLSLVAO *pvao=nullptr):shaderProgram(p),vao(pvao),isMaster(false){
 		if(vao==nullptr){
@@ -31,10 +29,12 @@ public:
 		r->isMaster=false;
 		return r;
 	}
+	void setMaterial(Material &m){material=m;}
+	Material &getMaterial(){return material;}
 	void setShaderProgram(GLSLShaderProgram *p){shaderProgram=p;}
 	void init(ModelMeshArticulated &pm){
 		SolidArticulated::init(pm);
-		animatedTransforms=vector<Mat>(getJointNames().size());
+		//getJointsRoot().fillAnimatedTransforms(animatedTransforms);
 		ModelMesh m=pm.buildShaderReadyMeshModel();
 		vao->init();
 		vao->createIndexBuffer(m.getIvertices());
@@ -49,34 +49,18 @@ public:
 		vector<GLfloat> vw=pm.getWeights();
 		vao->createAttribute(4,vw,3);
 	}
-	void setPose(SkeletonPose &currentPose){
-		SolidArticulated::setPose(currentPose);
-		getJointsRoot().fillAnimatedTransforms(animatedTransforms);
-	}
-	void applyPose2Joints(SkeletonPose &pose,Joint &joint,Mat &currentParentTransform){
-		//not all articulations have to be animated
-		Mat currentLocalTransform;
-		if(pose.count(joint.getName())>0)
-			currentLocalTransform=pose[joint.getName()];
-		//if not articulation on pose just take the default localBindTransform
-		else
-			currentLocalTransform=joint.getLocalBindTransform();
-		Mat currentTransform  =currentParentTransform*currentLocalTransform;
-		Mat animationTransform=currentTransform*joint.getInverseBindTransform();
-		joint.setAnimatedTransform(animationTransform);
-		for(Joint &j:joint.getChildren())
-			applyPose2Joints(pose,j,currentTransform);
-	}
 	void render(){
-		//SolidArticulated::render();
+		SolidArticulated::render();
 		GLSLShaderProgram &sp=*shaderProgram;
+		material.bind();
 		sp.start();
 	    vao->bindAll();
-	    sp["jointT"]=animatedTransforms;
+	    sp["jointT"]=getAnimatedTransforms();
 		sp["T"]=posEulerAnglesToTransformationMatrix<float>(getPos(),getRot());
 		glDrawElements(GL_TRIANGLES, vao->getIndexCount(), GL_UNSIGNED_INT,0); // Empezar desde el vértice 0S; 3 vértices en total -> 1 triángulo
 		vao->unbindAll();
 		sp.stop();
+		material.unbind();
 	}
 	GLSLVAO* getPtrVAO(){return vao;}
 };

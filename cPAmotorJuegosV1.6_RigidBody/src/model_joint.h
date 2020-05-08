@@ -13,10 +13,16 @@
 // SkeletonPose is all local transformations for a hole skeleton, in this case map<string,Mat>
 // since they are indexed by name
 typedef map<string,Mat> SkeletonPose;
-
+inline ostream &operator<<(ostream &os, const SkeletonPose &pose) {
+	for(pair<string,Mat> psm:pose){
+		cout << psm.first << endl;
+		cout << psm.second << endl;
+	}
+	return os;
+}
 class Joint{
 	// idx is the VAO index
-	GLuint idx;
+	int idx;
 	string name;
 	vector<Joint> children;
 	// ****************** INITIAL/BIND TRANSFORMS
@@ -54,13 +60,25 @@ public:
 	}
 	//given InverseBindTransforms (from DAEs files) work out all other transforms
 	void loadInverseBindTransforms(vector<Mat> &ibts,Mat &parentBindTransform){
-		Mat &ibt=ibts[getIdx()];
-		setInverseBindTransform(ibt);
-		Mat lbt=ibt*parentBindTransform;
-		setLocalBindTransform(lbt);
-		animatedTransform=Mat::eye(4,4,CV_32F);
-		for(Joint &j:getChildren())
-			j.loadInverseBindTransforms(ibts,getBindTransform());
+		//if this pose is not articulated then
+		if(getIdx()==-1){
+			//a localBindTransform must have been set in some way
+			bindTransform=parentBindTransform*localBindTransform;
+			inverseBindTransform=bindTransform.inv();
+			animatedTransform=Mat::eye(4,4,CV_32F);
+			for(Joint &j:getChildren())
+				j.loadInverseBindTransforms(ibts,getBindTransform());
+		}
+		else{
+			Mat &ibt=ibts[getIdx()];
+			setInverseBindTransform(ibt);
+			//Mat lbt=ibt*parentBindTransform;
+			Mat lbt=parentBindTransform.inv()*getBindTransform();
+			setLocalBindTransform(lbt);
+			animatedTransform=Mat::eye(4,4,CV_32F);
+			for(Joint &j:getChildren())
+				j.loadInverseBindTransforms(ibts,getBindTransform());
+		}
 	}
 	void fillAnimatedTransforms(vector<Mat> &jm){
 		Joint &joint=*this;
@@ -71,7 +89,7 @@ public:
 	}
 	void fillJointTransforms(vector<Mat> &jm){
 		Joint &joint=*this;
-		jm[joint.getIdx()]=joint.getAnimatedTransform()* joint.getBindTransform();
+		jm[joint.getIdx()]=joint.getAnimatedTransform()*joint.getBindTransform();
 		for(Joint &j:joint.getChildren()){
 			j.fillJointTransforms(jm);
 		}
@@ -107,9 +125,8 @@ public:
 		for(Joint &j:joint.getChildren())
 			j.applyPose2Joints(pose,currentTransform);
 	}
-
 	inline vector<Joint> &getChildren()  {return children;}
-	inline GLuint getIdx()               {return idx;}
+	inline int getIdx()               {return idx;}
 	inline string &getName()             {return name;}
 	inline Mat &getAnimatedTransform()   {return animatedTransform;}
 	inline Mat &getInverseBindTransform(){return inverseBindTransform;}
@@ -119,4 +136,16 @@ public:
 	inline void setInverseBindTransform(Mat &m){inverseBindTransform=m;bindTransform=m.inv();}
 	inline void setBindTransform(Mat &m){bindTransform=m;inverseBindTransform=m.inv();}
 	inline void setLocalBindTransform(Mat &m){localBindTransform=m;}
+	friend ostream &operator<<(ostream &os, const Joint &v);
+	friend void printJoint(ostream &os, const Joint &j,int indent);
 };
+void printJoint(ostream &os, const Joint &j,int indent){
+	for(int i=0;i<indent;i++) os<<" ";
+	os<<indent<<".-Name="<<j.name<<"("<<j.idx<<")"<<endl;
+	for(const Joint &jc:j.children)
+		printJoint(os,jc,indent+2);
+}
+ostream &operator<<(ostream &os, const Joint &j){
+	printJoint(os,j,0);
+	return os;
+}

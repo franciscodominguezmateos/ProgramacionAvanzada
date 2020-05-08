@@ -14,14 +14,15 @@
 class LoaderDAE: public Loader {
 	int idxGeo;
 	AnimationSkeleton animSkeleton;
+    XMLNode root;
 public:
+    string nameRootJoint;
 	LoaderDAE(string name,int idx=0):Loader(name),idxGeo(idx){}
 	AnimationSkeleton &getAnimationSkeleton(){return animSkeleton;}
 	void load(){
 		//ifstream ifdae("model.dae");
 	    string fileName=getName();
 	    ifstream ifdae(fileName.c_str());
-	    XMLNode root;
 	    ifdae >> root;
 
 	    // COLLADA FILE FORMAT
@@ -29,7 +30,6 @@ public:
 	    XMLNode &collada=root("COLLADA");
 	    XMLNode &library_geometries   =collada("library_geometries");
 	    XMLNode &library_controllers  =collada("library_controllers");
-	    XMLNode &library_animations   =collada("library_animations");
 	    XMLNode &library_visual_scenes=collada("library_visual_scenes");
 
 	    //for the moment this only load the idxGeo geometry
@@ -59,17 +59,17 @@ public:
 	    	getModelArticulated().initFromLocalBindTransforms();
 	    }
 	    else{
-		  //XMLNode &hips=library_visual_scenes("visual_scene")("node","id","Hips");
-		  XMLNode &hips=library_visual_scenes("visual_scene")("node","id","Zombie_Hips");
-		  jointsRoot=loadJoints(hips);
-		  //Mat I=Mat::eye(4,4,CV_32F);
-		  //jointsRoot.calcInverseBindTransform(I);
-		  setJointsRoot(jointsRoot);
-		  getModelArticulated().initFromInverseBindTransforms();
+	    	//loadJoints("Hips");
+	    	//loadJoints("Zombie_Hips");
+	    	//loadJoints("spot_armature");
+	    	loadJoints(nameRootJoint);
 	    }
 
 	    //Load Animations
-	    loadJointAnimations(library_animations);
+	    if(collada.hasChild("library_animations")){
+	    	XMLNode &library_animations   =collada("library_animations");
+	    	loadJointAnimations(library_animations);
+	    }
 
 	    //for(auto &pair:collada.getChildren()){
 	    //	cout << pair.first << endl;
@@ -133,17 +133,28 @@ public:
 	    }
 	}
 	/*                          J O I N T S                      */
+	void loadJoints(string name){
+	    Joint jointsRoot;
+	    XMLNode &collada=root("COLLADA");
+		XMLNode &library_visual_scenes=collada("library_visual_scenes");
+		XMLNode &hips=library_visual_scenes("visual_scene")("node","name",name);//("node","name","spot_body");
+        jointsRoot=loadJoints(hips);
+    	setJointsRoot(jointsRoot);
+		getModelArticulated().initFromInverseBindTransforms();
+    	//getModelArticulated().initFromLocalBindTransforms();
+	}
 	Joint loadJoints(XMLNode &jointNode){
 		Joint joint=getJoint(jointNode);
 		if(jointNode.hasChild("node")){
 			vector<XMLNode> &vn=jointNode["node"];
 			for(XMLNode &n:vn)
-				joint.addChild(loadJoints(n));
+				if(isValidJoint(n))
+					joint.addChild(loadJoints(n));
 		}
 		return joint;
 	}
 	Joint getJoint(XMLNode &jointNode){
-		string name=jointNode.getAttribute("id");
+		string name=jointNode.getAttribute("name");
 		int idx=getJointIdx(name);
 		string matrixTxt=jointNode("matrix").getText();
 		vector<GLfloat> vf=split_numbers<GLfloat>(matrixTxt);
@@ -154,6 +165,13 @@ public:
 		//cout << m <<endl;
 		return Joint(idx,name,m);
 	}
+	//if the joint name is in joint names collection
+	bool isValidJoint(XMLNode &jointNode){
+		string name=jointNode.getAttribute("name");
+		int idx=getJointIdx(name);
+		return idx!=-1;
+		//return true;
+	}
 	/*                       M E S H                             */
 	void loadVertices(XMLNode &mesh){
 		XMLNode &vertices=mesh("vertices");
@@ -162,29 +180,44 @@ public:
 		setVerticesFromFloats(vf);
 	}
 	void loadNormals(XMLNode &mesh){
-        XMLNode &polylist=mesh("polylist");
+		string name;
+		if(mesh.hasChild("polylist"))
+			name="polylist";
+		else
+			name="triangles";
+		XMLNode &polylist=mesh(name);
 		XMLNode &iNormal=polylist("input","semantic","NORMAL");
 		vector<GLfloat> vn=colladaSourceNumbers(iNormal,mesh);
 		setNormalsFromFloats(vn);
 	}
 	void loadTextures(XMLNode &mesh){
-		XMLNode &polylist=mesh("polylist");
+		string name;
+		if(mesh.hasChild("polylist"))
+			name="polylist";
+		else
+			name="triangles";
+		XMLNode &polylist=mesh(name);
 		XMLNode &iTextcoord=polylist("input","semantic","TEXCOORD");
 		vector<GLfloat> vt=colladaSourceNumbers(iTextcoord,mesh);
 		setTexturesFromFloats(vt);
 	}
 	void loadIndixes(XMLNode &mesh){
-		  XMLNode &polylist=mesh("polylist");
-		  int typeCount=polylist["input"].size();
-		  XMLNode &p=polylist("p");
-		  vector<GLuint> vi=split_numbers<GLuint>(p.getText());
-		  for(unsigned int i=0;i<vi.size()/typeCount;i++){
-			  GLuint iv=vi[i*typeCount+0];
-			  GLuint in=vi[i*typeCount+1];
-			  GLuint it=vi[i*typeCount+2];
-			  addVTNindex(iv,it,in);
-		  }
-		  //TODO: check count
+		string name;
+		if(mesh.hasChild("polylist"))
+			name="polylist";
+		else
+			name="triangles";
+		XMLNode &polylist=mesh(name);
+		int typeCount=polylist["input"].size();
+		XMLNode &p=polylist("p");
+		vector<GLuint> vi=split_numbers<GLuint>(p.getText());
+		for(unsigned int i=0;i<vi.size()/typeCount;i++){
+			GLuint iv=vi[i*typeCount+0];
+			GLuint in=vi[i*typeCount+1];
+			GLuint it=vi[i*typeCount+2];
+			addVTNindex(iv,it,in);
+		}
+		//TODO: check count
 	}
 	/*                   C O L A D A   U T I L                   */
 	inline string getSourceId(XMLNode &nodeID){
