@@ -29,6 +29,16 @@ public:
 		r->isMaster=false;
 		return r;
 	}
+	void setMaterial(string filename){
+	    Material mt;
+		Texture* map_Kd_tex=new Texture();
+		map_Kd_tex->init();
+		Mat img=imread(filename,IMREAD_UNCHANGED);
+		map_Kd_tex->setImage(img);
+
+	    mt.setMapKdTex(map_Kd_tex);
+	    setMaterial(mt);
+	}
 	void setMaterial(Material &m){material=m;}
 	Material &getMaterial(){return material;}
 	void setShaderProgram(GLSLShaderProgram *p){shaderProgram=p;}
@@ -50,17 +60,21 @@ public:
 		vao->createAttribute(4,vw,3);
 	}
 	void render(){
-		SolidArticulated::render();
+		//SolidArticulated::render();
+		//Turn on wireframe mode
+		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		GLSLShaderProgram &sp=*shaderProgram;
 		material.bind();
 		sp.start();
 	    vao->bindAll();
 	    sp["jointT"]=getAnimatedTransforms();
 		sp["T"]=posEulerAnglesToTransformationMatrix<float>(getPos(),getRot());
-		glDrawElements(GL_TRIANGLES, vao->getIndexCount(), GL_UNSIGNED_INT,0); // Empezar desde el vértice 0S; 3 vértices en total -> 1 triángulo
+		glDrawElements(/*GL_LINES*/GL_TRIANGLES, vao->getIndexCount(), GL_UNSIGNED_INT,0); // Empezar desde el vértice 0S; 3 vértices en total -> 1 triángulo
 		vao->unbindAll();
 		sp.stop();
 		material.unbind();
+		//Turn off wireframe mode
+		//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
 	GLSLVAO* getPtrVAO(){return vao;}
 };

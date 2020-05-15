@@ -11,38 +11,6 @@
 using namespace cv;
 using namespace std;
 
-//24/04/2020 this doesn't work yet
-void renderString( int x, int y, int z, string ss )
-{
-  glColor3f( 0.9f, 0.9f, 0.0f );
-  //glRasterPos2i( x, y );
-  glRasterPos3f( x, y , z);
-  //glWindowPos3f(10, 10, 0);
-  for(char c:ss)
-    glutBitmapCharacter( GLUT_BITMAP_9_BY_15, c );
-}
-void drawBitmapText(const char *string) {
-
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
-    glLoadIdentity();
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix();
-    glLoadIdentity();
-
-    glRasterPos3f(-1,0.8,-1);
-    glColor3f( 0.9f, 0.9f, 0.9f );
-
-    const char *c;
-    for (c=string; *c != '\0'; c++) {
-        glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_10, *c);
-    }
-
-    glMatrixMode(GL_PROJECTION);
-    glPopMatrix();
-    glMatrixMode(GL_MODELVIEW);
-    glPopMatrix();
-}
 class Game{
 	string title;
 	vector<View*> views;

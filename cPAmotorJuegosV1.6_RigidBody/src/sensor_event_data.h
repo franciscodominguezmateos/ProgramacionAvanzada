@@ -12,7 +12,7 @@ using namespace std;
 //for now SensorEventData is just a CGI http protocol parameter wrapper
 typedef CGI SensorEventData;
 
-//This class abstract the information sent from a wiimote as SensorEventData
+//This class abstracts the information sent from a wiimote as SensorEventData
 class SensorWiiMoteEventData{
 	static const int CWIID_BTN_2    =   1;
 	static const int CWIID_BTN_1    =   2;
