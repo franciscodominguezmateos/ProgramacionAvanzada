@@ -9,6 +9,7 @@
 #define SOLID_RIGID_BODY_H_
 #include <opencv2/opencv.hpp>
 #include "solido.h"
+#include "segment.h"
 
 //for the moment are just boxes
 class SolidRigidBody: public Solido {
@@ -124,6 +125,28 @@ public:
 		p=Vector3D(-w,-h, d);
 		corners.push_back(p);
 		setCol(Vector3D(0.9,0.9,0));
+	}
+	//     5---1
+	//    /   /|
+	//   4---0 |
+	//   |   | 2
+	//   |   |/
+	//   7---3
+	inline vector<Segment> getEdges(){
+		vector<Segment> e;
+		e.push_back(Segment(getCorner(0),getCorner(1)));
+		e.push_back(Segment(getCorner(1),getCorner(2)));
+		e.push_back(Segment(getCorner(2),getCorner(3)));
+		e.push_back(Segment(getCorner(3),getCorner(0)));
+		e.push_back(Segment(getCorner(4),getCorner(5)));
+		e.push_back(Segment(getCorner(5),getCorner(6)));
+		e.push_back(Segment(getCorner(6),getCorner(7)));
+		e.push_back(Segment(getCorner(7),getCorner(4)));
+		e.push_back(Segment(getCorner(4),getCorner(0)));
+		e.push_back(Segment(getCorner(5),getCorner(1)));
+		e.push_back(Segment(getCorner(6),getCorner(2)));
+		e.push_back(Segment(getCorner(7),getCorner(3)));
+		return e;
 	}
 	inline vector<Vector3D> getCorners(){
 		vector<Vector3D> vc;

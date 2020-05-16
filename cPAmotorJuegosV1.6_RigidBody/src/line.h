@@ -7,6 +7,7 @@
 #pragma once
 #include "vector3d.h"
 class Line {
+protected:
 	Vector3D p,v;
 	//Plucker coordinates
 	//from: http://web.cs.iastate.edu/~cs577/handouts/plucker-coordinates.pdf
@@ -19,6 +20,7 @@ public:
 		//The norm‖m‖ gives the distance from the origin to the line.
 		m=p0.X(v);
 	}
+	inline Vector3D &getV(){return v;}
     //Projection of point in line
 	Vector3D project(Vector3D q){
 		// v is normalized
@@ -58,7 +60,8 @@ public:
 		float dist=abuv/normuv;
 		return dist;
 	}
-	inline bool intersect(Line l){return nearZero(distance(l));}
+	inline bool contains(Vector3D p){return nearZero(distance(p),0.05);}
+	inline bool intersect(Line l){return nearZero(distance(l),0.05);}
 	inline Vector3D getPoint(float t){return p+v*t;}
 	inline Vector3D intersectionPoint(Line l){
 		float px0=p.getX();
@@ -80,8 +83,14 @@ public:
 		float t=(px1+vx1*k-px0)/vx0;
 		Vector3D p0=p+v*t;
 		Vector3D p1=l.p+l.v*k;
-		if(!nearZero((p0-p1).length()))
+		Vector3D dif=p1-p0;
+		float    dis=dif.length();
+		if(!nearZero(dis,0.05)){
+			/*cout << "p0="<< p0 <<endl;
+			cout << "p1="<< p1 <<endl;
+			cout << "dis="<<dis << endl;*/
 			throw runtime_error("from Line::intersectionPoint() line don't intersect p0<>p1.");
+		}
 		return p0;
 	}
 };

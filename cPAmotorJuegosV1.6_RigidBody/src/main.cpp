@@ -35,7 +35,7 @@
 using namespace cv;
 
 double t=0.0;
-double dt=1.0/100;
+double dt=1.0/1000;
 
 int mx=-1,my=-1;        // Previous mouse coordinates
 

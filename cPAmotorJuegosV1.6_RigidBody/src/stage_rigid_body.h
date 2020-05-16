@@ -19,7 +19,7 @@ public:
 		//rigidBodies[0]->setRot(Vector3D(30,15,15));
 		rigidBodies[1]->setPos(Vector3D(0,3.75,0));
 		rigidBodies[1]->setRot(Vector3D(30,15,15));
-		for(int i=0;i<20;i++){
+		for(int i=0;i<0;i++){
 			double L=25;
 			SolidRigidBody* s=new SolidRigidBody(getRand(3,0.25),getRand(10,0.25),getRand(3,0.25));
 			s->setPos(Vector3D(getRand(  L, -L),getRand( 10)    ,getRand(  L, -L)));
@@ -48,6 +48,25 @@ public:
 			}
 		}
 	}
+	void solveEdgeCollision(Contact &c){
+		SolidRigidBody* sa=c.getA();
+		SolidRigidBody* sb=c.getB();
+		vector<Segment> saEdges=sa->getEdges();
+		vector<Segment> sbEdges=sb->getEdges();
+		for(Segment &ea:saEdges){
+			for(Segment &eb:sbEdges){
+				if(ea.intersect(eb)){
+					Vector3D p=ea.intersectionPoint(eb);
+					c.addContactPoint(p);
+					Vector3D n=ea.getV().X(eb.getV());
+					c.setNormal(n);
+					c.setPenetration(0.01);
+					cout << "edge detected collision!!!"<<endl;
+					return;
+				}
+			}
+		}
+	}
 	void update(double dt){
 		SolidRigidBody* dummy=new SolidRigidBody(1,1,1);
 		dummy->hazFija();
@@ -63,6 +82,12 @@ public:
 		for(Contact &c0:contactsNoSure){
 			Contact c(c0.getB(),c0.getA());
 			solveColision(c);
+			if(c.hasContactPoints()) contacts.push_back(c);
+		}
+		//check edges
+		for(Contact &c0:contactsNoSure){
+			Contact c(c0.getA(),c0.getB());
+			solveEdgeCollision(c);
 			if(c.hasContactPoints()) contacts.push_back(c);
 		}
 		//Collision with ground
