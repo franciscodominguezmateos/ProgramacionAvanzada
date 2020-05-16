@@ -30,6 +30,7 @@
 #include "rectangle.h"
 #include "stage.h"
 #include "stage_rigid_body.h"
+#include "line.h"
 
 using namespace cv;
 
@@ -219,6 +220,17 @@ int main(int argc, char** argv) try{
 	Quaternion q1(M_PI/2,Vector3D(0,0,1));
 	Vector3D v1=q1*Vector3D(1,0,0);
 	cout << "v1="<<v1<<endl;
+
+	Line l(Vector3D(2,3,-1),Vector3D(2,3,-1)+Vector3D(1,2,1));
+	cout << "distance="<<l.distance(Vector3D(2,4,1))<<"="<<sqrt(7.0/3.0)<<endl;
+
+	Line r0(Vector3D(2,-3,0),Vector3D(2,-3,0)+Vector3D(1,2,1));
+	Line r1(Vector3D(0,0,0),Vector3D(1,1,1));
+	cout << "distance="<<r0.distance(r1)<<"="<<sqrt(2.0)<<endl;
+    Line r2(Vector3D(1,5,-2),Vector3D(1,5,-2)+Vector3D(2,-1,3));
+    Line r3(Vector3D(-7,4,1),Vector3D(-7,4,1)+Vector3D(1,2,-6));
+	cout << "interPoint"<<r2.intersectionPoint(r3)<<endl;
+
  vel=0;
  //cout << t.isIn(Vector3D(0.25,0.25,0))<<endl;
  for(Camara &c:camaras){

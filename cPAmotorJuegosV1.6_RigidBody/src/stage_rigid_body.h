@@ -19,9 +19,9 @@ public:
 		//rigidBodies[0]->setRot(Vector3D(30,15,15));
 		rigidBodies[1]->setPos(Vector3D(0,3.75,0));
 		rigidBodies[1]->setRot(Vector3D(30,15,15));
-		for(int i=0;i<100;i++){
+		for(int i=0;i<20;i++){
 			double L=25;
-			SolidRigidBody* s=new SolidRigidBody(getRand(3,0.25),getRand(3,0.25),getRand(3,0.25));
+			SolidRigidBody* s=new SolidRigidBody(getRand(3,0.25),getRand(10,0.25),getRand(3,0.25));
 			s->setPos(Vector3D(getRand(  L, -L),getRand( 10)    ,getRand(  L, -L)));
 			s->setRot(Vector3D(getRand( 30,-30),getRand( 30,-30),getRand( 30,-30)));
 			rigidBodies.push_back(s);
