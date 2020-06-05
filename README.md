@@ -33,6 +33,6 @@ Simulacion del juego MarioKart.
 
 Las vistas de la derecha son en realidad aumentada sobre el suelo de mi despacho.
 
-![Screenshot](zombie_kichen.gif)
+![Screenshot](zombie_chiken.gif)
 
 Ejemplo de modelos .DAE con textura, articulados y animados renderizados con Shader y SkyBox
