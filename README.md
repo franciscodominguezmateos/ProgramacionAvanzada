@@ -16,12 +16,12 @@ Desde 2020
 * Permite modelos articulados con shader y con una textura.
 * Permite modelos articulados y animados con shader y con una textura.
 * Parser XML en 300 líneas de codigo sin punteros.
-* Servicios de networking: Servidor streaming de imagenes, recepcion de datos de sensores wiimote, servidor http sencillo con protocolo CGI.
+* Servicios de networking: Servidor streaming de imagenes, recepcion de datos de sensores Wiimote, servidor http sencillo con protocolo CGI.
 * Lee formatos .dae con una textura, articulaciones y animacion de articulaciones.
 * Permite Realidad Virtual con movil y un servidor python modificado de Trinus VR. 
 * Pequeña libreria para utilizar Quaterniones en las rotaciones.
 * Motor fisico de solidos rigidos (faltan colisiones).
-
+* SkyBox
 
 En la captura de pantalla se muestra dos objetos obj, spiderman y mariokart, una vista en tercera persona y una en realidad aumentada sobre el suelo de mi despacho. Un cubo animado con el motor fisico, con una textura de camara en directo.
 
@@ -32,3 +32,7 @@ Simulacion del juego MarioKart.
 ![Screenshot](MarioCarPA.png)
 
 Las vistas de la derecha son en realidad aumentada sobre el suelo de mi despacho.
+
+![Screenshot](zombie_chiken.gif)
+
+Ejemplo de modelos .DAE con textura, articulados y animados renderizados con Shader y SkyBox
