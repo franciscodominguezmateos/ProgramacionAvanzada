@@ -7,6 +7,7 @@
 #pragma once
 #include "game_engine.h"
 #include "sky_box.h"
+#include <AL/alut.h>
 
 using namespace cv;
 using namespace std;
@@ -24,6 +25,9 @@ class Game{
 	Mat img;
 	double t;  // time in seconds
 	double dt; // time increment in seconds
+	//Sound
+	vector<ALuint>     audioBuffers;
+	map<string,ALuint> audioSources;
 public:
 	Game(string t="PAGame default;-P",int port=8881):title(t),seProcessor(port),screen(640,480),skyBox(nullptr),t(0),dt(0.1){}
 	void addShader(GLSLShaderProgram* sp){shaders.push_back(sp);}
@@ -100,4 +104,29 @@ public:
 		e.add("y",y);
 		seProcessor.dispatchSensorObserverEvent(e);
 	}
+	// Sound methods
+	void addWav(string name,string fileName){
+		   ALenum format;
+		   ALsizei size;
+		   ALvoid* data;
+		   ALsizei freq;
+		   ALboolean loop;
+		   ALuint buffer, source;
+		   // Load any of your favourite wav song here
+		   // Load wav data into a buffer.
+		   alGenBuffers(1, &buffer);
+		   alutLoadWAVFile((ALbyte*)fileName.c_str(), &format, &data, &size, &freq, &loop);
+		   alBufferData(buffer, format, data, size, freq);
+		   alutUnloadWAV(format, data, size, freq);
+		   alGenSources (1, &source);
+		   alSourcei (source, AL_BUFFER, buffer);
+		   audioBuffers.push_back(buffer);
+		   audioSources[name]=source;
+	}
+	void playAudio(string name){
+		ALuint source;
+		source=audioSources[name];
+		alSourcePlay(source);
+	}
+
 };

@@ -45,6 +45,7 @@ public:
 	}
 	// GLUT abstraction
 	static void gameInit(int argc, char** argv){
+	    alutInit (&argc, argv);
 		glutInit(&argc,argv);
 		glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
 		glutInitWindowSize(640*2,480);
@@ -71,6 +72,7 @@ public:
 		 glutMouseFunc(&cbMousePress);
 		 if(fullScreen) glutFullScreen();
 		 glutMainLoop();
+		 alutExit ();
 	}
 };
 Game* GameEngine::g=nullptr;

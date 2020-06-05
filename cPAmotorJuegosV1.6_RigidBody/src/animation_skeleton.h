@@ -58,6 +58,7 @@ class AnimationSkeleton:public Animation{
 	vector<string> jointNames;
 	map<string,AnimationJoint> animationJoints;
 public:
+	virtual AnimationSkeleton* clone(){return new AnimationSkeleton(*this);}
 	inline void doUniformScale(float s){
 		for(string &n:jointNames){
 			//some articulation could not be animated

@@ -9,21 +9,20 @@
 #include "solid_articulated_vao.h"
 
 class SolidArticulatedAnimatedVAO:public SolidArticulatedVAO {
-	Animation* as;
 	AnimatorArticulated* aa;
 public:
-	SolidArticulatedAnimatedVAO():as(nullptr),aa(nullptr){}
+	SolidArticulatedAnimatedVAO():aa(nullptr){}
 	SolidArticulatedAnimatedVAO(GLSLShaderProgram* p=nullptr,GLSLVAO *pvao=nullptr):
-		SolidArticulatedVAO(p,pvao),as(nullptr),aa(nullptr){}
+		SolidArticulatedVAO(p,pvao),aa(nullptr){}
+    SolidArticulatedAnimatedVAO(const SolidArticulatedAnimatedVAO &s):SolidArticulatedVAO(s),aa(s.aa->clone()){aa->setSolidArticulated(this);}
+    SolidArticulatedAnimatedVAO* clone(){return new SolidArticulatedAnimatedVAO(*this);}
 	void init(ModelMeshArticulated &ma,AnimationSkeleton* pas,float scale=0.01){
 	    ma.doUniformScale(scale);
 	    SolidArticulatedVAO::init(ma);
 	    pas->doUniformScale(scale);
-	    as=pas;
-	    aa=new AnimatorArticulated(this,as);
+	    aa=new AnimatorArticulated(this,pas);
 	}
 	void setAnimation(AnimationSkeleton* pas,bool b=true){
-		as=pas;
 		aa->setAnimation(pas,b);
 	}
 	void update(double dt){

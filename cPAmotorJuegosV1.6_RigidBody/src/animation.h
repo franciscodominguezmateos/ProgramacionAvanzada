@@ -18,6 +18,7 @@ public:
 	void setDuration(float duration) {this->duration = duration;}
 	virtual void resetCurrentFrame()=0;
 	virtual SkeletonPose getCurrentPose(float currentTime)=0;
+	virtual Animation* clone()=0;
 };
 class AnimatorArticulated{
 	SolidArticulated* sa;
@@ -26,6 +27,9 @@ class AnimatorArticulated{
 	bool isLoop;
 public:
 	AnimatorArticulated(SolidArticulated* sa,Animation* animation,bool l=true):sa(sa),animation(animation),currentTime(0),isLoop(l){}
+	AnimatorArticulated(const AnimatorArticulated &aa):sa(aa.sa),animation(aa.animation->clone()),currentTime(0),isLoop(aa.isLoop){}
+	AnimatorArticulated* clone(){return new AnimatorArticulated(*this);}
+	void setSolidArticulated(SolidArticulated* s){sa=s;}
 	void setAnimation(Animation* a,bool l=true){
 		currentTime=0;
 		a->resetCurrentFrame();
