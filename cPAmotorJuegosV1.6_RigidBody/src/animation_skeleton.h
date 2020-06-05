@@ -40,7 +40,7 @@ public:
 	Mat getTransformation(float t){
 		int nextFrame=currentFrame+1;
 		if(t>keyFrames[nextFrame].getTimeStamp()){
-			if(nextFrame!=(int)keyFrames.size()-1){
+			if(nextFrame<=(int)keyFrames.size()-1){
 				currentFrame=nextFrame;
 				nextFrame+=1;
 			}

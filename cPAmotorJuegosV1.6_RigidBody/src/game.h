@@ -47,10 +47,12 @@ public:
 			Camara* &cam=cameras[i];
 			Stage*  &e=scenes[i];
 			Solido* s=cam;//->getSolido();
-			Mat cameraViewMat=posEulerAnglesToTransformationMatrix<float>(s->getPos(),-s->getRot());
+			Mat cameraViewMat=cam->getMat();
+			Mat projection=view->getProyeccion()->getMat();
 			for(GLSLShaderProgram* &sp:shaders){
 				GLSLShaderProgram &spAnimation=*sp;
 				spAnimation.start();
+				spAnimation["projection"]=projection;
 				spAnimation["cameraView"]=cameraViewMat;
 				spAnimation.stop();
 			}

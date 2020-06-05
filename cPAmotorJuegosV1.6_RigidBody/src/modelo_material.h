@@ -45,8 +45,8 @@ public:
 		cargar();
 		scale=Vector3D(1,1,1);
 	}
-	ModeloMaterial(const ModeloMaterial &m);
-	ModeloMaterial *clone(){return nullptr;}
+	//ModeloMaterial(const ModeloMaterial &m);
+	ModeloMaterial *clone(){return new ModeloMaterial(*this);}
 
 	Triangle *centrar(Triangle *t){
 		Vector3D centro(minX+getAncho()/2.0,minY+getAlto()/2.0,minZ+getProfundo()/2);

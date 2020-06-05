@@ -33,7 +33,8 @@ public:
 	    Material mt;
 		Texture* map_Kd_tex=new Texture();
 		map_Kd_tex->init();
-		Mat img=imread(filename,IMREAD_UNCHANGED);
+		//Mat img=imread(filename,IMREAD_UNCHANGED);
+		Mat img=imread(filename);
 		map_Kd_tex->setImage(img);
 
 	    mt.setMapKdTex(map_Kd_tex);
@@ -63,6 +64,7 @@ public:
 		//SolidArticulated::render();
 		//Turn on wireframe mode
 		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        glDisable(GL_BLEND);
 		GLSLShaderProgram &sp=*shaderProgram;
 		material.bind();
 		sp.start();
@@ -73,6 +75,7 @@ public:
 		vao->unbindAll();
 		sp.stop();
 		material.unbind();
+        glEnable(GL_BLEND);
 		//Turn off wireframe mode
 		//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}

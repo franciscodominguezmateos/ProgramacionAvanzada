@@ -11,6 +11,9 @@ class Decorator: public Solido {
 public:
 	Decorator(Solido* s){decorated=s;}
 	inline Solido* &getDecorated(){return decorated;}
+	virtual Vector3D getPos(){
+		return decorated->getPos();
+	}
 /*	 void setSuelo(double s){suelo=s;}
 	 double getSuelo(){return suelo;}
 	 inline Vector3D getPos(){return pos;}
@@ -61,11 +64,14 @@ public:
    //friend std::ostream &operator << (std::ostream &os, const Solido &v);
 };
 class DecoratorSpin: public Decorator{
+	float speed;
 public:
-	DecoratorSpin(Solido* s):Decorator(s){}
+	DecoratorSpin(Solido* s):Decorator(s),speed(50){}
 	virtual void update(double dt){
 		Solido &s=*getDecorated();
-		Vector3D nRot=s.getRot()+Vector3D(0,1*dt,0);
+		Vector3D nRot=s.getRot()+Vector3D(0,speed*dt,0);
 		s.setRot(nRot);
 	}
+	void setSpeed(float s){speed=s;}
+	float getSpeed(){return speed;}
 };

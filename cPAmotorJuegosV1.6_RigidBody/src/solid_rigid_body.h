@@ -4,9 +4,7 @@
  *  Created on: 8 Oct 2019
  *      Author: Francisco Dominguez
  */
-
-#ifndef SOLID_RIGID_BODY_H_
-#define SOLID_RIGID_BODY_H_
+#pragma once
 #include <opencv2/opencv.hpp>
 #include "solido.h"
 #include "segment.h"
@@ -61,7 +59,7 @@ public:
 	inline Vector3D getRot(){return rotationMatrixToEulerAngles(R);}
 	inline Mat     &getRotMat(){return R;}
 	inline Vector3D getW(){return Vector3D(w.at<double>(0,0),w.at<double>(1,0),w.at<double>(2,0));}
-	inline 	Mat     getPosMat(){return getPos().asMat();}
+	inline Mat      getPosMat(){return getPos().asMat();}
 	inline Mat      getVelMat(){return getVel().asMat();}
 	inline Vector3D getVelAtPoint(Vector3D p){
 		Vector3D rp=p-getPos();
@@ -332,4 +330,3 @@ public:
 	}
 };
 
-#endif /* SOLID_RIGID_BODY_H_ */

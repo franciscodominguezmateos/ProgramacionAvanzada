@@ -26,7 +26,12 @@ class AnimatorArticulated{
 	bool isLoop;
 public:
 	AnimatorArticulated(SolidArticulated* sa,Animation* animation,bool l=true):sa(sa),animation(animation),currentTime(0),isLoop(l){}
-	void setAnimation(Animation* a,bool l=true){currentTime=0;animation=a;isLoop=l;}
+	void setAnimation(Animation* a,bool l=true){
+		currentTime=0;
+		a->resetCurrentFrame();
+		animation=a;
+		isLoop=l;
+	}
 	void update(float dt){
 		incrementTime(dt);
 		SkeletonPose currentPose=animation->getCurrentPose(currentTime);
@@ -35,12 +40,15 @@ public:
 		sa->setPose(currentPose);
 	}
 	void incrementTime(float dt){
+		//TODO: if dt=0.1 only it doesn't work
+		dt*=0.1;
 		currentTime+=dt;
 		float animDuration=animation->getDuration();
 		if(currentTime>animDuration){
 			if(isLoop){
 				// aproximation to remaind/mod/% with two floats
-				while(currentTime>animDuration) currentTime-=animDuration;
+				//while(currentTime>animDuration) currentTime-=animDuration;
+				currentTime=0;
 				animation->resetCurrentFrame();
 			}
 			else currentTime=animDuration;

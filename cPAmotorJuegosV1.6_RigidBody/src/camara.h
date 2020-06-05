@@ -27,6 +27,9 @@ public:
 		 glRotatef(getRot().getY(), 0,1,0);
 		 glRotatef(getRot().getZ(), 0,0,1);
 	}
+	virtual Mat getMat(){
+		return posEulerAnglesToTransformationMatrix(getPos(),-getRot());
+	}
 };
 class CamaraFPS: public Camara {
 public:
@@ -46,6 +49,11 @@ public:
 		 glRotatef(getRot().getY(), 0,1,0);
 		 glRotatef(getRot().getZ(), 0,0,1);
 		 glTranslatef(-getPos().getX(),-getPos().getY(),-getPos().getZ());
+	}
+	virtual Mat getMat(){
+		Mat m1=posEulerAnglesToTransformationMatrix(getPos(),Vector3D());
+		Mat m2=posEulerAnglesToTransformationMatrix(Vector3D(),-getRot());
+		return m2*m1;
 	}
 };
 class CamaraFPSVR: public CamaraFPS {
@@ -101,6 +109,12 @@ public:
 	}
 	bool isLookSolido() const {return lookSolido;}
 	void setLookSolido(bool lookSolido) {this->lookSolido = lookSolido;}
+	virtual Mat getMat(){
+		Mat m1=posEulerAnglesToTransformationMatrix(-s->getPos(),Vector3D());
+		Mat m2=posEulerAnglesToTransformationMatrix(Vector3D(),-s->getRot());
+		Mat m=posEulerAnglesToTransformationMatrix(-getPos(),getRot());
+		return m*m2*m1;
+	}
 };
 class CamaraTPSVR: public CamaraTPS {
 	double baseline;

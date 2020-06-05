@@ -14,13 +14,17 @@ class SolidArticulatedAnimatedVAO:public SolidArticulatedVAO {
 public:
 	SolidArticulatedAnimatedVAO():as(nullptr),aa(nullptr){}
 	SolidArticulatedAnimatedVAO(GLSLShaderProgram* p=nullptr,GLSLVAO *pvao=nullptr):
-		SolidArticulatedVAO(p,pvao){}
+		SolidArticulatedVAO(p,pvao),as(nullptr),aa(nullptr){}
 	void init(ModelMeshArticulated &ma,AnimationSkeleton* pas,float scale=0.01){
 	    ma.doUniformScale(scale);
 	    SolidArticulatedVAO::init(ma);
 	    pas->doUniformScale(scale);
 	    as=pas;
 	    aa=new AnimatorArticulated(this,as);
+	}
+	void setAnimation(AnimationSkeleton* pas,bool b=true){
+		as=pas;
+		aa->setAnimation(pas,b);
 	}
 	void update(double dt){
 		SolidArticulatedVAO::update(dt);
