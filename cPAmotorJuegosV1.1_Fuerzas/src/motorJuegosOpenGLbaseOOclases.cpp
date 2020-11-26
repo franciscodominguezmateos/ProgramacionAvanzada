@@ -27,7 +27,7 @@ GLfloat pitch=0.0f;
 int mx=-1,my=-1;        // Previous mouse coordinates
 
 Escena e;
-Camara cam;
+Camera cam;
 Cubo *pc;
 Modelo *m;
 Textura tex,ladrillos,paredTex,texTv;

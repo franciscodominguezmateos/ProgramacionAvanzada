@@ -73,12 +73,12 @@ public:
 		}
 	}
 	void bind(){
-		if(map_Kd_tex) map_Kd_tex->activar();
-		if(map_Ka_tex) map_Ka_tex->activar();
+		if(map_Kd_tex) map_Kd_tex->bind();
+		if(map_Ka_tex) map_Ka_tex->bind();
 	}
 	void unbind(){
-		if(map_Kd_tex) map_Kd_tex->desactivar();
-		if(map_Ka_tex) map_Ka_tex->desactivar();
+		if(map_Kd_tex) map_Kd_tex->unbind();
+		if(map_Ka_tex) map_Ka_tex->unbind();
 	}
 	double getD() const {return d;}
 	void setD(double d) {this->d = d;}

@@ -123,7 +123,7 @@ public:
 	void render(){
 		Vector3D c=this->getCol();
 		glColor3f(c.getX(),c.getY(),c.getZ());
-		if(textura!=nullptr) textura->activar();
+		if(textura!=nullptr) textura->bind();
 		glBegin(GL_TRIANGLES);
 		    glTexCoord2f(t0.getX(),t0.getY());
 		    //glNormal3d(vnx,vny,vnz);
@@ -159,7 +159,7 @@ public:
 			  glVertex3f(p2.getX(),p2.getY(),p2.getZ());
 			glEnd();
 	    }
-	    if(textura!=nullptr) textura->desactivar();
+	    if(textura!=nullptr) textura->unbind();
 	}
 	bool contact(Vector3D pt){
 		if(nearZero(distance(pt)))

@@ -13,13 +13,13 @@
 
 inline double rot2rad(double  a){return a/180*M_PI;}
 
-class Camara {
+class Camera {
 	Vector3D pos;
 	Vector3D rot;
 public:
-	Camara();
-	Camara(double x,double y,double z):pos(Vector3D(x,y,z)){}
-	virtual ~Camara();
+	Camera();
+	Camera(double x,double y,double z):pos(Vector3D(x,y,z)){}
+	virtual ~Camera();
 	inline Vector3D getPos() const {return pos;	}
 	inline void setPos(Vector3D pos) {this->pos = pos;}
 	inline Vector3D getRot() const {return rot;	}
@@ -31,9 +31,9 @@ public:
 		 glRotatef(getRot().getZ(), 1,0,1);
 	}
 };
-class CamaraFPS: public Camara {
+class CamaraFPS: public Camera {
 public:
-	CamaraFPS(double x=0,double y=1.65,double z=0):Camara(x,y,z){}
+	CamaraFPS(double x=0,double y=1.65,double z=0):Camera(x,y,z){}
 	void update(double dt){
 		double ry=rot2rad(getRot().getY());
 		Vector3D vel={-sin(ry),0,cos(ry)};

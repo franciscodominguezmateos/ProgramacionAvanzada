@@ -265,7 +265,7 @@ Mat uniformScaleTransform(Mat t,float s){
 // this interpolated by right-> dm in on the right and update is r=T0*Tt
 // m1=m0*dm->dm=m0.inv()*m1;
 Mat interpolate(Mat T0,Mat T1,float t){
-	//Totation
+	//Rotation
 	Mat m0=getRotation(T0);
 	Mat m1=getRotation(T1);
 	Mat dm,vt,mt;

@@ -6,9 +6,10 @@
  */
 #pragma once
 #include <string>
+
+#include "camera.h"
 #include "shader.h"
 #include "vector3d.h"
-#include "camara.h"
 #include "view.h"
 #include "sensors.h"
 #include "stage.h"
