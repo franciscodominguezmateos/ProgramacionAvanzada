@@ -131,9 +131,9 @@ public:
 		render();
 	}
 };
-class CamaraFly: public Camara {
+class Camera: public Camara {
 public:
-	CamaraFly(double x=0,double y=1.65,double z=0):Camara(x,y,z){}
+	Camera(double x=0,double y=1.65,double z=0):Camara(x,y,z){}
 	void update(double dt){
 		double ry=deg2rad(getRot().getY());
 		double rx=deg2rad(getRot().getX());

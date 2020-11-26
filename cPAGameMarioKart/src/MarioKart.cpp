@@ -1,5 +1,11 @@
-#include <GL/glut.h>
+// this must be the first include it initialize OpenGL/glut and Shaders
+#include "game_engine.h"
+#include "modelo_material.h"
+
+/*
+#include "shader.h"
 #include <stdlib.h>
+#include <view.h>
 #include <iostream>
 #include <thread>
 #include <mutex>
@@ -13,12 +19,11 @@
 #include "escena.h"
 #include "pared.h"
 #include "camara.h"
-#include "textura.h"
+#include "texture.h"
 #include "rectangulo.h"
 #include "pendulo.h"
 #include "cubo_elastico.h"
 #include "fondo_textura.h"
-#include "vista.h"
 #include "luz.h"
 #include "proyeccion_perspectiva.h"
 #include "pose_estimation_chessboard.h"
@@ -26,10 +31,11 @@
 #include "modelo_material.h"
 #include "caja_elastica.h"
 #include "caja_modelo_elastico.h"
-
+*/
 //Declaration needed in next .h
 Mat global_img;
 #include "socket_TCP_server.h"
+#include "sensors.h"
 
 using namespace cv;
 
@@ -45,10 +51,10 @@ double vel;
 ModeloMaterial* circuit;
 ModeloMaterial* mariokart;
 
-Escena e;
+Stage e;
 Cubo *pc;
 ModeloMaterial* m;
-Textura tex,ladrillos,paredTex,texTv,spiderTex,marioKartTex,minionTex,mariokartTex;
+Texture tex,ladrillos,paredTex,texTv,spiderTex,marioKartTex,minionTex,mariokartTex;
 VideoCapture cap(0);
 CuboElastico *ce;
 CajaElastica* cje;
@@ -66,7 +72,7 @@ Mat dist=Mat::zeros(4,1,cv::DataType<double>::type); // Assuming no lens distort
 CamaraAR *camAR=nullptr;
 ProyeccionCamara pCam(K);
 PoseEstimationChessBoard peChessBoard(K,dist);
-Textura texTablero;
+Texture texTablero;
 void setPoseCamAR(Mat &tablero){
 	 if(peChessBoard.estimatePose(tablero)){
 		 if(camAR)
@@ -86,46 +92,26 @@ void initCamAR(){
 	 setPoseCamAR(tablero);
 }
 ProyeccionPerspectiva proyeccion;
-vector<Vista> vistas={{0.0,0.0,0.5,1,&proyeccion},{0.5,0.0,0.5,1,&pCam}};//,{0.0,0.5,0.5,0.5},{0.5,0.5,0.5,0.5}};
+vector<View> vistas={{0.0,0.0,0.5,1,&proyeccion},{0.5,0.0,0.5,1,&pCam}};//,{0.0,0.5,0.5,0.5},{0.5,0.5,0.5,0.5}};
 //vector<Vista> vistas={{0.0,0.0,0.5,1,&proyeccion},{0.5,0.0,0.5,1,&proyeccion}};//,{0.0,0.5,0.5,0.5},{0.5,0.5,0.5,0.5}};
 vector<CamaraTPS> camaras(vistas.size());
 
 /* SENSOR */
-vector<CGI> sensorEvents;
-mutex mtxSensorEvents;
-class StringCGIProcessor:public StringProcessor{
-public:
-	string process(string &si){
-		CGI event(si);
-		//cout << si << endl;
-		mtxSensorEvents.lock();
-		sensorEvents.clear();
-		sensorEvents.push_back(si);
-		mtxSensorEvents.unlock();
-	    return "OK";
-	}
+class SensorWiiMote:public SensorObserver{
+	void onSensorEvent(SensorEventData &e){
+	    CamaraTPS &cam=camaras[0];
+		Solido* mario = cam.getSolido();
+		//cout << "wiimote->" << e << endl;
+		//double x=stod(e["x"]);
+		double y=e.getDouble("y");
+		double z=e.getDouble("z");
+		//double b=stod(e["buttons"]);
+		y=linearMap(y,94,140,-2,2);
+		z=linearMap(z,94,140,-0.01,0.01);
+		mario->setRot(mario->getRot() + Vector3D(0, y, 0));
+		vel+=z;
+	};
 };
-void updateSensors(){
-	if(!sensorEvents.empty()){
-		vector<CGI>::iterator pos=sensorEvents.begin();
-		mtxSensorEvents.lock();
-		CGI e=sensorEvents.front();
-		mtxSensorEvents.unlock();
-		if(e.size()==4){
-		    CamaraTPS &cam=camaras[0];
-			Solido* mario = cam.getSolido();
-			cout << "e=" << e << endl;
-			//double x=stod(e["x"]);
-			double y=stod(e["y"]);
-			double z=stod(e["z"]);
-			//double b=stod(e["buttons"]);
-			y=linearMap(y,94,140,-2,2);
-			z=linearMap(z,94,140,-0.01,0.01);
-			mario->setRot(mario->getRot() + Vector3D(0, y, 0));
-			vel+=z;
-		}
-	}
-}
 
 void displayMe(void){
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
@@ -147,11 +133,11 @@ void displayMe(void){
 void upKart(){
 	Vector3D up(0,1,0);
 	circuit->setDrawNormals(false);
-	vector<Triangulo*> &triangulos=circuit->getTriangulos();
+	vector<Triangle*> &triangulos=circuit->getTriangulos();
 	Vector3D p=mariokart->getPos();
 	double min=1e40;
-	Triangulo* nearest=nullptr;
-	for(Triangulo* &t:triangulos){
+	Triangle* nearest=nullptr;
+	for(Triangle* &t:triangulos){
 /*
 		 double d=t->getCenter().distancia(p);
 		 if(d<min){
@@ -160,7 +146,7 @@ void upKart(){
 		 }
 		*/
 		if(t->getNormal()*up>0.5){
-			if(t->isIn(p)){
+			if(t->isOver(p)){
 				double d=t->distancia(p);
 				if(fabs(d)<3)
 				if(d<min){
@@ -222,7 +208,7 @@ void idle(){
  CamaraTPS &cam=camaras[0];
  cam.update(dt*vel);
  displayMe();
- updateSensors();
+ //scp.updateSensors();
 }
 void keyPressed(unsigned char key,int x,int y){
 	Solido* s;
@@ -326,12 +312,6 @@ void mousePress(int button, int state, int x, int y)
         my = -1;
     }
 }
-
-void reshape(int width,int height){
-	for(Vista &v:vistas)
-		v.reshape(width,height);
-}
-
 void loadCircuit(int i){
 	 /*  C I R C U I T O S */
 	 if(i==0){
@@ -396,81 +376,58 @@ void loadCircuit(int i){
 		 e.add(circuit);
 	 }
 }
-void init(void){
- glEnable(GL_DEPTH_TEST);
- glEnable(GL_LIGHTING);
- glEnable(GL_LIGHT0);
- glEnable(GL_LIGHT1);
- glEnable(GL_COLOR_MATERIAL);
- //glShadeModel(GL_FLAT);
- glShadeModel(GL_SMOOTH);
- texTablero.init();
+int main(int argc, char** argv) try{
+	srand(10);
+	SensorWiiMote wiim;
+	Game marioKart("PAGame Mario Kart :-D");
+	marioKart.addStage(&view,&cam,&hpall);
+	marioKart.addStage(&view1,&camk,&hpall);
+
+	 vel=0;
+	 //cout << t.isIn(Vector3D(0.25,0.25,0))<<endl;
+	 //camaras[0].setLookSolido(false);
+	 for(Camara &c:camaras){
+		 c.setPos(Vector3D(0,2.50,10));
+		 //c.setPos(Vector3D(0,1.50,0));
+		 c.setRot(Vector3D(0,180,0));
+	 }
+	 Luz* l1=new Luz(Vector3D( 50,50,15));
+	 l1->hazFija();
+	 e.add(l1);
+	 //e.add(new Luz(Vector3D(-50,50,15)));
+
+	 /*  M E N U  */
+	 int ci=4;
+	 cout << "Please enter the circuit number from 0 to 5: ";
+	 //cin >>ci;
+	 ci=0;
+
+
+	GameEngine::setGame(&marioKart);
+	GameEngine::gameInit(argc,argv);
+
+	 // In order to use textures fist gameInit() as to be called
+	 /*  M A R I O   K A R T */
+	 mariokart=new ModeloMaterial("pk_kart.obj");
+	 mariokart->hazFija();
+	 //mariokart->doScale(0.10);
+	 e.add(mariokart);
+	 camaras[0].setSolido(mariokart);
+
+
+
+	 loadCircuit(ci);
+
+	 initCamAR();
+	 fondoTablero.setTextura(texTablero);
+
+
+
+	//gameSetup();
+	marioKart.addSensorObserver(&wiim);
+	GameEngine::gameMainLoop();
+	return 0;
 }
-void gameInit(int argc, char** argv){
-	 glutInit(&argc,argv);
-	 //glutInitDisplayMode(GLUT_SINGLE);
-	 glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
-	 glutInitWindowSize(640*2,480);
-	 glutInitWindowPosition(300,300);
-	 glutCreateWindow("Mario Kart Augmented Reality Third Person :D");
-	 init();
+catch (exception &e){
+	cout << "Error in main():"<<e.what() <<endl;
 }
-void gameMainLoop(){
-	 glutDisplayFunc(displayMe);
-	 glutIdleFunc(idle);
-	 glutReshapeFunc(reshape);
-	 glutKeyboardFunc(keyPressed);
-	 glutMotionFunc(&mouseMoved);
-	 glutMouseFunc(&mousePress);
-	 //glutFullScreen();
-	 glutMainLoop();
-}
-
-int main(int argc, char** argv){
- srand(10);
- // Launch input sensor server thread
- bool stop=false;
- StringCGIProcessor scp;
- thread string_th(string_server,&stop,&scp,8881);
- // wait a minute
- this_thread::sleep_for(chrono::milliseconds(100));
-
- vel=0;
- //cout << t.isIn(Vector3D(0.25,0.25,0))<<endl;
- //camaras[0].setLookSolido(false);
- for(Camara &c:camaras){
-	 c.setPos(Vector3D(0,2.50,10));
-	 //c.setPos(Vector3D(0,1.50,0));
-	 c.setRot(Vector3D(0,180,0));
- }
- Luz* l1=new Luz(Vector3D( 50,50,15));
- l1->hazFija();
- e.add(l1);
- //e.add(new Luz(Vector3D(-50,50,15)));
-
- /*  M E N U  */
- int ci=4;
- cout << "Please enter the circuit number from 0 to 5: ";
- cin >>ci;
-
- gameInit(argc,argv);
-
-
- // In order to use textures fist gameInit() as to be called
- /*  M A R I O   K A R T */
- mariokart=new ModeloMaterial("pk_kart.obj");
- mariokart->hazFija();
- //mariokart->doScale(0.10);
- e.add(mariokart);
- camaras[0].setSolido(mariokart);
-
- loadCircuit(ci);
-
- initCamAR();
- fondoTablero.setTextura(texTablero);
-
- gameMainLoop();
- return 0;
-}
-
-

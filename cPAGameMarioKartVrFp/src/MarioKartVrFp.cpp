@@ -1,3 +1,4 @@
+
 //============================================================================
 // Name        : CPAGameMarioKartVrPf project. MarioKartVrFp.cpp
 // Author      : Francisco Dominguez
@@ -21,16 +22,16 @@
 #include "cubo.h"
 #include "cilindro.h"
 #include "rosco.h"
-#include "compuesto.h"
-#include "escena.h"
+#include <composite.h>
+#include <stage.h>
 #include "pared.h"
 #include "camara.h"
-#include "textura.h"
-#include "rectangulo.h"
+#include "texture.h"
+#include <rectangle.h>
 #include "pendulo.h"
 #include "cubo_elastico.h"
 #include "fondo_textura.h"
-#include "vista.h"
+#include <view.h>
 #include "luz.h"
 #include "proyeccion_perspectiva.h"
 #include "pose_estimation_chessboard.h"
@@ -38,108 +39,6 @@
 #include "modelo_material.h"
 #include "caja_elastica.h"
 #include "caja_modelo_elastico.h"
-
-// Un arreglo de 3 vectores que representan 3 vértices
-static const GLfloat g_vertex_buffer_data[] = {
-   -1.0f, -1.0f, 0.0f,
-   1.0f, -1.0f, 0.0f,
-   0.0f,  1.0f, 0.0f,
-};
-// Identificar el vertex buffer
-GLuint vertexbuffer;
-// Program IDs
-GLuint programID;
-
-// FROM: http://www.opengl-tutorial.org/es/beginners-tutorials/tutorial-2-the-first-triangle/
-GLuint LoadShaders(const char * vertex_file_path,const char * fragment_file_path){
-
-	// Crear los shaders
-	GLuint VertexShaderID = glCreateShader(GL_VERTEX_SHADER);
-	GLuint FragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
-
-	// Leer el Vertex Shader desde archivo
-	std::string VertexShaderCode;
-	std::ifstream VertexShaderStream(vertex_file_path, std::ios::in);
-	if(VertexShaderStream.is_open()){
-		std::stringstream sstr;
-		sstr << VertexShaderStream.rdbuf();
-		VertexShaderCode = sstr.str();
-		VertexShaderStream.close();
-	}else{
-		printf("Impossible to open %s. Are you in the right directory ? Don't forget to read the FAQ !\n", vertex_file_path);
-		getchar();
-		return 0;
-	}
-
-	// Leer el Fragment Shader desde archivo
-	std::string FragmentShaderCode;
-	std::ifstream FragmentShaderStream(fragment_file_path, std::ios::in);
-	if(FragmentShaderStream.is_open()){
-		std::stringstream sstr;
-		sstr << FragmentShaderStream.rdbuf();
-		FragmentShaderCode = sstr.str();
-		FragmentShaderStream.close();
-	}
-
-	GLint Result = GL_FALSE;
-	int InfoLogLength;
-
-
-	// Compilar Vertex Shader
-	printf("Compiling shader : %s\n", vertex_file_path);
-	char const * VertexSourcePointer = VertexShaderCode.c_str();
-	glShaderSource(VertexShaderID, 1, &VertexSourcePointer , NULL);
-	glCompileShader(VertexShaderID);
-
-	// Revisar Vertex Shader
-	glGetShaderiv(VertexShaderID, GL_COMPILE_STATUS, &Result);
-	glGetShaderiv(VertexShaderID, GL_INFO_LOG_LENGTH, &InfoLogLength);
-	if ( InfoLogLength > 0 ){
-		std::vector<char> VertexShaderErrorMessage(InfoLogLength+1);
-		glGetShaderInfoLog(VertexShaderID, InfoLogLength, NULL, &VertexShaderErrorMessage[0]);
-		printf("%s\n", &VertexShaderErrorMessage[0]);
-	}
-
-	// Compilar Fragment Shader
-	printf("Compiling shader : %s\n", fragment_file_path);
-	char const * FragmentSourcePointer = FragmentShaderCode.c_str();
-	glShaderSource(FragmentShaderID, 1, &FragmentSourcePointer , NULL);
-	glCompileShader(FragmentShaderID);
-
-	// Revisar Fragment Shader
-	glGetShaderiv(FragmentShaderID, GL_COMPILE_STATUS, &Result);
-	glGetShaderiv(FragmentShaderID, GL_INFO_LOG_LENGTH, &InfoLogLength);
-	if ( InfoLogLength > 0 ){
-		std::vector<char> FragmentShaderErrorMessage(InfoLogLength+1);
-		glGetShaderInfoLog(FragmentShaderID, InfoLogLength, NULL, &FragmentShaderErrorMessage[0]);
-		printf("%s\n", &FragmentShaderErrorMessage[0]);
-	}
-
-	// Vincular el programa por medio del ID
-	printf("Linking program\n");
-	GLuint ProgramID = glCreateProgram();
-	glAttachShader(ProgramID, VertexShaderID);
-	glAttachShader(ProgramID, FragmentShaderID);
-	glLinkProgram(ProgramID);
-
-	// Revisar el programa
-	glGetProgramiv(ProgramID, GL_LINK_STATUS, &Result);
-	glGetProgramiv(ProgramID, GL_INFO_LOG_LENGTH, &InfoLogLength);
-	if ( InfoLogLength > 0 ){
-		std::vector<char> ProgramErrorMessage(InfoLogLength+1);
-		glGetProgramInfoLog(ProgramID, InfoLogLength, NULL, &ProgramErrorMessage[0]);
-		printf("%s\n", &ProgramErrorMessage[0]);
-	}
-
-	glDetachShader(ProgramID, VertexShaderID);
-	glDetachShader(ProgramID, FragmentShaderID);
-
-	glDeleteShader(VertexShaderID);
-	glDeleteShader(FragmentShaderID);
-
-	return ProgramID;
-}
-
 
 //Declaration needed in next .h
 Mat global_img;
@@ -159,10 +58,10 @@ double vel;
 ModeloMaterial* circuit;
 ModeloMaterial* mariokart;
 
-Escena e;
+Stage e;
 Cubo *pc;
 ModeloMaterial* m;
-Textura tex,ladrillos,paredTex,texTv,spiderTex,marioKartTex,minionTex,mariokartTex;
+Texture tex,ladrillos,paredTex,texTv,spiderTex,marioKartTex,minionTex,mariokartTex;
 VideoCapture cap(0);
 CuboElastico *ce;
 CajaElastica* cje;
@@ -171,7 +70,7 @@ CajaModeloElastico* cme;
 FondoTextura fondo,fondoTablero;
 
 ProyeccionPerspectiva proyeccion;
-vector<Vista> vistas={{0.0,0.0,0.5,1,&proyeccion},{0.5,0.0,0.5,1,&proyeccion}};//,{0.0,0.5,0.5,0.5},{0.5,0.5,0.5,0.5}};
+vector<View> vistas={{0.0,0.0,0.5,1,&proyeccion},{0.5,0.0,0.5,1,&proyeccion}};//,{0.0,0.5,0.5,0.5},{0.5,0.5,0.5,0.5}};
 
 CamaraTPSVR camVR;
 /* SENSOR LinusTrinus */
@@ -253,27 +152,10 @@ Mat opengl_default_frame_to_opencv() {
     cv::flip(img, flipped, 0);
     return img;
 }
+SocketMJPEGServer sms;
 void displayMe(void){
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-/*
-	// Use our shader
-	glUseProgram(programID);
-	// Draw triangle...
-	// 1rst attribute buffer : vértices
-	glEnableVertexAttribArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-	glVertexAttribPointer(
-	   0,                  // atributo 0. No hay razón particular para el 0, pero debe corresponder en el shader.
-	   3,                  // tamaño
-	   GL_FLOAT,           // tipo
-	   GL_FALSE,           // normalizado?
-	   0,                    // Paso
-	   (void*)0            // desfase del buffer
-	);
-	// Dibujar el triángulo !
-	glDrawArrays(GL_TRIANGLES, 0, 3); // Empezar desde el vértice 0S; 3 vértices en total -> 1 triángulo
-	glDisableVertexAttribArray(0);
-*/
+
 	vistas[0].render();
     glLoadIdentity();
     camVR.renderLeft();
@@ -286,15 +168,16 @@ void displayMe(void){
 
     glutSwapBuffers();
     global_img=opengl_default_frame_to_opencv();
+    sms.setImg(global_img);
 }
 void upKart(){
 	Vector3D up(0,1,0);
 	circuit->setDrawNormals(false);
-	vector<Triangulo*> &triangulos=circuit->getTriangulos();
+	vector<Triangle*> &triangulos=circuit->getTriangulos();
 	Vector3D p=mariokart->getPos();
 	double min=1e40;
-	Triangulo* nearest=nullptr;
-	for(Triangulo* &t:triangulos){
+	Triangle* nearest=nullptr;
+	for(Triangle* &t:triangulos){
 /*
 		 double d=t->getCenter().distancia(p);
 		 if(d<min){
@@ -303,7 +186,7 @@ void upKart(){
 		 }
 		*/
 		if(t->getNormal()*up>0.5){
-			if(t->isIn(p)){
+			if(t->isOver(p)){
 				double d=t->distancia(p);
 				if(fabs(d)<3)
 				if(d<min){
@@ -461,7 +344,7 @@ void mousePress(int button, int state, int x, int y)
 }
 
 void reshape(int width,int height){
-	for(Vista &v:vistas)
+	for(View &v:vistas)
 		v.reshape(width,height);
 }
 
@@ -562,6 +445,8 @@ void init(void){
  glEnable(GL_COLOR_MATERIAL);
  //glShadeModel(GL_FLAT);
  glShadeModel(GL_SMOOTH);
+ glEnable(GL_BLEND);
+ glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 void gameInit(int argc, char** argv){
 	//string glv((char*)glGetString(GL_VERSION));
@@ -573,20 +458,6 @@ void gameInit(int argc, char** argv){
 	 glutInitWindowPosition(300,300);
 	 glutCreateWindow("Mario Kart Virtual Reality First Person :D");
 	 init();
-	 glCreateShader(GL_VERTEX_SHADER);
-	 // VAO
-	 GLuint VertexArrayID;
-	 glGenVertexArrays(1, &VertexArrayID);
-	 glBindVertexArray(VertexArrayID);
-	 // El siguiente paso es entregarle este triángulo a OpenGL
-	 // Generar un buffer, poner el resultado en el vertexbuffer que acabamos de crear
-	 glGenBuffers(1, &vertexbuffer);
-	 // Los siguientes comandos le darán características especiales al 'vertexbuffer'
-	 glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-	 // Darle nuestros vértices a  OpenGL.
-	 glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
-	 // Crear y compilar el programa GLSL desde los shaders
-	 programID = LoadShaders( "src/SimpleVertexShader.vertexshader", "src/SimpleFragmentShader.fragmentshader" );
 }
 void gameMainLoop(){
 	 glutDisplayFunc(displayMe);
@@ -605,18 +476,25 @@ int main(int argc, char** argv){
  bool stop=false;
  // THREADs
  // JPEG stream server
- thread server_th(video_jpeg_stream_server,&stop,4097);
- this_thread::sleep_for(chrono::milliseconds(100));
+ //thread server_th(video_jpeg_stream_server,&stop,4097);
+ //this_thread::sleep_for(chrono::milliseconds(100));
+ //sms=new SocketMJPEGServer();
+ //sms->setImg(Mat::eye(320,240,CV_32F));
  // Linus Trinus head tracking sensor server
  StringCGIProcessorLT scp;
+ SocketTCPStringServer string_svr(&scp,8882);
+ /*
  thread string_th_LT(string_server,&stop,&scp,8881);
  this_thread::sleep_for(chrono::milliseconds(100));
+ */
  // WiiMotion wheel sensor server
  StringCGIProcessorWM scpWM;
+ SocketTCPStringServer string_wm_svr(&scpWM,8881);
+ /*
  thread string_th_WM(string_server,&stop,&scpWM,8882);
  // wait a minute
  this_thread::sleep_for(chrono::milliseconds(100));
-
+*/
  vel=0;
  //cout << t.isIn(Vector3D(0.25,0.25,0))<<endl;
  camVR.setLookSolido(false);
@@ -631,8 +509,8 @@ int main(int argc, char** argv){
  /*  M E N U  */
  int ci=0;
  cout << "Please enter the circuit number from 0 to 6: ";
- cin >>ci;
-
+ //cin >>ci;
+ ci=0;
  gameInit(argc,argv);
 
  // In order to use textures fist gameInit() as to be called
