@@ -6,10 +6,8 @@
 #include "vector3d.h"
 #include "esfera.h"
 #include "cubo.h"
-#include "cilindro.h"
 #include "rosco.h"
 #include "pared.h"
-#include "camara.h"
 #include "pendulo.h"
 #include "cubo_elastico.h"
 #include "fondo_textura.h"
@@ -20,6 +18,7 @@
 #include "modelo_material.h"
 #include "caja_elastica.h"
 #include "caja_modelo_elastico.h"
+#include "camera_ar.h"
 #include "composite.h"
 #include "walking_inverted_pendulum.h"
 #include "quaternion.h"
@@ -27,6 +26,7 @@
 #include "solid_rigid_body.h"
 #include "view.h"
 #include "contact.h"
+#include "cylinder.h"
 #include "rectangle.h"
 #include "stage.h"
 #include "stage_rigid_body.h"
@@ -57,8 +57,8 @@ CajaModeloElastico* cme;
 StageRigidBody* srb;
 
 // Pendulum masses
-Solido *pt1;
-Solido *pt2;
+Solid *pt1;
+Solid *pt2;
 
 FondoTextura fondo,fondoTablero;
 
@@ -68,13 +68,13 @@ Mat K=(Mat_<double>(3,3) <<
 						 0,                 0,                 1);
 
 Mat dist=Mat::zeros(4,1,cv::DataType<double>::type); // Assuming no lens distortion
-CamaraAR *camAR;
+CameraAR *camAR;
 ProyeccionCamara pCam(K);
 PoseEstimationChessBoard peChessBoard(K,dist);
 
 ProyeccionPerspectiva proyeccion;
 vector<View> vistas={{0.0,0.0,1,1,&proyeccion}};
-vector<Camara> camaras(vistas.size());
+vector<Camera> camaras(vistas.size());
 
 void displayMe(void){
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
@@ -165,7 +165,7 @@ void mouseMoved(int x, int y)
     	for(unsigned int i=0;i<vistas.size();i++){
     		if(vistas[i].contain(x,y)){
     			Vector3D r;
-    			Camara &cam=camaras[i];
+    			Camera &cam=camaras[i];
     			r=cam.getRot()+Vector3D(y-my,x-mx,0);
     			cam.setRot(r);
     		}
@@ -233,7 +233,7 @@ int main(int argc, char** argv) try{
 
  vel=0;
  //cout << t.isIn(Vector3D(0.25,0.25,0))<<endl;
- for(Camara &c:camaras){
+ for(Camera &c:camaras){
 	 c.setPos(Vector3D(0,1.65,20));
 	 c.setRot(Vector3D(0,90,0));
  }
@@ -320,8 +320,8 @@ int main(int argc, char** argv) try{
 
  // Walking inverted pendulum
  // updated on idle
- pt1=new Solido(0,0,0);
- pt2=new Solido(0.1,2.5,0);
+ pt1=new Solid(0,0,0);
+ pt2=new Solid(0.1,2.5,0);
  WalkingInvertedPendulum* wip=new WalkingInvertedPendulum(pt1,pt2);
  e.add(wip);
 

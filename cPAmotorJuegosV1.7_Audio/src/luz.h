@@ -9,10 +9,11 @@
 #define LUZ_H_
 #include <assert.h>
 #include <GL/glut.h>
-#include "vector3d.h"
-#include "solido.h"
 
-class Luz:public Solido {
+#include "solid.h"
+#include "vector3d.h"
+
+class Luz:public Solid {
 	// here you can see const vs constexpr
 	static const unsigned char NLIGHTS=8;
 	static constexpr GLenum ids[]={
@@ -30,7 +31,7 @@ public:
 	static void init(){
 		idCount=0;
 	}
-	Luz(Vector3D p):Solido(p),idLight(idCount++){
+	Luz(Vector3D p):Solid(p),idLight(idCount++){
 		assert(idCount<=NLIGHTS);
 		glEnable(ids[idLight]);
 	}

@@ -5,12 +5,12 @@
  *      Author: Francisco Dominguez
  */
 #pragma once
-#include "solido.h"
-class Decorator: public Solido {
-	Solido* decorated;
+#include "solid.h"
+class Decorator: public Solid {
+	Solid* decorated;
 public:
-	Decorator(Solido* s){decorated=s;}
-	inline Solido* &getDecorated(){return decorated;}
+	Decorator(Solid* s){decorated=s;}
+	inline Solid* &getDecorated(){return decorated;}
 	virtual Vector3D getPos(){
 		return decorated->getPos();
 	}
@@ -66,9 +66,9 @@ public:
 class DecoratorSpin: public Decorator{
 	float speed;
 public:
-	DecoratorSpin(Solido* s):Decorator(s),speed(50){}
+	DecoratorSpin(Solid* s):Decorator(s),speed(50){}
 	virtual void update(double dt){
-		Solido &s=*getDecorated();
+		Solid &s=*getDecorated();
 		Vector3D nRot=s.getRot()+Vector3D(0,speed*dt,0);
 		s.setRot(nRot);
 	}

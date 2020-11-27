@@ -10,13 +10,14 @@
 #include <iostream>
 #include <vector>
 #include <GL/glut.h>
+
+#include "solid.h"
 #include "vector3d.h"
-#include "solido.h"
 
 using namespace std;
 
-class Composite:public Solido {
-	vector<Solido*> solidos;
+class Composite:public Solid {
+	vector<Solid*> solidos;
 public:
 	Composite();
 	Composite(const Composite &c){
@@ -29,12 +30,12 @@ public:
 		//	solidos.push_back(s);
 		//}
 		//Copia profunda
-		for(Solido *s:c.solidos){
+		for(Solid *s:c.solidos){
 			solidos.push_back(s->clone());
 		}
 	}
 	virtual ~Composite(){
-		 for(Solido *s:solidos){
+		 for(Solid *s:solidos){
 			delete s;
 		 }
 		 solidos.clear();//no es necesario se llama en el destructor de vector
@@ -46,13 +47,13 @@ public:
 		glPushMatrix();
 		//glColor3f(this->getCol().getX(),this->getCol().getY(),this->getCol().getZ());
 		glTranslatef(this->getPos().getX(),this->getPos().getY(),this->getPos().getZ());
-		for(Solido *s:solidos)
+		for(Solid *s:solidos)
 			s->render();
 		glPopMatrix();
 	}
-	template<class T=Solido>
+	template<class T=Solid>
 	vector<T*> getSolidos(){return solidos;}
-	void add(Solido *s){solidos.push_back(s);}
+	void add(Solid *s){solidos.push_back(s);}
 };
 
 #endif /* COMPOSITE_H_ */

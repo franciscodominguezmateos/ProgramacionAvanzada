@@ -9,15 +9,15 @@
 #define SOLIDO_ELASTICO_H_
 #include <vector>
 
-#include "solido.h"
 #include "fuerza_elastica.h"
 #include "fuerza_amortiguada.h"
+#include "solid.h"
 
 using namespace std;
 
-class SolidoElastico:public Solido {
+class SolidoElastico:public Solid {
 protected:
-	vector<Solido *> particulas;
+	vector<Solid *> particulas;
 	vector<FuerzaElastica *> fuerzasElasticas;
 	FuerzaAmortiguada fa;
 public:
@@ -30,12 +30,12 @@ public:
 	virtual ~SolidoElastico(){}
 	void filaX(double maxX,double Y,double Z) {
 		for(int i=0;i<maxX;i++){
-			Solido *p=new Solido();
+			Solid *p=new Solid();
 			p->setPos(Vector3D(-1+i/maxX*2.0,Y,Z));
 			particulas.push_back(p);
 		}
 		for(int i=0;i<maxX-1;i++){
-			Solido *p1,*p2;
+			Solid *p1,*p2;
 			p1=particulas[i+0];
 			p2=particulas[i+1];
 			Vector3D pos1=p1->getPos();
@@ -48,22 +48,22 @@ public:
 			fuerzasElasticas.push_back(f);
 		}
 	}
-	inline const vector<Solido *> &getParticulas(){return particulas;}
-	inline Solido *getParticula(unsigned i){
+	inline const vector<Solid *> &getParticulas(){return particulas;}
+	inline Solid *getParticula(unsigned i){
 		assert(i<particulas.size());
 		return particulas[i];}
 	inline vector<FuerzaElastica *> getFuerzasElasticas(){return fuerzasElasticas;}
-	inline void setParticulas(vector<Solido *> pts){particulas=pts;}
-	inline void add(Solido *s){particulas.push_back(s);}
+	inline void setParticulas(vector<Solid *> pts){particulas=pts;}
+	inline void add(Solid *s){particulas.push_back(s);}
 	inline void add(FuerzaElastica *f){fuerzasElasticas.push_back(f);}
-	inline Solido *getPrimeraParticula(){return particulas[0];}
-	inline Solido *getUltimaParticula(){
+	inline Solid *getPrimeraParticula(){return particulas[0];}
+	inline Solid *getUltimaParticula(){
 		int ultimaPos=particulas.size()-1;
 		return particulas[ultimaPos];
 	}
 	inline Vector3D getCenter(){
 		Vector3D v;
-		for(Solido* &s:particulas)
+		for(Solid* &s:particulas)
 			v+=s->getPos();
 		return v/particulas.size();
 	}
@@ -74,13 +74,13 @@ public:
 	    glColor4f(r, g, b,0.9f);
 	}
 	inline void setF(Vector3D v){
-		for(Solido *s:particulas)
+		for(Solid *s:particulas)
 			s->setF(v);
 	}
 	inline void render(){
 	    glColor3f(1.0f, 1.0f, 0.0f);
 	    //glBegin(GL_POINTS);
-		for(Solido *p:particulas){
+		for(Solid *p:particulas){
 			p->render();
 			//Vector3D pos1=p->getPos();
 		    //glVertex3f(pos1.getX(),pos1.getY(),pos1.getZ());
@@ -88,8 +88,8 @@ public:
 		//glEnd();
 		int s=fuerzasElasticas.size();
 		for(int i=0;i<s;i++){
-			Solido *p1=fuerzasElasticas[i]->getParticula1();
-			Solido *p2=fuerzasElasticas[i]->getParticula2();
+			Solid *p1=fuerzasElasticas[i]->getParticula1();
+			Solid *p2=fuerzasElasticas[i]->getParticula2();
 			Vector3D pos1=p1->getPos();
 			Vector3D pos2=p2->getPos();
 			//Vector3D col=p1->getCol();
@@ -102,17 +102,17 @@ public:
 		}
 	}
 	inline void limpiaFuerza(){
-		for(Solido *p:particulas)
+		for(Solid *p:particulas)
 			p->limpiaFuerza();
 	}
 	inline void acumulaFuerza(Vector3D f){
-		for(Solido *p:particulas)
+		for(Solid *p:particulas)
 			p->acumulaFuerza(f);
 	}
 	inline void acumulaFuerzasElasticas(){
 		for(FuerzaElastica *fe:fuerzasElasticas){
-			Solido *p1=fe->getParticula1();
-			Solido *p2=fe->getParticula2();
+			Solid *p1=fe->getParticula1();
+			Solid *p2=fe->getParticula2();
 			Vector3D elastica=fe->evalua();
 			p1->acumulaFuerza(elastica);
 			p2->acumulaFuerza(-elastica);
@@ -123,7 +123,7 @@ public:
 		}
 	}
 	inline void updateParticles(double dt){
-		for(Solido *p:particulas)
+		for(Solid *p:particulas)
 			p->update(dt);
 	}
 	inline void update(double dt){
@@ -132,7 +132,7 @@ public:
 	}
 	void calculaLongitudReposo(double s=1.0){
 		for(FuerzaElastica *f:fuerzasElasticas){
-			Solido *p1,*p2;
+			Solid *p1,*p2;
 			p1=f->getParticula1();
 			p2=f->getParticula2();
 			Vector3D pos1=p1->getPos();

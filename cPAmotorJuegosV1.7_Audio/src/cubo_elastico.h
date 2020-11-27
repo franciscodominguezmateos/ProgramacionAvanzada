@@ -14,24 +14,24 @@ class CuboElastico: public SolidoElastico {
 	Texture tex;
 public:
 	CuboElastico(double l){
-			Solido *p;
-			p=new Solido( l, l, l);
+			Solid *p;
+			p=new Solid( l, l, l);
 			particulas.push_back(p);
-			p=new Solido( l, l,-l);
+			p=new Solid( l, l,-l);
 			particulas.push_back(p);
-			p=new Solido( l,-l,-l);
+			p=new Solid( l,-l,-l);
 			particulas.push_back(p);
-			p=new Solido( l,-l, l);
+			p=new Solid( l,-l, l);
 			particulas.push_back(p);
-			p=new Solido(-l, l, l);
+			p=new Solid(-l, l, l);
 			particulas.push_back(p);
-			p=new Solido(-l, l,-l);
+			p=new Solid(-l, l,-l);
 			particulas.push_back(p);
-			p=new Solido(-l,-l,-l);
+			p=new Solid(-l,-l,-l);
 			particulas.push_back(p);
-			p=new Solido(-l,-l, l);
+			p=new Solid(-l,-l, l);
 			particulas.push_back(p);
-			Solido *p1,*p2;
+			Solid *p1,*p2;
 			for(unsigned int i=0;i<this->getParticulas().size();i++){
 				for(unsigned int j=i+1;j<this->getParticulas().size();j++){
 					p1=getParticulas()[i];
@@ -46,7 +46,7 @@ public:
 					fuerzasElasticas.push_back(f1);
 				}
 			}
-			for(Solido *p:this->getParticulas()){
+			for(Solid *p:this->getParticulas()){
 				Vector3D iy(0,2,0);
 				//p->setM(1);
 				p->setPos(p->getPos()+iy);

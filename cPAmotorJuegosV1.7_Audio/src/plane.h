@@ -7,9 +7,9 @@
 
 #ifndef PLANO_H_
 #define PLANO_H_
-#include "solido.h"
+#include "solid.h"
 
-class Plane: public Solido {
+class Plane: public Solid {
 	float a,b,c,d;
 public:
 	Plane(){a=b=c=d=0;}

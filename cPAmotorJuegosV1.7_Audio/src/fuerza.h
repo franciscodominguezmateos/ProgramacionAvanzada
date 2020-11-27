@@ -7,7 +7,7 @@
 
 #ifndef FUERZA_H_
 #define FUERZA_H_
-#include "solido.h"
+#include "solid.h"
 
 class Fuerza {
 public:

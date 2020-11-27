@@ -8,8 +8,8 @@
 #ifndef SRC_FUERZAELASTICA_H_
 #define SRC_FUERZAELASTICA_H_
 #include "util.h"
-#include "solido.h"
 #include "fuerza.h"
+#include "solid.h"
 
 //Una fuerza elastica está formada por un muelle y un amortiguador
 //el muelle proporciona fuerza proporcional a la distancia
@@ -19,14 +19,14 @@ class FuerzaElastica: public Fuerza {
 	double longRep;
 	double Km;
 	double Ka;
-	Solido *p1,*p2;
+	Solid *p1,*p2;
 public:
 //	inline FuerzaElastica():longRep(2.0/51.0),Km(40.0/1.0),Ka(10.55),p1(nullptr),p2(nullptr){};
 	inline FuerzaElastica():longRep(1.0/51.0),Km(10.0/1.0),Ka(2.55),p1(nullptr),p2(nullptr){};
-	inline Solido *getParticula1(){return p1;}
-	inline Solido *getParticula2(){return p2;}
-	inline void setParticula1(Solido *p){p1=p;}
-	inline void setParticula2(Solido *p){p2=p;}
+	inline Solid *getParticula1(){return p1;}
+	inline Solid *getParticula2(){return p2;}
+	inline void setParticula1(Solid *p){p1=p;}
+	inline void setParticula2(Solid *p){p2=p;}
 	inline void setKm(double k){Km=k;}
 	inline void setKa(double k){Ka=k;}
 	inline void setLongitudReposo(double l){longRep=l;}

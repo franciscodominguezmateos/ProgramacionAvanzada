@@ -15,7 +15,7 @@ protected:
 	double w,h,d;
 public:
 	CajaElastica(double w2,double h2,double d2):w(w2),h(h2),d(d2){
-			Solido *p;
+			Solid *p;
 			double w=w2/2;
 			double h=h2/2;
 			double d=d2/2;
@@ -27,27 +27,27 @@ public:
 			//   7---3
 			//square of the right
 			//right/up/front point
-			p=new Solido( w, h, d);
+			p=new Solid( w, h, d);
 			particulas.push_back(p);
 			//right/up/back point
-			p=new Solido( w, h,-d);
+			p=new Solid( w, h,-d);
 			particulas.push_back(p);
 			//right/bottom/back point
-			p=new Solido( w,-h,-d);
+			p=new Solid( w,-h,-d);
 			particulas.push_back(p);
 			//right/bottom/front point
-			p=new Solido( w,-h, d);
+			p=new Solid( w,-h, d);
 			particulas.push_back(p);
 			//squre of the left
-			p=new Solido(-w, h, d);
+			p=new Solid(-w, h, d);
 			particulas.push_back(p);
-			p=new Solido(-w, h,-d);
+			p=new Solid(-w, h,-d);
 			particulas.push_back(p);
-			p=new Solido(-w,-h,-d);
+			p=new Solid(-w,-h,-d);
 			particulas.push_back(p);
-			p=new Solido(-w,-h, d);
+			p=new Solid(-w,-h, d);
 			particulas.push_back(p);
-			Solido *p1,*p2;
+			Solid *p1,*p2;
 			for(unsigned int i=0;i<this->getParticulas().size();i++){
 				for(unsigned int j=i+1;j<this->getParticulas().size();j++){
 					p1=getParticulas()[i];
@@ -62,7 +62,7 @@ public:
 					fuerzasElasticas.push_back(f1);
 				}
 			}
-			for(Solido *p:this->getParticulas()){
+			for(Solid *p:this->getParticulas()){
 				Vector3D iy(0,h+1,0);
 				//p->setM(1);
 				p->setPos(p->getPos()+iy);

@@ -1,13 +1,14 @@
 #ifndef CUBO_H_
 #define CUBO_H_
 #include <GL/glut.h>
+
+#include "solid.h"
 #include "vector3d.h"
-#include "solido.h"
-class Cubo: public Solido{
+class Cubo: public Solid{
  float s;
 public:
- Cubo():Solido(),s(1){}
- Cubo(const Cubo &c):Solido(c),s(c.s){}
+ Cubo():Solid(),s(1){}
+ Cubo(const Cubo &c):Solid(c),s(c.s){}
  Cubo *clone(){
 	 return new Cubo(*this);
  }
@@ -27,7 +28,7 @@ public:
  friend std::ostream &operator << (std::ostream &os, const Cubo &v);
 };
 inline std::ostream &operator<<(std::ostream &os, const Cubo &c){
-	os << static_cast<const Solido&>( c );
+	os << static_cast<const Solid&>( c );
 	os <<",S="<< c.s;
     return os;
 }

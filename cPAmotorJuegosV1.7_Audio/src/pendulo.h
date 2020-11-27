@@ -12,7 +12,7 @@
 class Pendulo:public SolidoElastico {
 public:
 	Pendulo(){}
-	Pendulo(Solido *p1,Solido *p2){
+	Pendulo(Solid *p1,Solid *p2){
 		p1->hazFija();
 		FuerzaElastica *f=new FuerzaElastica();
 		f->setParticula1(p1);

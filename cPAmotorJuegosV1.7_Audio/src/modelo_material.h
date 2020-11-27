@@ -21,7 +21,7 @@
 
 using namespace std;
 
-class ModeloMaterial: public Solido {
+class ModeloMaterial: public Solid {
 	vector<Vector3D *> vertices;
 	vector<Vector3D *> textures;
 	vector<Vector3D *> normals;

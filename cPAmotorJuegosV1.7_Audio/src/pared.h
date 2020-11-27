@@ -7,15 +7,15 @@
 
 #ifndef PARED_H_
 #define PARED_H_
-#include "solido.h"
+#include "solid.h"
 
-class Pared: public Solido {
+class Pared: public Solid {
 	Vector3D dim;
 	bool vertical;
 public:
 	//x=longitud, y=altura, z=profundidad
 	Pared(double x=4,double y=3,double z=0.1):dim(Vector3D(x,y,z)),vertical(false){}
-	Pared(const Pared &p):Solido(p),dim(p.dim),vertical(p.vertical){}
+	Pared(const Pared &p):Solid(p),dim(p.dim),vertical(p.vertical){}
 	virtual ~Pared(){}
 	void setVertical(bool b){vertical=b;}
 	bool getVertical(){return vertical;}
