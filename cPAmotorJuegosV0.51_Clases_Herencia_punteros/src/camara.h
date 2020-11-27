@@ -9,13 +9,13 @@
 #define CAMARA_H_
 #include "vector3d.h"
 
-class Camara {
+class Camera {
 	Vector3D pos;
 	Vector3D rot;
 public:
-	Camara();
-	Camara(double x,double y,double z):pos(Vector3D(x,y,z)){}
-	virtual ~Camara();
+	Camera();
+	Camera(double x,double y,double z):pos(Vector3D(x,y,z)){}
+	virtual ~Camera();
 	const Vector3D& getPos() const {
 		return pos;
 	}

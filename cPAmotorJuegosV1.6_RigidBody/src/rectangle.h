@@ -41,7 +41,7 @@ public:
 		float vnx=vn.getX();
 		float vny=vn.getY();
 		float vnz=vn.getZ();
-		tex.activar();
+		tex.bind();
 		glBegin(GL_QUADS);
 			glTexCoord2f(0, 0);
 		    glNormal3f(vnx,vny,vnz);
@@ -56,7 +56,7 @@ public:
 		    glNormal3f(vnx,vny,vnz);
 		    glVertex3f(p3.getX(),p3.getY(),p3.getZ());
 		glEnd();
-		tex.desactivar();
+		tex.unbind();
 	    if(drawNormals){
 			//Draw normal
 	    	Vector3D vn=this->getNormal();

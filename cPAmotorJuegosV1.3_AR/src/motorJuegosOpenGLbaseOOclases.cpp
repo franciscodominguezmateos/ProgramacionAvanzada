@@ -166,7 +166,7 @@ void mouseMoved(int x, int y)
     	for(unsigned int i=0;i<vistas.size();i++){
     		if(vistas[i].contain(x,y)){
     			Vector3D r;
-    			Camara &cam=camaras[i];
+    			Camera &cam=camaras[i];
     			r=cam.getRot()+Vector3D(y-my,x-mx,0);
     			cam.setRot(r);
     		}
@@ -218,7 +218,7 @@ void initCamAR(){
 
 int main(int argc, char** argv){
  srand(10);
- for(Camara &c:camaras)
+ for(Camera &c:camaras)
 	 c.setPos(Vector3D(0,1.65,10));
  e.add(new Luz(Vector3D( 50,50,15)));
  e.add(new Luz(Vector3D(-50,50,15)));

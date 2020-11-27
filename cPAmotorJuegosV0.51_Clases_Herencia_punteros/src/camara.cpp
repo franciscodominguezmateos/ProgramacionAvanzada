@@ -7,12 +7,12 @@
 
 #include "camara.h"
 
-Camara::Camara() {
+Camera::Camera() {
 	// TODO Auto-generated constructor stub
 
 }
 
-Camara::~Camara() {
+Camera::~Camera() {
 	// TODO Auto-generated destructor stub
 }
 

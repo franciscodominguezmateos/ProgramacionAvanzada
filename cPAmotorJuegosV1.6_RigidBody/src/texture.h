@@ -92,13 +92,13 @@ public:
 		img=i;
 		update();
 	}
-	void activar(){
+	void bind(){
 		if(!isReady())
 			return;
 		glEnable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, idTexture);
 	}
-	void desactivar(){
+	void unbind(){
 		if(!isReady())
 			return;
 		glDisable(GL_TEXTURE_2D);

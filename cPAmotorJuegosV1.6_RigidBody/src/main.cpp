@@ -74,7 +74,7 @@ PoseEstimationChessBoard peChessBoard(K,dist);
 
 ProyeccionPerspectiva proyeccion;
 vector<View> vistas={{0.0,0.0,1,1,&proyeccion}};
-vector<Camara> camaras(vistas.size());
+vector<Camera> camaras(vistas.size());
 
 void displayMe(void){
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
@@ -165,7 +165,7 @@ void mouseMoved(int x, int y)
     	for(unsigned int i=0;i<vistas.size();i++){
     		if(vistas[i].contain(x,y)){
     			Vector3D r;
-    			Camara &cam=camaras[i];
+    			Camera &cam=camaras[i];
     			r=cam.getRot()+Vector3D(y-my,x-mx,0);
     			cam.setRot(r);
     		}
@@ -233,7 +233,7 @@ int main(int argc, char** argv) try{
 
  vel=0;
  //cout << t.isIn(Vector3D(0.25,0.25,0))<<endl;
- for(Camara &c:camaras){
+ for(Camera &c:camaras){
 	 c.setPos(Vector3D(0,1.65,20));
 	 c.setRot(Vector3D(0,90,0));
  }
