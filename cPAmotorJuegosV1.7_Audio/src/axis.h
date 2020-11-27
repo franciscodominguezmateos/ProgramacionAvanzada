@@ -6,14 +6,15 @@
  */
 #pragma once
 #include <GL/glut.h>
+
+#include "solid.h"
 #include "vector3d.h"
-#include "solido.h"
-class Axis: public Solido{
+class Axis: public Solid{
  float ax,ay,az;
 public:
- Axis():Solido(),ax(1),ay(1),az(1){}
- Axis(Vector3D v):Solido(),ax(v.getX()),ay(v.getY()),az(v.getZ()){}
- Axis(const Axis &c):Solido(c),ax(c.ax),ay(c.ay),az(c.az){}
+ Axis():Solid(),ax(1),ay(1),az(1){}
+ Axis(Vector3D v):Solid(),ax(v.getX()),ay(v.getY()),az(v.getZ()){}
+ Axis(const Axis &c):Solid(c),ax(c.ax),ay(c.ay),az(c.az){}
  Axis *clone(){
 	 return new Axis(*this);
  }
@@ -41,7 +42,7 @@ public:
  friend std::ostream &operator << (std::ostream &os, const Axis &v);
 };
 inline std::ostream &operator<<(std::ostream &os, const Axis &c){
-	os << static_cast<const Solido&>( c );
+	os << static_cast<const Solid&>( c );
 	os <<",ax="<< c.ax<<",ay="<< c.ay<<",az="<< c.az;
     return os;
 }

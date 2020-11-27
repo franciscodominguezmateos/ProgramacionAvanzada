@@ -8,10 +8,10 @@
 #include <vector>
 #include <map>
 #include <string>
-#include "solido.h"
 #include "model_mesh_articulated.h"
+#include "solid.h"
 
-class SolidArticulated: public Solido{
+class SolidArticulated: public Solid{
 	Joint jointsRoot;
 	vector<string>  jointNames;
 	map<string,int> jointIdx;

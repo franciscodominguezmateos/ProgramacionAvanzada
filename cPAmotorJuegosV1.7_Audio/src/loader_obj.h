@@ -22,7 +22,7 @@
 
 using namespace std;
 
-class LoaderOBJ: public Solido {
+class LoaderOBJ: public Solid {
 	ModelMesh m;
 	string currentMaterial;
 	float maxX,maxY,maxZ;

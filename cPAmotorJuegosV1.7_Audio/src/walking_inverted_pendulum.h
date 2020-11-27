@@ -12,11 +12,11 @@
 
 class WalkingInvertedPendulum: public Pendulo {
 public:
-	WalkingInvertedPendulum(Solido *pt1,Solido *pt2):Pendulo(pt1,pt2){getParticula(0)->setFija(true);}
+	WalkingInvertedPendulum(Solid *pt1,Solid *pt2):Pendulo(pt1,pt2){getParticula(0)->setFija(true);}
 	void update(double dt){
 		Pendulo::update(dt);
-		Solido* pt1=getParticula(0);
-		Solido* pt2=getParticula(1);
+		Solid* pt1=getParticula(0);
+		Solid* pt2=getParticula(1);
 		 // Walk (inverted pendulum)
 		 Vector3D right=Vector3D(1,0,0);
 		 Vector3D deltaP=pt2->getPos()-pt1->getPos();

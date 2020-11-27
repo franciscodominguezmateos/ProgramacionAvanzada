@@ -9,7 +9,7 @@
 #define STAGE_RIGID_BODY_H_
 #include "contact.h"
 #include "composite.h"
-class StageRigidBody:public Solido {
+class StageRigidBody:public Solid {
 	vector<SolidRigidBody*> rigidBodies;
 public:
 	StageRigidBody(){

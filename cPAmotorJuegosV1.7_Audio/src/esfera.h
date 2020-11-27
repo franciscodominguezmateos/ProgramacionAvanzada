@@ -1,14 +1,15 @@
 #ifndef ESFERA_H_
 #define ESFERA_H_
 #include <GL/glut.h>
-#include "vector3d.h"
-#include "solido.h"
 
-class Esfera: public Solido{
+#include "solid.h"
+#include "vector3d.h"
+
+class Esfera: public Solid{
  double r;
 public:
- Esfera():Solido(),r(1){}
- Esfera(const Esfera &e):Solido(e),r(e.r){}
+ Esfera():Solid(),r(1){}
+ Esfera(const Esfera &e):Solid(e),r(e.r){}
  Esfera *clone(){
 	 return new Esfera(*this);
  }
@@ -24,7 +25,7 @@ public:
  friend std::ostream &operator << (std::ostream &os, const Esfera &v);
 };
 inline std::ostream &operator<<(std::ostream &os, const Esfera &e){
-	os << static_cast<const Solido&>( e );
+	os << static_cast<const Solid&>( e );
 	os <<",R="<< e.r;
     return os;
 }

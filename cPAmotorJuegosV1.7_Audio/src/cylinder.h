@@ -5,29 +5,30 @@
  *      Author: francisco
  */
 
-#ifndef CILINDRO_H_
-#define CILINDRO_H_
+#ifndef CYLINDER_H_
+#define CYLINDER_H_
 #include <GL/glut.h>
+
+#include "solid.h"
 #include "vector3d.h"
-#include "solido.h"
-class Cilindro: public Solido {
+class Cylinder: public Solid {
 	float b;
 	float h;
 	GLUquadricObj *quadratic;
 public:
-	Cilindro(float bp=1,float hp=1){
+	Cylinder(float bp=1,float hp=1){
 		 quadratic=gluNewQuadric();
 		 b=bp;
 		 h=hp;
 	}
-	Cilindro(const Cilindro &c):Solido(c),b(c.b),h(c.h){
+	Cylinder(const Cylinder &c):Solid(c),b(c.b),h(c.h){
 		quadratic=gluNewQuadric();
 	}
-	virtual ~Cilindro(){
+	virtual ~Cylinder(){
 
 	}
-	Cilindro *clone(){
-		return new Cilindro(*this);
+	Cylinder *clone(){
+		return new Cylinder(*this);
 	}
 	void render(){
 		glPushMatrix();
@@ -37,11 +38,11 @@ public:
 		gluCylinder(quadratic,b,b,h,16,16);
 		glPopMatrix();
 	}
-	 friend std::ostream &operator << (std::ostream &os, const Cilindro &v);
+	 friend std::ostream &operator << (std::ostream &os, const Cylinder &v);
 };
-inline std::ostream &operator<<(std::ostream &os, const Cilindro &c){
-	os << static_cast<const Solido&>( c );
+inline std::ostream &operator<<(std::ostream &os, const Cylinder &c){
+	os << static_cast<const Solid&>( c );
 	os <<",B="<< c.b <<",H="<<c.h;
     return os;
 }
-#endif /* CILINDRO_H_ */
+#endif /* CYLINDER_H_ */

@@ -50,7 +50,7 @@ public:
 			View*   &view=views[i];
 			Camera* &cam=cameras[i];
 			Stage*  &e=scenes[i];
-			Solido* s=cam;//->getSolido();
+			Solid* s=cam;//->getSolido();
 			Mat cameraViewMat=cam->getMat();
 			Mat projection=view->getProyeccion()->getMat();
 			for(GLSLShaderProgram* &sp:shaders){

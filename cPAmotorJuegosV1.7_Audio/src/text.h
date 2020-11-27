@@ -6,13 +6,14 @@
  */
 #pragma once
 #include <GL/glut.h>
+
+#include "solid.h"
 #include "vector3d.h"
-#include "solido.h"
-class Text: public Solido{
+class Text: public Solid{
  string text;
 public:
- Text(string t="Default text"):Solido(),text(t){}
- Text(const Text &c):Solido(c),text(c.text){}
+ Text(string t="Default text"):Solid(),text(t){}
+ Text(const Text &c):Solid(c),text(c.text){}
  Text *clone(){
 	 return new Text(*this);
  }
@@ -31,7 +32,7 @@ public:
  friend std::ostream &operator << (std::ostream &os, const Text &v);
 };
 inline std::ostream &operator<<(std::ostream &os, const Text &c){
-	os << static_cast<const Solido&>( c );
+	os << static_cast<const Solid&>( c );
 	os <<",text="<< c.text;
     return os;
 }

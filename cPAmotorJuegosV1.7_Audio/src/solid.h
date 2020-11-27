@@ -8,7 +8,7 @@
 #include <GL/glut.h>
 #include "vector3d.h"
 
-class Solido {
+class Solid {
 	 Vector3D pos;
 	 Vector3D rot;
 	 Vector3D vel;
@@ -20,14 +20,14 @@ class Solido {
 	 static double floorAll;
 	 double suelo;
 public:
-	 Solido(Vector3D p):pos(p),rot(0,0,0),vel(0,0,0),color(1,1,1),f(0,0,0),m(1.0),fija(false),edad(0){suelo=floorAll;}
-	 Solido(double x,double y,double z):Solido(Vector3D(x,y,z)){suelo=floorAll;}
-	 Solido():Solido(0,0,0) {suelo=floorAll;}
-	 Solido(const Solido &s):pos(s.pos),vel(s.vel),color(s.color),f(s.f),m(s.m),fija(s.fija){}
+	 Solid(Vector3D p):pos(p),rot(0,0,0),vel(0,0,0),color(1,1,1),f(0,0,0),m(1.0),fija(false),edad(0){suelo=floorAll;}
+	 Solid(double x,double y,double z):Solid(Vector3D(x,y,z)){suelo=floorAll;}
+	 Solid():Solid(0,0,0) {suelo=floorAll;}
+	 Solid(const Solid &s):pos(s.pos),vel(s.vel),color(s.color),f(s.f),m(s.m),fija(s.fija){}
 	 void setSuelo(double s){suelo=s;}
 	 double getSuelo(){return suelo;}
 	 static void setFloorAll(double s){floorAll=s;}
-	 Solido& operator=(const Solido &s){
+	 Solid& operator=(const Solid &s){
 		 pos=s.pos;
 		 vel=s.vel;
 		 color=s.color;
@@ -37,8 +37,8 @@ public:
 		 edad=s.edad;
 		 return *this;
 	 }
-	 virtual ~Solido(){}
-	 virtual Solido *clone (){return new Solido(*this);}
+	 virtual ~Solid(){}
+	 virtual Solid *clone (){return new Solid(*this);}
 	 inline Vector3D getPos(){return pos;}
 	 inline Vector3D getVel(){return vel;}
 	 inline Vector3D getCol(){return color;}
@@ -82,10 +82,10 @@ public:
 		   glutSolidSphere(0.1,10,10);
 		   glPopMatrix();
 	 }
-    friend std::ostream &operator << (std::ostream &os, const Solido &v);
+    friend std::ostream &operator << (std::ostream &os, const Solid &v);
 };
-inline std::ostream &operator<<(std::ostream &os, const Solido &s){
+inline std::ostream &operator<<(std::ostream &os, const Solid &s){
     os << "Pos=" << s.pos << ",Vel=" << s.vel << ",Col=" << s.color;
     return os;
 }
-double Solido::floorAll=0;
+double Solid::floorAll=0;

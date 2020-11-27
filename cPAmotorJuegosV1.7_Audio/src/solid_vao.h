@@ -5,9 +5,9 @@
  *      Author: Francisco Dominguez
  */
 #pragma once
-#include "solido.h"
 #include "shader.h"
 #include "model_mesh.h"
+#include "solid.h"
 /*
  * The point of this class is to use one instance as master, the owner of the pointer vao
  * and other clones are used to share the vao attribute of the master instance.
@@ -21,7 +21,7 @@
 // next instance mvao0 is the master, we can use copy constructor to set not master SolidVAOs
 // not master vaos do not have to be initiated with a mesh.
 // Example: SolidVAO mvaor(mvao0);
-class SolidVAO: public Solido {
+class SolidVAO: public Solid {
 	GLSLShaderProgram* shaderProgram;
 	GLSLVAO* vao;
 	bool isMaster;
@@ -98,7 +98,7 @@ public:
 //The first one own all vertex, normals and textcoord
 //TODO: differentiate from master and no master in order render
 //     many same objects in different locations.
-class SolidMultiVAO:Solido{
+class SolidMultiVAO:Solid{
 	GLSLShaderProgram* shaderProgram;
 	vector<SolidVAO*> solidVAOs;
 public:
@@ -118,8 +118,8 @@ public:
 			solidVAOs.push_back(svao);
 		}
 	}
-	void setPos(Vector3D p){Solido::setPos(p);for(SolidVAO* &sv:solidVAOs) sv->setPos(p);}
-	void setRot(Vector3D r){Solido::setRot(r);for(SolidVAO* &sv:solidVAOs) sv->setRot(r);}
+	void setPos(Vector3D p){Solid::setPos(p);for(SolidVAO* &sv:solidVAOs) sv->setPos(p);}
+	void setRot(Vector3D r){Solid::setRot(r);for(SolidVAO* &sv:solidVAOs) sv->setRot(r);}
 	void render(){for(SolidVAO* &sv:solidVAOs) sv->render();}
 };
 
