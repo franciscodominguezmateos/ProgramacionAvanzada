@@ -22,7 +22,83 @@ using namespace std;
 /**
  * This is a generic model of a triangle mesh
  */
-class ModelMesh {
+class ModelMeshTriangles{
+protected:
+	vector<Triangle> triangles;
+	vector<string>   triangleMaterialNames;
+	map<string,Material> materials;
+	float maxX,maxY,maxZ;
+	float minX,minY,minZ;
+public:
+	inline void addMaterial(string name,Material &m){materials[name]=m;}
+	inline void addTriangle(Triangle &t){triangles.push_back(t);}
+	inline void addTriangleMaterialName(string s){triangleMaterialNames.push_back(s);}
+	inline vector<Triangle>& getTriangles()     {return triangles;}
+	inline map<string, Material>& getMaterials(){return materials;}
+	inline Material              &getMaterial(string n){return materials[n];}
+	inline vector<string>         getMaterialNames(){
+		vector<string> vs;
+		for(pair<string,Material> pm:materials)
+			vs.push_back(pm.first);
+		return vs;
+	}
+	void calculaExtremos(Vector3D &v){
+		float x=v.getX();
+		float y=v.getY();
+		float z=v.getZ();
+		maxX=fmax(maxX,x);
+		maxY=fmax(maxY,y);
+		maxZ=fmax(maxZ,z);
+		minX=fmin(minX,x);
+		minY=fmin(minY,y);
+		minZ=fmin(minZ,z);
+	}
+	Triangle centrar(Triangle &t){
+		Vector3D centro(minX+getAncho()/2.0,minY+getAlto()/2.0,minZ+getProfundo()/2);
+		Vector3D p0=t.getP0();
+		Vector3D p1=t.getP1();
+		Vector3D p2=t.getP2();
+		/// NNOOOOOOOOO
+		return(Triangle(p0-centro,p1-centro,p2-centro));
+	}
+	inline float getAncho()    {return maxX-minX;}
+	inline float getAlto()     {return maxY-minY;}
+	inline float getProfundo() {return maxZ-minZ;}
+	inline Vector3D getCentro(){return Vector3D(minX+getAncho()/2.0,minY+getAlto()/2.0,minZ+getProfundo()/2);}
+	void computeMinMax(){
+		for(Triangle &t:triangles){
+			calculaExtremos(t.getP0());
+			calculaExtremos(t.getP1());
+			calculaExtremos(t.getP2());
+		}
+	}
+	void doCentrar(){
+		for(Triangle &t:triangles){
+			t=centrar(t);
+		}
+	}
+	void doScale(double s){
+		vector<Triangle> vt(triangles);
+		triangles.clear();
+		for(Triangle &t:vt) try{
+			t.doScale(s);
+			triangles.push_back(t);
+		}
+		catch(runtime_error &e){
+			//cout << "triangulo muy pequeño en ModeloMaterial::doScale :"+string(e.what())<<endl;
+		}
+		minX*=s;
+		minY*=s;
+		minZ*=s;
+		maxX*=s;
+		maxY*=s;
+		maxZ*=s;
+	}
+};
+/**
+ * This is a generic model of a triangle mesh with indices
+ */
+class ModelMesh: public ModelMeshTriangles {
 	vector<Vector3D> vertices;
 	vector<Vector3D> textures;
 	//it should be Vector2D but....
@@ -33,11 +109,6 @@ class ModelMesh {
 	vector<unsigned int> inormals;
 	//this vector size is above ones divided by 3 since are triangles
 	vector<string>       iMaterialNames;
-	vector<Triangle> triangles;
-	vector<string>   triangleMaterialNames;
-	map<string,Material> materials;
-	float maxX,maxY,maxZ;
-	float minX,minY,minZ;
 public:
 	inline void addVTNindex(unsigned int iv,unsigned int it,unsigned int in){
 		ivertices.push_back(iv);
@@ -52,9 +123,6 @@ public:
 	inline void addVertex (Vector3D &v){vertices.push_back(v);}
 	inline void addTexture(Vector3D &v){textures.push_back(v);}
 	inline void addNormal (Vector3D &v){normals.push_back(v);}
-	inline void addMaterial(string name,Material &m){materials[name]=m;}
-	inline void addTriangle(Triangle &t){triangles.push_back(t);}
-	inline void addTriangleMaterialName(string s){triangleMaterialNames.push_back(s);}
 	inline void addIdxMaterialName(string s){iMaterialNames.push_back(s);}
 	inline void setVector(vector<Vector3D> &vv,vector<GLfloat> &vf,unsigned int stride=3){
 		vector<double> va(stride);
@@ -86,15 +154,6 @@ public:
 	inline vector<unsigned int>& getIvertices() {return ivertices;}
 	inline vector<unsigned int>& getInormals()  {return inormals; }
 	inline vector<unsigned int>& getItextures() {return itextures;}
-	inline vector<Triangle>& getTriangles()     {return triangles;}
-	inline map<string, Material>& getMaterials(){return materials;}
-	inline Material              &getMaterial(string n){return materials[n];}
-	inline vector<string>         getMaterialNames(){
-		vector<string> vs;
-		for(pair<string,Material> pm:materials)
-			vs.push_back(pm.first);
-		return vs;
-	}
 	void buildTriangles(){
 		//it is supose that all data is ready: vertices,textures,normals and indixes
 		unsigned int stride=3; //since we are building triangles
@@ -152,58 +211,10 @@ public:
 		}
 		return idxV;
 	}
-	void calculaExtremos(Vector3D &v){
-		float x=v.getX();
-		float y=v.getY();
-		float z=v.getZ();
-		maxX=fmax(maxX,x);
-		maxY=fmax(maxY,y);
-		maxZ=fmax(maxZ,z);
-		minX=fmin(minX,x);
-		minY=fmin(minY,y);
-		minZ=fmin(minZ,z);
-	}
-	Triangle centrar(Triangle &t){
-		Vector3D centro(minX+getAncho()/2.0,minY+getAlto()/2.0,minZ+getProfundo()/2);
-		Vector3D p0=t.getP0();
-		Vector3D p1=t.getP1();
-		Vector3D p2=t.getP2();
-		/// NNOOOOOOOOO
-		return(Triangle(p0-centro,p1-centro,p2-centro));
-	}
-	inline float getAncho()    {return maxX-minX;}
-	inline float getAlto()     {return maxY-minY;}
-	inline float getProfundo() {return maxZ-minZ;}
-	inline Vector3D getCentro(){return Vector3D(minX+getAncho()/2.0,minY+getAlto()/2.0,minZ+getProfundo()/2);}
-	void computeMinMax(){
-		for(Triangle &t:triangles){
-			calculaExtremos(t.getP0());
-			calculaExtremos(t.getP1());
-			calculaExtremos(t.getP2());
-		}
-	}
-	void doCentrar(){
-		for(Triangle &t:triangles){
-			t=centrar(t);
-		}
-	}
 	void doScale(double s){
 		for(Vector3D &v:vertices)
 			v*=s;
-		vector<Triangle> vt(triangles);
-		triangles.clear();
-		for(Triangle &t:vt) try{
-			t.doScale(s);
-			triangles.push_back(t);
-		}
-		catch(runtime_error &e){
-			//cout << "triangulo muy pequeño en ModeloMaterial::doScale :"+string(e.what())<<endl;
-		}
-		minX*=s;
-		minY*=s;
-		minZ*=s;
-		maxX*=s;
-		maxY*=s;
-		maxZ*=s;
+		ModelMeshTriangles::doScale(s);
+
 	}
 };

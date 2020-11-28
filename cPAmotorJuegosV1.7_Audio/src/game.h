@@ -31,7 +31,7 @@ class Game{
 public:
 	Game(string t="PAGame default;-P",int port=8881):title(t),seProcessor(port),screen(640,480),skyBox(nullptr),t(0),dt(0.1){}
 	void addShader(GLSLShaderProgram* sp){shaders.push_back(sp);}
-	void addStage(View* v,Camera* cam,Stage* e){
+	void addScene(View* v,Camera* cam,Stage* e){
 		if(skyBox==nullptr){
 			skyBox=new SkyBox();
 			Mat m=v->getProyeccion()->getMat();
