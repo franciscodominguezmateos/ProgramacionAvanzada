@@ -194,7 +194,7 @@ public:
 	}
 	void update(double dt){
 		// ground collision
-		Vector3D pcm=getPos();
+		//Vector3D pcm=getPos();
 
 		cout <<"F="<<getF()<<endl;
 		cout <<"T="<< T.at<double>(0,0)<<","<< T.at<double>(1,0)<<","<< T.at<double>(2,0)<<endl;

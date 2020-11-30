@@ -2,11 +2,9 @@
  * Plano.h
  *
  *  Created on: Oct 5, 2015
- *      Author: francisco
+ *      Author: Francisco Dominguez
  */
-
-#ifndef PLANO_H_
-#define PLANO_H_
+#pragma once
 #include "solid.h"
 
 class Plane: public Solid {
@@ -32,6 +30,7 @@ public:
 	inline void setC(float c) {this->c = c;}
 	inline float getD() const {return d;}
 	inline void setD(float d) {this->d = d;}
+	inline Vector3D getNearestPoint(){return Vector3D(-getNormal()*d);}
 	//bool colision(Solido *s);
 	inline Vector3D getNormal(){
 		Vector3D v(a,b,c);
@@ -63,5 +62,3 @@ public:
 		return vt;
 	}
 };
-
-#endif /* PLANO_H_ */

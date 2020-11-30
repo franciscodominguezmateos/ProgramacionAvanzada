@@ -18,6 +18,7 @@ public:
 		//moment vector of the line
 		//It is the moment of a unit force acting at p0 in the direction v with respect to the origin.
 		//The norm‖m‖ gives the distance from the origin to the line.
+		//On the other hand this is the Screw Axis of a SE(3) rotation about the line axis
 		m=p0.X(v);
 	}
 	inline Vector3D &getV(){return v;}

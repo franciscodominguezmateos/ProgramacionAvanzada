@@ -91,7 +91,7 @@ public:
 	inline Quaternion inv(){
 		Quaternion q=*this;
 		// it should be norm squared?
-		Quaternion r=!q.normalize();
+		//Quaternion r=!q.normalize();
 		return q;
 	}
 	inline Mat asMat(){
@@ -122,9 +122,10 @@ public:
 	// Parameter derivative of quaterion action on p aka Jacobian of action/application
 	Mat Ja(Vector3D a){
 		Mat I=Mat::eye(3,3,CV_64F);
-		Vector3D v0=a*w+v.X(a);
+		//Vector3D v0=a*w+v.X(a);
 		Mat m=a*v*I+v.O(a)-a.O(v)-w*S(a);
 		Mat r=Mat::zeros(3,4,CV_64F);
+		return r;
 	}
 	// TODO: Aprox almost Rotation Matrix m as Quaternion
 	inline static Quaternion aprox(Mat m){

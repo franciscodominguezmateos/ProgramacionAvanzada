@@ -34,7 +34,7 @@ public:
 		//TODO: detectCollision(a,b);
 	}
 	void init(){
-		int contactCount=contactPoints.size();
+		//int contactCount=contactPoints.size();
 		// Calculate mix restitution
 		me=min(a->getRestitution(),b->getRestitution());
 		// Calculate static and dynamic friction
