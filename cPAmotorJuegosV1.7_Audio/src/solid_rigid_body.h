@@ -190,17 +190,16 @@ public:
 		Rodrigues(dw,dR);
 		// update orientation matrix
 		R=dR*R;
-
 	}
 	void update(double dt){
 		// ground collision
 		//Vector3D pcm=getPos();
 
-		cout <<"F="<<getF()<<endl;
+		cout <<"F="<<getF()    <<endl;
 		cout <<"T="<< T.at<double>(0,0)<<","<< T.at<double>(1,0)<<","<< T.at<double>(2,0)<<endl;
 		cout <<"L="<< L.at<double>(0,0)<<","<< L.at<double>(1,0)<<","<< L.at<double>(2,0)<<endl;
-		cout <<"w="<<getW()<<endl;
-		cout <<"V="<<getVel()<<endl;
+		cout <<"w="<<getW()    <<endl;
+		cout <<"V="<<getVel()  <<endl;
 		cout <<"R="<< getRot() <<endl;
 		cout <<"p="<< getPos() <<endl;
 		// Update Inverse inertia tensor with new orientation

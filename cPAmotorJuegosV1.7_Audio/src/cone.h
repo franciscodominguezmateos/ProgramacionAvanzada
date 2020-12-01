@@ -11,40 +11,39 @@
 
 #include "solid.h"
 #include "vector3d.h"
-class Cylinder: public Solid {
+class Cone: public Solid {
 	float b;
 	float h;
 	GLUquadricObj *quadratic;
 public:
-	Cylinder(float bp=1,float hp=1){
+	Cone(float bp=1,float hp=1){
 		 quadratic=gluNewQuadric();
 		 b=bp;
 		 h=hp;
 	}
-	Cylinder(const Cylinder &c):Solid(c),b(c.b),h(c.h){
+	Cone(const Cone &c):Solid(c),b(c.b),h(c.h){
 		quadratic=gluNewQuadric();
 	}
-	virtual ~Cylinder(){
+	virtual ~Cone(){
 		if(quadratic!=nullptr){
 			delete quadratic;
 			quadratic=nullptr;
 		}
-
 	}
-	Cylinder *clone(){
-		return new Cylinder(*this);
+	Cone *clone(){
+		return new Cone(*this);
 	}
 	void render(){
 		glPushMatrix();
 		glColor3f(this->getCol().getX(),this->getCol().getY(),this->getCol().getZ());
 		glTranslatef(this->getPos().getX(),this->getPos().getY(),this->getPos().getZ());
 		glRotatef(90,1,0,0);
-		gluCylinder(quadratic,b,b,h,16,16);
+		gluCylinder(quadratic,b,0,h,16,16);
 		glPopMatrix();
 	}
-	 friend std::ostream &operator << (std::ostream &os, const Cylinder &v);
+	 friend std::ostream &operator << (std::ostream &os, const Cone &v);
 };
-inline std::ostream &operator<<(std::ostream &os, const Cylinder &c){
+inline std::ostream &operator<<(std::ostream &os, const Cone &c){
 	os << static_cast<const Solid&>( c );
 	os <<",B="<< c.b <<",H="<<c.h;
     return os;
