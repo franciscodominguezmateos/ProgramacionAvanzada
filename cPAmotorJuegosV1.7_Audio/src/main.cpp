@@ -31,11 +31,13 @@
 #include "stage.h"
 #include "stage_rigid_body.h"
 #include "line.h"
+#include "arrow.h"
+#include "axis.h"
 
 using namespace cv;
 
 double t=0.0;
-double dt=1.0/1000;
+double dt=1.0/100;
 
 int mx=-1,my=-1;        // Previous mouse coordinates
 
@@ -204,8 +206,8 @@ void init(void){
  //15/04/2020
  //spiderTex.setImage(imread("TheAmazingSpiderman1Tex.png"),cv2.IMREAD_UNCHANGED);
  spiderTex.setImage(imread("TheAmazingSpiderman1Tex.png"));
- marioKartTex.init();
- marioKartTex.setImage(imread("E_main.png"));
+ //marioKartTex.init();
+ //marioKartTex.setImage(imread("E_main.png"));
  mariokartTex.init();
  mariokartTex.setImage(imread("tex_0301.png"));
 }
@@ -237,10 +239,6 @@ int main(int argc, char** argv) try{
 	 c.setPos(Vector3D(0,1.65,20));
 	 c.setRot(Vector3D(0,90,0));
  }
- Luz* l1=new Luz(Vector3D( 50,50,15));
- l1->hazFija();
- e.add(l1);
- //e.add(new Luz(Vector3D(-50,50,15)));
 
  glutInit(&argc,argv);
  //glutInitDisplayMode(GLUT_SINGLE);
@@ -252,24 +250,34 @@ int main(int argc, char** argv) try{
  //glutFullScreen();
  init();
 
-
+ Luz* l1=new Luz(Vector3D( 50,50,15));
+ l1->hazFija();
+ e.add(l1);
+ e.add(new Luz(Vector3D(-50,50,15)));
  // In order to use textures fist init() as to be called
  /*  M A R I O   K A R T */
- mariokart=new ModeloMaterial("mk_kart.obj");
- mariokart->hazFija();
+ //mariokart=new ModeloMaterial("mk_kart.obj");
+ //mariokart->hazFija();
  //mariokart->doScale(10);
  //e.add(mariokart);
  //camaras[0].setSolido(mariokart);
 
  //loadCircuit(ci);
 
- SolidRigidBody *sr=new SolidRigidBody(1,0.5,2);
- sr->setPos(Vector3D(0,2,0));
+ //SolidRigidBody *sr=new SolidRigidBody(1,0.5,2);
+ //sr->setPos(Vector3D(0,2,0));
  //sr->setRot(Vector3D(30,15,15));
  //e.add(sr);
 
- srb=new StageRigidBody();
- e.add(srb);
+ //srb=new StageRigidBody();
+ //e.add(srb);
+ Arrow* aw=new Arrow(0.05,1);
+ aw->setPos(Vector3D(0,1,0));
+ aw->setCol(Vector3D(0,0,1));
+ aw->hazFija();
+ e.add(aw);
+ Axis* a=new Axis();
+ e.add(a);
  //m=new ModeloMaterial("leia.obj");
  //m->setPos(Vector3D(0,0,-20));
  //m->setScale(0.1);
@@ -311,11 +319,11 @@ int main(int argc, char** argv) try{
  //e.add(minion_golf);
 
 
- mariokart->doCenter();
+ //mariokart->doCenter();
  //cme=new CajaModeloElastico(mariokart);
- cme=new MarioKart();
- cme->setVel(Vector3D(1,0,1));
- e.add(cme);
+ //cme=new MarioKart();
+ //cme->setVel(Vector3D(1,0,1));
+ //e.add(cme);
  //camaras[0].setSolido(cme);
 
  // Walking inverted pendulum
@@ -385,7 +393,7 @@ int main(int argc, char** argv) try{
  return 0;
 }
 catch (exception &e){
-	cout << "Error at main() in V1.6_RigidBody:"<<e.what() <<endl;
+	cout << "Error at main() in V1.7_Audio:"<<e.what() <<endl;
 }
 
 

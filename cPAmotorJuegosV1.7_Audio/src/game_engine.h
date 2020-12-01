@@ -5,6 +5,8 @@
  *      Author: Francisco Dominguez
  */
 #pragma once
+//First thing to include in order to activate GLSL Shaders later on
+#include "shader.h"
 #include <string>
 
 #include "camera.h"

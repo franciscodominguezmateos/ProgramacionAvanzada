@@ -6,6 +6,7 @@
  */
 #pragma once
 #include "shader.h"
+#include "texture_cube.h"
 
 class SkyBox {
 	static vector<GLfloat> skyboxVertices;

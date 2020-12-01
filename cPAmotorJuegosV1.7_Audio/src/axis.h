@@ -9,6 +9,8 @@
 
 #include "solid.h"
 #include "vector3d.h"
+#include "arrow.h"
+
 class Axis: public Solid{
  float ax,ay,az;
 public:
@@ -19,6 +21,18 @@ public:
 	 return new Axis(*this);
  }
  void render(){
+	 Arrow awX(ax*0.05,ax);
+	 awX.setRot(Vector3D(0,90,0));
+	 awX.setCol(Vector3D(1,0,0));
+	 Arrow awY(ay*0.05,ay);
+	 awY.setRot(Vector3D(-90,0,0));
+	 awY.setCol(Vector3D(0,1,0));
+	 Arrow awZ(az*0.05,az);
+	 awZ.setCol(Vector3D(0,0,1));
+	 awX.render();
+	 awY.render();
+	 awZ.render();
+	 /*
 	 glPopMatrix();
 		glPushMatrix();
 		  glColor3f(1,0,0);
@@ -38,7 +52,7 @@ public:
 		  glTranslatef(0.0,0,0.5);
 		  glutSolidCube(1);
 		glPopMatrix();
-	glPopMatrix();
+	glPopMatrix();*/
  }
  friend std::ostream &operator << (std::ostream &os, const Axis &v);
 };
