@@ -8,14 +8,9 @@
 #include <mutex>
 #include <chrono>
 #include "socket_TCP_server.h"
-#include "sensor_event_data.h"
+#include "sensor_observer.h"
 
 using namespace std;
-
-class SensorObserver{
-public:
-	virtual void onSensorEvent(SensorEventData &sed)=0;
-};
 
 typedef map<string,SensorEventData> TSensorEventIDs;
 typedef map<string,TSensorEventIDs> TSensorEventDevices;

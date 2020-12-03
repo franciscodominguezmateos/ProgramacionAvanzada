@@ -6,7 +6,9 @@
  */
 
 #pragma once
+class SensorEventDataKeyboard{
 
+};
 
 
 

@@ -6,6 +6,10 @@
  */
 #pragma once
 #include "sensor_event_data.h"
+#include "sensor_event_data_keyboard.h"
+#include "sensor_event_data_mouse_pressed.h"
+#include "sensor_event_data_mouse_moved.h"
+#include "sensor_event_data_wiimote.h"
 
 
 template<typename SensorEventDataType>
@@ -14,5 +18,9 @@ public:
 	virtual void onSensorEvent(SensorEventDataType &sed)=0;
 };
 
-typedef SensorObserverX<SensorEventData> SensorObserver;
-fype
+typedef SensorObserverX<SensorEventData>             SensorObserver;
+typedef SensorObserverX<SensorEventDataKeyboard>     SensorObserverKeyboard;
+typedef SensorObserverX<SensorEventDataMousePressed> SensorObserverMousePressed;
+typedef SensorObserverX<SensorEventDataMouseMoved>   SensorObserverMouseMoved;
+typedef SensorObserverX<SensorEventDataWiiMote>      SensorObserverWiiMote;
+

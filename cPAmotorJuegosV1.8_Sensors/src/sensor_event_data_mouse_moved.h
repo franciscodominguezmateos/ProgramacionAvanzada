@@ -6,3 +6,12 @@
  */
 
 #pragma once
+#include "sensor_event_data.h"
+class SensorEventDataMouseMoved{
+	int x;
+	int y;
+public:
+	SensorEventDataMouseMoved(int x,int y):x(x),y(y){}
+	int &getX(){return x;}
+	int &getY(){return y;}
+};

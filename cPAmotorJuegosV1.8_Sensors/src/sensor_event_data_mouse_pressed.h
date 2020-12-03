@@ -6,3 +6,13 @@
  */
 
 #pragma once
+#include "sensor_event_data_mouse_moved.h"
+class SensorEventDataMousePressed:public SensorEventDataMouseMoved{
+	int button;
+	int state;
+public:
+	SensorEventDataMousePressed(int button,int state,int x,int y):
+		SensorEventDataMouseMoved(x,y),
+		button(button),
+		state(state){}
+};

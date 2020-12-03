@@ -5,27 +5,45 @@
  *      Author: Francisco Dominguez
  */
 #pragma once
+#include <vector>
 #include "sensor_observer.h"
 
-class SensorDispatcherStandard:public SensorObserver{
-	SensorEventDataWiiMote wiim[2];
+//Implement Chain of Resposabilities Design Pattern
+//This class observe the general SensorEvent service and
+//dispatch to specific SensorEventDataType
+template <typename SensorEventDataType>
+class SensorDispatcherAbstract:public SensorObserver{
+protected:
+	vector<SensorObserverX<SensorEventDataType>*> observers;
+	SensorDispatcherAbstract* next;
 public:
+	SensorDispatcherAbstract():next(nullptr){}
+	SensorDispatcherAbstract(SensorDispatcherAbstract* n):next(n){}
+	virtual ~SensorDispatcherAbstract(){
+		for(SensorObserverX<SensorEventDataType>* &o:observers)
+			delete o;
+		delete next;
+	}
 	void onSensorEvent(SensorEventData &e){
-		if(e["device"]=="WiiMote"){
-			int id=e.getInt("id");
+		if(e["device"]==SensorEventDataType::device &&
+		   e["event"] ==SensorEventDataType::event){
+			SensorEventDataType eventData;
+			eventData.setData(e);
+			dispatchEvent(eventData);
 		}
-		// custom generate mobil python3 device
-		if(e["device"]=="qpy3"){
-			double x=e.getDouble("roll");
-			double y=e.getDouble("pitch");
+		else{
+			if(next!=nullptr)
+				next->onSensorEvent(e);
 		}
-/*		if(e["device"]=="mouse"){
-			if(e["event"]=="MouseMoved")
-				mouseMoved(e.getInt("x"),e.getInt("y"));
-			if(e["event"]=="MousePress")
-				mousePress(e.getInt("button"),e.getInt("state"),e.getInt("x"),e.getInt("y"));
-		}
-		if(e["device"]=="keyboard")
-			keyPressed(e.getChar("key"),e.getInt("x"),e.getInt("y"));*/
+	}
+	void dispatchEvent(SensorEventDataType e){
+		for(SensorObserverX<SensorEventDataType>* &observer:observers)
+			observer->onSensorEvent(e);
 	}
 };
+typedef SensorDispatcherAbstract<SensorEventData>             SensorDispatcher;
+typedef SensorDispatcherAbstract<SensorEventDataKeyboard>     SensorDispatcherKeyBoard;
+typedef SensorDispatcherAbstract<SensorEventDataMousePressed> SensorDispatcherMousePressed;
+typedef SensorDispatcherAbstract<SensorEventDataMouseMoved>   SensorDispatcherMouseMoved;
+typedef SensorDispatcherAbstract<SensorEventDataWiiMote>      SensorDispatcherWiiMote;
+
