@@ -39,6 +39,7 @@ public:
 	 }
 	 virtual ~Solid(){}
 	 virtual Solid *clone (){return new Solid(*this);}
+	 virtual Mat getTransformationMat(){return posEulerAnglesToTransformationMatrix(getPos(),getRot()); }
 	 inline Vector3D getPos(){return pos;}
 	 inline Vector3D getVel(){return vel;}
 	 inline Vector3D getCol(){return color;}

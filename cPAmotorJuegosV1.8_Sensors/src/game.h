@@ -14,9 +14,7 @@ using namespace std;
 
 class Game{
 	string title;
-	vector<View*> views;
-	vector<Camera*> cameras;
-	vector<Stage*> stages;
+	vector<Scene*> scenes;
 	vector<GLSLShaderProgram*> shaders;
 	SensorEventProcessor seProcessor;
 	SocketMJPEGServer  sms;
@@ -31,40 +29,39 @@ class Game{
 public:
 	Game(string t="PAGame default;-P",int port=8881):title(t),seProcessor(port),screen(640,480),skyBox(nullptr),t(0),dt(0.1){}
 	void addShader(GLSLShaderProgram* sp){shaders.push_back(sp);}
-	void addScene(View* v,Camera* cam,Stage* e){
+	void addScene(Scene* &scene){scenes.push_back(scene);	}
+	void addScene(View* v,Camera* cam,Stage* s){
 		if(skyBox==nullptr){
 			skyBox=new SkyBox();
 			Mat m=v->getProyeccion()->getMat();
 			skyBox->setProjection(m);
 		}
-		views.push_back(v);
-		cameras.push_back(cam);
-		stages.push_back(e);
+		Scene* e=new Scene(v,cam,s);
+		scenes.push_back(e);
 	}
 	void addSensorObserver(SensorObserver* so){seProcessor.addSensorObserver(so);}
 	string &getTitle(){return title;}
 	Mat &getImg(){return img;}
+	void setShaderProgramTransformations(Scene* &scene){
+		View*   &view =scene->getView();
+		Camera* &cam  =scene->getCamera();
+		Mat cameraViewMat=cam->getMat();
+		Mat projection=view->getProyeccion()->getMat();
+		for(GLSLShaderProgram* &sp:shaders){
+			GLSLShaderProgram &spAnimation=*sp;
+			spAnimation.start();
+			spAnimation["projection"]=projection;
+			spAnimation["cameraView"]=cameraViewMat;
+			spAnimation.stop();
+		}
+		//this shouldn't be here BUT!!!
+		skyBox->setCameraView(cameraViewMat);
+	}
 	virtual void onDisplay(){
 		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-		for(unsigned int i=0;i<views.size();i++){
-			View*   &view=views  [i];
-			Camera* &cam =cameras[i];
-			Stage*  &e   =stages [i];
-			Solid* s=cam;//->getSolido();
-			Mat cameraViewMat=cam->getMat();
-			Mat projection=view->getProyeccion()->getMat();
-			for(GLSLShaderProgram* &sp:shaders){
-				GLSLShaderProgram &spAnimation=*sp;
-				spAnimation.start();
-				spAnimation["projection"]=projection;
-				spAnimation["cameraView"]=cameraViewMat;
-				spAnimation.stop();
-			}
-			view->render();
-		    glLoadIdentity();
-			cam->render();
-			e->render();
-			skyBox->setCameraView(cameraViewMat);
+		for(Scene* &scene:scenes){
+			setShaderProgramTransformations(scene);
+			scene->render();
 			skyBox->render();
 		}
 		glutSwapBuffers();
@@ -85,6 +82,8 @@ public:
 	}
 	virtual void onKeyPressed(unsigned char key,int x,int y){
 		SensorEventData e("device=keyboard&event=KeyPressed&id=0");
+		//Press ESC to exit :-)
+		if(key==27) exit(0);
 		e.add("key",key);
 		e.add("x",x);
 		e.add("y",y);

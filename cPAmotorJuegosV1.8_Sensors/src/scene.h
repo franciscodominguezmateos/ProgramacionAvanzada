@@ -34,6 +34,12 @@ public:
 	void          setStage(const Stage*& stage) {this->stage = stage;}
 	const View* &getView() const {return view;}
 	void         setView(const View*& view) {this->view = view;}
+	inline void render(){
+		view->render();
+	    glLoadIdentity();
+		camera->render();
+		stage->render();
+	}
 };
 
 

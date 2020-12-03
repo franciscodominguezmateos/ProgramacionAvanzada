@@ -9,12 +9,9 @@
 #include "shader.h"
 #include <string>
 
-#include "camera.h"
-#include "shader.h"
 #include "vector3d.h"
-#include "view.h"
+#include "scene.h"
 #include "sensors.h"
-#include "stage.h"
 #include "game.h"
 
 using namespace cv;
