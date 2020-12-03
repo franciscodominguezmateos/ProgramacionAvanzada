@@ -16,12 +16,12 @@ class Game{
 	string title;
 	vector<View*> views;
 	vector<Camera*> cameras;
-	vector<Stage*> scenes;
+	vector<Stage*> stages;
 	vector<GLSLShaderProgram*> shaders;
 	SensorEventProcessor seProcessor;
 	SocketMJPEGServer  sms;
 	GLSLFBO screen; //default frame buffer object is the screen if init() is not called
-	SkyBox *skyBox;
+	SkyBox *skyBox;//this should go inside scene
 	Mat img;
 	double t;  // time in seconds
 	double dt; // time increment in seconds
@@ -39,7 +39,7 @@ public:
 		}
 		views.push_back(v);
 		cameras.push_back(cam);
-		scenes.push_back(e);
+		stages.push_back(e);
 	}
 	void addSensorObserver(SensorObserver* so){seProcessor.addSensorObserver(so);}
 	string &getTitle(){return title;}
@@ -49,7 +49,7 @@ public:
 		for(unsigned int i=0;i<views.size();i++){
 			View*   &view=views  [i];
 			Camera* &cam =cameras[i];
-			Stage*  &e   =scenes [i];
+			Stage*  &e   =stages [i];
 			Solid* s=cam;//->getSolido();
 			Mat cameraViewMat=cam->getMat();
 			Mat projection=view->getProyeccion()->getMat();
@@ -73,7 +73,7 @@ public:
 	}
 	virtual void onIdle(){
 		 t+=dt;
-		 for(Stage* &e:scenes)
+		 for(Stage* &e:stages)
 			 e->update(dt);
 		 onDisplay();
 	}
@@ -88,13 +88,13 @@ public:
 		e.add("key",key);
 		e.add("x",x);
 		e.add("y",y);
-		seProcessor.dispatchSensorObserverEvent(e);
+		seProcessor.addEvent(e);
 	}
 	virtual void onMouseMoved(int x, int y){
 		SensorEventData e("device=mouse&event=MouseMoved&id=0");
 		e.add("x",x);
 		e.add("y",y);
-		seProcessor.dispatchSensorObserverEvent(e);
+		seProcessor.addEvent(e);
 	}
 	virtual void onMousePress(int button, int state, int x, int y){
 		SensorEventData e("device=mouse&event=MousePress&id=0");
@@ -102,7 +102,7 @@ public:
 		e.add("state",state);
 		e.add("x",x);
 		e.add("y",y);
-		seProcessor.dispatchSensorObserverEvent(e);
+		seProcessor.addEvent(e);
 	}
 	// Sound methods
 	void addWav(string name,string fileName){

@@ -29,23 +29,28 @@ public:
 			so->onSensorEvent(e);
 	}
 	void setSpeed(int s){speed=s;}
-	string process(string &si){
-		CGI event(si);
+	void addEvent(SensorEventData event){
 		string device=event["device"];
 		string id=event["id"];
 		//cout << si << endl;
 		mtxSensorEvents.lock();
-		sensorEvents[device][id]=si;
+		sensorEvents[device][id]=event;
+		mtxSensorEvents.unlock();
+	}
+	string process(string &si){
+		CGI event(si);
+		addEvent(event);
 	    chrono::time_point<chrono::system_clock> now = chrono::system_clock::now();
 	    int elapsed_milliseconds = chrono::duration_cast<chrono::milliseconds>(now-before).count();
 	    if(elapsed_milliseconds>speed){
 	    	before=now;
+			mtxSensorEvents.lock();
 	    	for(pair<string,TSensorEventIDs> pe:sensorEvents)
 	    		for(pair<string,SensorEventData> pi:pe.second)
 	    			//dispatchSensorObserverEvent(sensorEvents[device][id]);
 	    	        dispatchSensorObserverEvent(pi.second);
+			mtxSensorEvents.unlock();
 	    }
-		mtxSensorEvents.unlock();
 	    return "OK";
 	}
 };

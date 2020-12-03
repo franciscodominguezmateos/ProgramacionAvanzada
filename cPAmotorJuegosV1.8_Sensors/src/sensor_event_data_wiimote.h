@@ -9,7 +9,7 @@
 #include "sensor_event_data.h"
 
 //This class abstracts the information sent from a Wiimote as SensorEventData
-class SensorEventDataWiiMote{
+class SensorEventDataWiiMote:public SensorEventAbstract{
 	static const int CWIID_BTN_2    =   1;
 	static const int CWIID_BTN_1    =   2;
 	static const int CWIID_BTN_B    =   4;
@@ -25,11 +25,11 @@ class SensorEventDataWiiMote{
 	int obuttons;
 	//new state of buttons
 	int ebuttons;
-	int id;
 	double x,y,z;
 public:
 	SensorEventDataWiiMote():obuttons(0),ebuttons(0){}
-	void setData(SensorEventData &e){
+	void setData(const SensorEventData &e){
+		SensorEventAbstract::setData(e);
 		obuttons=ebuttons;
 		ebuttons=e.getInt("buttons");
 		id=e.getInt("id");
@@ -65,7 +65,6 @@ public:
 	bool isUPdown()   {return isDown(CWIID_BTN_UP);}
 	bool isPLUSdown() {return isDown(CWIID_BTN_PLUS);}
 	//TODO same with idUp
-	int    getId(){return id;}
 	double getX() {return  x;}
 	double getY() {return  y;}
 	double getZ() {return  z;}
