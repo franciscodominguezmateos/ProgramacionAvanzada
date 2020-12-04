@@ -62,6 +62,8 @@ public:
 	    //Very important to activate transparency or alpha channel
         glEnable(GL_BLEND);
 	    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	    if(g!=nullptr)
+	    	g->init();
 	}
 	static void gameMainLoop(){
 		 glutDisplayFunc(cbDisplay);

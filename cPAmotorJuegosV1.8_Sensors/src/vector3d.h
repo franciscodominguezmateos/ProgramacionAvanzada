@@ -93,8 +93,8 @@ public:
 			    v1.x*v2.y - v1.y*v2.x);
 	}
 	//Syntactic version of crossProduct
-	inline Vector3Dx<S> X(const Vector3Dx<S> &v2) {
-		Vector3Dx<S> &v1 = *this;
+	inline Vector3Dx<S> X(const Vector3Dx<S> &v2) const {
+		const Vector3Dx<S> &v1 = *this;
 		return Vector3Dx<S>(
 				v1.y*v2.z - v1.z*v2.y,
 			    v1.z*v2.x - v1.x*v2.z,
@@ -106,6 +106,7 @@ public:
 	}
 	inline S lengthSquared() {return x * x + y * y + z * z;}
 	inline S length() {return sqrt(lengthSquared());}
+	inline S norm()   {return sqrt(lengthSquared());}
 	inline void normalize() {
 		S magnitude = length();
 		//assert(!equalsZero(magnitude));
@@ -115,6 +116,16 @@ public:
 		x *= magnitude;
 		y *= magnitude;
 		z *= magnitude;
+	}
+	inline Vector3Dx<S> normalized(){
+		Vector3Dx<S> &self=*this;
+		S magnitude = self.length();
+		//assert(!equalsZero(magnitude));
+		if (nearZero(magnitude))
+			throw runtime_error(" in Vector3D::normalize(): magnitude near to zero.");
+		magnitude = 1.0f / magnitude;
+		Vector3Dx<S> r=self/magnitude;
+		return r;
 	}
 	//Change the length of this vector but not the direction
 	inline void setLength(S d){
@@ -191,6 +202,26 @@ inline Mat S(Vector3D &v){
 inline Vector3D v(Mat &S){
 	Vector3D r(S.at<double>(2,1),S.at<double>(0,2),S.at<double>(1,0));
 	return r;
+}
+//Rodrigues formula
+inline Mat exp(Vector3D w){
+	const static Mat I=Mat::eye(3,3,CV_64F);
+	Mat W=S(w);
+	Mat W2=W*W;
+	double theta=w.norm();
+	double theta2=theta*theta;
+	double CA,CB;
+	if(theta<0.001){
+		CA=1-theta2/6*(1-theta2/20*(1-theta2/42));
+		CB=1/2*(1-theta2/12*(1-theta2/30*(1-theta2/56)));
+	}
+	else{
+		double sw=sin(theta);
+		double cw=cos(theta);
+		CA=sw/theta;
+		CB=(1-cw)/theta2;
+	}
+	return I+W*CA+W2*CB;
 }
 inline Vector3D asVector3D(Mat m){
 	if(m.rows==1)

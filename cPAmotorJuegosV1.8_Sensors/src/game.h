@@ -17,7 +17,7 @@ class Game{
 	vector<Scene*> scenes;
 	vector<GLSLShaderProgram*> shaders;
 	SensorEventProcessor seProcessor;
-	SocketMJPEGServer  sms;
+	SocketMJPEGServer  smserv;
 	GLSLFBO screen; //default frame buffer object is the screen if init() is not called
 	SkyBox *skyBox;//this should go inside scene
 	Mat img;
@@ -28,6 +28,11 @@ class Game{
 	map<string,ALuint> audioSources;
 public:
 	Game(string t="PAGame default;-P",int port=8881):title(t),seProcessor(port),screen(640,480),skyBox(nullptr),t(0),dt(0.1){}
+	virtual void init(){}
+	virtual void update(double dt){}
+	double getTime(){return t;}
+	double getDTime(){return dt;}
+	void   setDTime(double d){dt=d;}
 	void addShader(GLSLShaderProgram* sp){shaders.push_back(sp);}
 	void addScene(Scene* &scene){scenes.push_back(scene);}
 	void addScene(View* v,Camera* cam,Stage* s){
@@ -65,10 +70,11 @@ public:
 		}
 		glutSwapBuffers();
 		img=screen.toOpenCV();
-		sms.setImg(img);
+		smserv.setImg(img);
 	}
 	virtual void onIdle(){
 		 t+=dt;
+		 update(dt);
 		 for(Scene* &e:scenes)
 			 e->getStage()->update(dt);
 		 onDisplay();
