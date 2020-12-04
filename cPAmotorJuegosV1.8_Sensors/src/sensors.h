@@ -11,7 +11,11 @@
 #include "sensor_observer.h"
 
 using namespace std;
-
+/**
+ * This should be a queue of SensorEventData
+ * There most be a process taking SensorEventData from the queues
+ * and dispatching them. BUT...
+ */
 typedef map<string,SensorEventData> TSensorEventIDs;
 typedef map<string,TSensorEventIDs> TSensorEventDevices;
 class SensorEventProcessor:public StringProcessor{

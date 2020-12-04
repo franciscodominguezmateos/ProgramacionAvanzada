@@ -28,11 +28,10 @@ class SensorEventDataWiiMote:public SensorEventAbstract{
 	double x,y,z;
 public:
 	SensorEventDataWiiMote():obuttons(0),ebuttons(0){}
-	void setData(const SensorEventData &e){
+	void setData(SensorEventData &e){
 		SensorEventAbstract::setData(e);
 		obuttons=ebuttons;
 		ebuttons=e.getInt("buttons");
-		id=e.getInt("id");
 		//Accelerometer data
 		x=e.getDouble("x");
 		y=e.getDouble("y");

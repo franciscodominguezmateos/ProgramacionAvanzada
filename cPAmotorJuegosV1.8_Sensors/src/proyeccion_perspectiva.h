@@ -36,7 +36,9 @@ public:
 		 glMatrixMode(GL_MODELVIEW);
 	}
 	Mat getMat(){
-		return Mat(4,4,CV_32F,getPerspectiveGLMatrix(fov,aspectRatio,zNear,zFar).data()).t();
+		vector<GLfloat> vf=getPerspectiveGLMatrix(fov,aspectRatio,zNear,zFar);
+		Mat m(4,4,CV_32F,vf.data());
+		return m.t();
 	}
 	inline double getHeight() const {return height;	}
 	inline void setHeight(double height) { aspectRatio=width/height; this->height = height;}

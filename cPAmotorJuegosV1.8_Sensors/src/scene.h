@@ -28,12 +28,12 @@ public:
 		delete camera;
 		delete stage;
 	}
-	const Camera* &getCamera() const {return camera;}
-	void           setCamera(const Camera*& camera) {	this->camera = camera;}
-	const Stage* &getStage() const {return stage;}
-	void          setStage(const Stage*& stage) {this->stage = stage;}
-	const View* &getView() const {return view;}
-	void         setView(const View*& view) {this->view = view;}
+	Camera* &getCamera() {return camera;}
+	void     setCamera(Camera* camera) {this->camera = camera;}
+	Stage* &getStage() {return stage;}
+	void    setStage(Stage* stage) {this->stage = stage;}
+	View* &getView() {return view;}
+	void   getView(View* view) {this->view = view;}
 	inline void render(){
 		view->render();
 	    glLoadIdentity();

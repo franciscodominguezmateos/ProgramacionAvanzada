@@ -33,10 +33,10 @@ public:
 	inline void add(string k,double v){params[k]=to_string(v);}
 	inline void add(string k,char v)  {params[k]=to_string(v);}
 	inline string &operator[](string key){return params[key];}
-	inline char   getChar  (string key)  const {return (char)stoi(params[key]);}
-	inline int    getInt   (string key)  const {return stoi(params[key]);}
-	inline float  getFloat (string key)  const {return stof(params[key]);}
-	inline double getDouble(string key)  const {return stod(params[key]);}
+	inline char   getChar  (string key) {return (char)stoi(params[key]);}
+	inline int    getInt   (string key) {return stoi(params[key]);}
+	inline float  getFloat (string key) {return stof(params[key]);}
+	inline double getDouble(string key) {return stod(params[key]);}
 	inline bool isEmpty(){return params.empty();}
 	inline void clear()  {params.clear();}
 	inline int  size()  const     {return params.size();}

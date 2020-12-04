@@ -18,13 +18,15 @@ class View {
 	int windowWidth, windowHeight;
 	ProyeccionPerspectiva *p;
 public:
-	View(double x=0,double y=0,double w=1,double h=1,ProyeccionPerspectiva *p=nullptr):
+	View(double x=0,double y=0,double w=1,double h=1,ProyeccionPerspectiva* p=nullptr):
 		x(x),y(y),w(w),h(h),
 		px(0),py(0),width(w*640),height(h*480),
 		windowWidth(640),windowHeight(480),
 		p(p){
 		width=w*(double)windowWidth;
 		height=h*(double)windowHeight;
+		if(p==nullptr)
+			this->p=new ProyeccionPerspectiva(60);
 	}
 	inline void setProyeccion(ProyeccionPerspectiva *py){p=py;}
 	inline ProyeccionPerspectiva* getProyeccion(){return p;}

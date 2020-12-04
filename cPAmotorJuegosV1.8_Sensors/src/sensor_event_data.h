@@ -17,7 +17,7 @@ class SensorEventAbstract{
 public:
 	inline int  getId() const {return id;}
 	inline void setId(int id) {this->id = id;}
-	virtual void setData(const SensorEventData &event){
+	virtual void setData(SensorEventData &event){
 		setId(event.getInt("id"));
 	}
 };

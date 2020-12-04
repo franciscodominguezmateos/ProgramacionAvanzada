@@ -48,7 +48,7 @@ public:
 		else throw runtime_error("Error in Vector3D::operator=(Mat) Vector from Mat");
 		return v;
 	}
-	inline Vector3Dx<S> operator+(const Vector3Dx<S> &b) {return	Vector3Dx<S>(x + b.x, y + b.y, z + b.z);}
+	inline Vector3Dx<S> operator+(const Vector3Dx<S> &b) const {return	Vector3Dx<S>(x + b.x, y + b.y, z + b.z);}
 	inline Vector3Dx<S> operator+=(const Vector3Dx<S> &v){x+=v.x;y+=v.y;z+=v.z;return *this;}
 	inline Vector3Dx<S> operator-() {return	Vector3Dx<S>(-x,-y,-z);}
 	inline Vector3Dx<S> operator-(const Vector3Dx<S> &b) {return Vector3Dx<S>(x-b.x,y-b.y,z-b.z);}

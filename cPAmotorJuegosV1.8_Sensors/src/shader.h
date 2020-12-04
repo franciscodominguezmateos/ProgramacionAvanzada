@@ -352,7 +352,7 @@ public:
 		int InfoLogLength;
 
 		// Vincular el programa por medio del ID
-		printf("Linking program\n");
+		//printf("Linking program\n");
 		programID = glCreateProgram();
 		glAttachShader(programID, vertexShaderID);
 		glAttachShader(programID, fragmentShaderID);

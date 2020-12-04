@@ -16,11 +16,9 @@ class GameStandard: public Game,public SensorObserver {
 public:
 	GameStandard(string title):
 		Game(title),
-		view(nullptr),
+		view  (new View()),
 		camera(new Camera()),
-		stage(new Stage()),mx(0),my(0){
-		ProyeccionPerspectiva* proyeccion=new ProyeccionPerspectiva();
-		view=new View(0.0,0.0,1,1,&proyeccion);
+		stage (new Stage()),mx(0),my(0){
 		camera->setPos(Vector3D(0,0,10));
 		addScene(view,camera,stage);
 		addSensorObserver(this);
@@ -43,8 +41,38 @@ public:
 	        mx = -1;
 	        my = -1;
 	    }
+	    if (button==3){
+	    	Vector3D pos=camera->getPos();
+	    	pos=pos*0.9;
+	    	camera->setPos(pos);
+	    }
+	    if (button==4){
+	    	Vector3D pos=camera->getPos();
+	    	pos=pos*1.1;
+	    	camera->setPos(pos);
+	    }
 	}
-	virtual void keyPressed(unsigned char key,int x,int y){}
+	virtual void keyPressed(char key,int x,int y){
+		Vector3D v;
+		 switch(key){
+		 case 'p':
+			 v=camera->getLookAtPos()+Vector3D(0.1,0,0);
+			 camera->setLookAtPos(v);
+			 break;
+		 case 'o':
+			 v=camera->getLookAtPos()+Vector3D(-0.1,0,0);
+			 camera->setLookAtPos(v);
+			 break;
+		 case 'q':
+			 v=camera->getLookAtPos()+Vector3D(0,0,-0.1);
+			 camera->setLookAtPos(v);
+			 break;
+		 case 'a':
+			 v=camera->getLookAtPos()+Vector3D(0,0,0.1);
+			 camera->setLookAtPos(v);
+			 break;
+		 }
+	}
 	virtual void onSensorEvent(SensorEventData &e){
 		if(e["device"]=="mouse"){
 			if(e["event"]=="MouseMoved")
@@ -56,5 +84,11 @@ public:
 			keyPressed(e.getChar("key"),e.getInt("x"),e.getInt("y"));
 	}
 	virtual ~GameStandard(){}
+	Camera* &getCamera() {return camera;}
+	void setCamera(Camera *&camera) {	this->camera = camera;}
+	Stage*& getStage() {return stage;}
+	void setStage(Stage *&stage) {this->stage = stage;}
+	View*& getView() {return view;}
+	void setView(View *&view) {this->view = view;}
 };
 

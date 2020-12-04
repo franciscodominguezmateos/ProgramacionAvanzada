@@ -2,12 +2,9 @@
  * arrow.h
  *
  *  Created on: 1 Dec 2020
- *      Author: francisco
+ *      Author: Francisco Dominguez
  */
-
-#ifndef ARROW_H_
-#define ARROW_H_
-
+#pragma once
 #include "solid.h"
 
 class Arrow: public Solid {
@@ -34,5 +31,3 @@ public:
 		glPopMatrix();
 	}
 };
-
-#endif /* ARROW_H_ */

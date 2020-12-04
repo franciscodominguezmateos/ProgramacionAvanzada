@@ -29,7 +29,7 @@ class Game{
 public:
 	Game(string t="PAGame default;-P",int port=8881):title(t),seProcessor(port),screen(640,480),skyBox(nullptr),t(0),dt(0.1){}
 	void addShader(GLSLShaderProgram* sp){shaders.push_back(sp);}
-	void addScene(Scene* &scene){scenes.push_back(scene);	}
+	void addScene(Scene* &scene){scenes.push_back(scene);}
 	void addScene(View* v,Camera* cam,Stage* s){
 		if(skyBox==nullptr){
 			skyBox=new SkyBox();
@@ -54,15 +54,14 @@ public:
 			spAnimation["cameraView"]=cameraViewMat;
 			spAnimation.stop();
 		}
-		//this shouldn't be here BUT!!!
-		skyBox->setCameraView(cameraViewMat);
 	}
 	virtual void onDisplay(){
 		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 		for(Scene* &scene:scenes){
 			setShaderProgramTransformations(scene);
 			scene->render();
-			skyBox->render();
+			//skyBox->setCameraView(scene->getCamera()->getMat());
+			//skyBox->render();
 		}
 		glutSwapBuffers();
 		img=screen.toOpenCV();
@@ -70,16 +69,17 @@ public:
 	}
 	virtual void onIdle(){
 		 t+=dt;
-		 for(Stage* &e:stages)
-			 e->update(dt);
+		 for(Scene* &e:scenes)
+			 e->getStage()->update(dt);
 		 onDisplay();
 	}
 	virtual void onReshape(int width,int height){
 		screen.setWidth(width);
 		screen.setHeight(height);
-		for(View* &view:views)
-			view->reshape(width,height);
+		for(Scene* &e:scenes)
+			e->getView()->reshape(width,height);
 	}
+	//Sensor events: Keyboard and mouse
 	virtual void onKeyPressed(unsigned char key,int x,int y){
 		SensorEventData e("device=keyboard&event=KeyPressed&id=0");
 		//Press ESC to exit :-)
@@ -87,13 +87,13 @@ public:
 		e.add("key",key);
 		e.add("x",x);
 		e.add("y",y);
-		seProcessor.addEvent(e);
+		seProcessor.dispatchSensorObserverEvent(e);
 	}
 	virtual void onMouseMoved(int x, int y){
 		SensorEventData e("device=mouse&event=MouseMoved&id=0");
 		e.add("x",x);
 		e.add("y",y);
-		seProcessor.addEvent(e);
+		seProcessor.dispatchSensorObserverEvent(e);
 	}
 	virtual void onMousePress(int button, int state, int x, int y){
 		SensorEventData e("device=mouse&event=MousePress&id=0");
@@ -101,7 +101,7 @@ public:
 		e.add("state",state);
 		e.add("x",x);
 		e.add("y",y);
-		seProcessor.addEvent(e);
+		seProcessor.dispatchSensorObserverEvent(e);
 	}
 	// Sound methods
 	void addWav(string name,string fileName){
