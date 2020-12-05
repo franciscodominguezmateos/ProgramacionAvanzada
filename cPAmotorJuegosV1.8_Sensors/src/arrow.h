@@ -14,6 +14,7 @@ class Arrow: public Solid {
 public:
 	Arrow(double b=0.05,double h=1):Solid(),b(b),h(h),tipB(b*1.5),tipH(0.2){
 		 quadratic=gluNewQuadric();
+		 hazFija();
 	}
 	Arrow(Vector3D v,double b=0.05):Arrow(b,v.length()){
 		Vector3D vn=v/h;
@@ -35,7 +36,9 @@ public:
 		Mat R=exp(wn*a);
 		setRot(rotationMatrixToEulerAngles(R));
 	}
-	Arrow(Vector3D v,Vector3D p):Arrow(v){setPos(p);}
+	Arrow(Vector3D v,Vector3D p):Arrow(v){
+		setPos(p);
+	}
 	Arrow(const Arrow &other):Solid(other),b(other.b),h(other.h),tipB(other.b*1.1),tipH(other.h*0.1){
 		 quadratic=gluNewQuadric();
 	}

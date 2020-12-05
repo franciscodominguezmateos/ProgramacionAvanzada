@@ -22,8 +22,8 @@ public:
 	 awY.setRot(Vector3D(-90,0,0));
 	 awY.setCol(Vector3D(0,1,0));
 	 awZ.setCol(Vector3D(0,0,1));
+	 hazFija();
  }
- //Axis(const Axis &c):Solid(c),ax(c.ax),ay(c.ay),az(c.az){}
  Axis *clone(){
 	 return new Axis(*this);
  }
@@ -37,27 +37,7 @@ public:
 	    awY.render();
 	    awZ.render();
 	 glPopMatrix();
-	 /*
-	 glPopMatrix();
-		glPushMatrix();
-		  glColor3f(1,0,0);
-		  glScalef(ax,ax/20.0,ax/20.0);
-		  glTranslatef(0.5,0,0);
-		  glutSolidCube(1);
-		glPopMatrix();
-		glPushMatrix();
-		  glColor3f(0,1,0);
-		  glScalef(ay/20.0,ay,ay/20.0);
-		  glTranslatef(0,0.5,0);
-		  glutSolidCube(1);
-		glPopMatrix();
-		glPushMatrix();
-		  glColor3f(0,0,1);
-		  glScalef(az/20.0,az/20.0,az);
-		  glTranslatef(0.0,0,0.5);
-		  glutSolidCube(1);
-		glPopMatrix();
-	glPopMatrix();*/
+
  }
  friend std::ostream &operator << (std::ostream &os, const Axis &v);
 };

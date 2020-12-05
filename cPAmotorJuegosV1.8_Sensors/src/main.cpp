@@ -5,7 +5,6 @@
 #include "shader.h"
 #include "vector3d.h"
 #include "esfera.h"
-#include "cubo.h"
 #include "rosco.h"
 #include "pared.h"
 #include "pendulo.h"
@@ -33,6 +32,7 @@
 #include "line.h"
 #include "arrow.h"
 #include "axis.h"
+#include "cube.h"
 
 using namespace cv;
 
@@ -49,7 +49,7 @@ ModeloMaterial* mariokart;
 LoaderOBJ *lo;
 
 Stage e;
-Cubo *pc;
+Cube *pc;
 ModeloMaterial* m;
 Texture tex,ladrillos,paredTex,texTv,texTablero,spiderTex,marioKartTex,minionTex,mariokartTex;
 VideoCapture cap(0);

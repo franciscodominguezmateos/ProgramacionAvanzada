@@ -347,7 +347,7 @@ inline bool isRotationMatrix(Mat &R){
     transpose(R, Rt);
     Mat shouldBeIdentity = Rt * R;
     Mat I = Mat::eye(3,3, shouldBeIdentity.type());
-    return  norm(I, shouldBeIdentity) < 1e-6;
+    return  norm(I, shouldBeIdentity) < 1e-3;
 }
 //TODO
 //Nearest rotation matrix
