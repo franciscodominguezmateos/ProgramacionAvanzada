@@ -2,7 +2,8 @@
  * escena.h
  *
  *  Created on: 18 Oct 2016
- *      Author: francisco
+ *      Author: Francisco Dominguez
+ *  Lights are the first think to add to a stage
  */
 
 #ifndef STAGE_H_

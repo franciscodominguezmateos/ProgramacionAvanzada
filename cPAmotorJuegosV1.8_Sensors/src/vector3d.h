@@ -155,9 +155,9 @@ public:
 		return Vector3Dx<S>(vn*d);
 	}
 	// column vector
-	inline Mat asMat(){	return (Mat_<S>(3,1)<< x,y,z);}
-	inline Mat asH()  {	return (Mat_<S>(4,1)<< x,y,z,1);}
-	inline Mat asH0() {	return (Mat_<S>(4,1)<< x,y,z,0);}
+	inline Mat asMat(){	return (Mat_<S>(3,1,CV_64F)<< x,y,z);}
+	inline Mat asH()  {	return (Mat_<S>(4,1,CV_64F)<< x,y,z,1);}
+	inline Mat asH0() {	return (Mat_<S>(4,1,CV_64F)<< x,y,z,0);}
 	//template <class S>  //this doesn't work
 	friend ostream &operator<<(ostream &os, const Vector3Dx<S> &v);
 };

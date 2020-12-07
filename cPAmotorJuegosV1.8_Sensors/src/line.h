@@ -6,23 +6,50 @@
  */
 #pragma once
 #include "vector3d.h"
-class Line {
+class Line: public Solid {
 protected:
+	// p is nearest point to origin
+	// v is normalized l
 	Vector3D p,v;
 	//Plucker coordinates
 	//from: http://web.cs.iastate.edu/~cs577/handouts/plucker-coordinates.pdf
+	// l is direction vector of line not normalized
+	// m is the momentum of the line
 	Vector3D l,m;
 public:
-	Line(Vector3D p0,Vector3D p1):p(p0),l((p1-p0)){
-		v=l;v.normalize();
+	Line(Vector3D p0,Vector3D p1):l((p1-p0)){
+		v=l;
+		v.normalize();
 		//moment vector of the line
 		//It is the moment of a unit force acting at p0 in the direction v with respect to the origin.
 		//The norm‖m‖ gives the distance from the origin to the line.
 		//On the other hand this is the Screw Axis of a SE(3) rotation about the line axis
 		m=p0.X(v);
+		//nearest point to origin in Line
+		//since |v|=1 => |p|=|m|=d distance to origin
+		p=v.X(m);
+		// Interesting facts
+		//A point q belong to the Line if q.X(v)=m
+		//Since m=p.X(v) then p and v define a plane Pi at origin with m as normal
+		// that plane contains p and all points in Line
+		// then v*m=p*m=0 since v and p are in Pi whose normal vector is m
+		//We can translate a Line in the direction of p multiplying by a scalar t
+		//The new line must have moment vector t*m since m=p.X(v) then tm=t*p.X(v)
+		// instead of multiply t by p we can divide v by t to get the same displacement
+		// at infinite we have the Line v=0 they are on the plane Pi
 	}
+	Mat asMatHomogeneous(){
+		Mat pts=Mat::zeros(4,2,CV_64F);
+		Mat M0 = pts.col(0);
+		Mat M1 = pts.col(1);
+		p.asH().copyTo(M0);
+		v.asH0().copyTo(M1);
+		return pts;
+	}
+
 	inline Vector3D &getV(){return v;}
-    //Projection of point in line
+	inline Vector3D getNearestPoint(){return p;}
+    //Projection of point in line vector
 	Vector3D project(Vector3D q){
 		// v is normalized
 		Vector3D qp=p-q;
@@ -78,7 +105,7 @@ public:
 		float vy1=l.v.getY();
 		//float vz1=l.v.getZ();
 		float denk=vx0*vy1-vy0*vx1;
-		if(denk==0)
+		if(nearZero(denk))
 			throw runtime_error("from Line::intersectionPoint() line don't intersect.");
 		float k=(vx0*(py0-py1)+vy0*(px1-px0))/denk;
 		float t=(px1+vx1*k-px0)/vx0;

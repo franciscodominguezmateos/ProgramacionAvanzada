@@ -31,8 +31,10 @@ public:
 		 glTranslatef(-lookAtPos.getX(),-lookAtPos.getY(),-lookAtPos.getZ());
 	}
 	virtual Mat getMat(){
-		return posEulerAnglesToTransformationMatrix(getPos(),-getRot());
-	}
+		Mat m1=posEulerAnglesToTransformationMatrix(-lookAtPos,Vector3D());
+		Mat m=posEulerAnglesToTransformationMatrix(-getPos(),getRot());
+		return m*m1;
+}
 
 	inline const Vector3D& getLookAtPos() const {return lookAtPos;}
 	inline void setLookAtPos(const Vector3D &lookAtPos) {this->lookAtPos = lookAtPos;}

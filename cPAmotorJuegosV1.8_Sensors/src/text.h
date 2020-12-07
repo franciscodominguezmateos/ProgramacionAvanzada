@@ -14,11 +14,9 @@ class Text: public Solid{
 public:
  Text(string t="Default text"):Solid(),text(t){}
  Text(const Text &c):Solid(c),text(c.text){}
- Text *clone(){
-	 return new Text(*this);
- }
+ Text *clone(){return new Text(*this);}
  inline string getText(){return text;}
- inline void setText(string t){text=t;}
+ inline void   setText(string t){text=t;}
  void render(){
 	 glPushMatrix();
 	  glColor3f(this->getCol().getX(),this->getCol().getY(),this->getCol().getZ());
@@ -27,7 +25,6 @@ public:
 	  for(char c:text)
 	    glutBitmapCharacter( GLUT_BITMAP_9_BY_15, c );
 	 glPopMatrix();
-
  }
  friend std::ostream &operator << (std::ostream &os, const Text &v);
 };

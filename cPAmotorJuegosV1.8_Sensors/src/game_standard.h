@@ -3,6 +3,9 @@
  *
  *  Created on: 3 Dec 2020
  *      Author: Francisco Dominguez
+ *  Just a scene with a view, a camera and a stage.
+ *  Default mouse and key events to cope with camera
+ *  You can inherit and redefine init(), update() and event methods
  */
 
 #pragma once

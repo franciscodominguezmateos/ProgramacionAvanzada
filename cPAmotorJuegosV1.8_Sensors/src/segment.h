@@ -7,13 +7,24 @@
 #pragma once
 #include "line.h"
 class Segment:public Line {
-	Vector3D p1;
+	Vector3D p0,p1;
 	float length;
 public:
-	Segment(Vector3D p0,Vector3D p1):Line(p0,p1),p1(p1){length=l.length();}
+	Segment(Vector3D p0,Vector3D p1):Line(p0,p1),p0(p0),p1(p1){length=l.length();}
+	Mat asMatHomogeneous(){
+		Mat pts=Mat::zeros(4,2,CV_64F);
+		Mat m=Line::asMatHomogeneous();
+		Mat M0 = pts.col(0);
+		Mat M1 = pts.col(1);
+		p0.asH().copyTo(M0);
+		p1.asH().copyTo(M1);
+		hconcat(pts,m,pts);
+		return pts;
+	}
 	inline bool contains(Vector3D q){
 		if(Line::contains(q)){
-			Vector3D d=q-p;
+			Vector3D d=q-p0;
+			// NONO
 			if(d.length()<length)
 				return true;
 			return false;
@@ -35,5 +46,14 @@ public:
 			}
 		}
 		return false;
+	}
+	void render(){
+		Vector3D c=this->getCol();
+		glColor3f(c.getX(),c.getY(),c.getZ());
+		glLineWidth(3);
+		glBegin(GL_LINES);
+		  glVertex3f(p0.getX(),p0.getY(),p0.getZ());
+		  glVertex3f(p1.getX(),p1.getY(),p1.getZ());
+		glEnd();
 	}
 };

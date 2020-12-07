@@ -36,11 +36,11 @@ public:
 	void addShader(GLSLShaderProgram* sp){shaders.push_back(sp);}
 	void addScene(Scene* &scene){scenes.push_back(scene);}
 	void addScene(View* v,Camera* cam,Stage* s){
-		if(skyBox==nullptr){
-			skyBox=new SkyBox();
-			Mat m=v->getProyeccion()->getMat();
-			skyBox->setProjection(m);
-		}
+		//if(skyBox==nullptr){
+			//skyBox=new SkyBox();
+			//Mat m=v->getProyeccion()->getMat();
+			//skyBox->setProjection(m);
+		//}
 		Scene* e=new Scene(v,cam,s);
 		scenes.push_back(e);
 	}
@@ -52,12 +52,12 @@ public:
 		Camera* &cam  =scene->getCamera();
 		Mat cameraViewMat=cam->getMat();
 		Mat projection=view->getProyeccion()->getMat();
-		for(GLSLShaderProgram* &sp:shaders){
-			GLSLShaderProgram &spAnimation=*sp;
-			spAnimation.start();
-			spAnimation["projection"]=projection;
-			spAnimation["cameraView"]=cameraViewMat;
-			spAnimation.stop();
+		for(GLSLShaderProgram* &pSp:shaders){
+			GLSLShaderProgram &sp=*pSp;
+			sp.start();
+			sp["projection"]=projection;
+			sp["cameraView"]=cameraViewMat;
+			sp.stop();
 		}
 	}
 	virtual void onDisplay(){

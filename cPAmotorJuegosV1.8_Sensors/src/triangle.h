@@ -4,8 +4,7 @@
  *  Created on: Nov 12, 2015
  *      Author: Francisco Dominguez
  */
-#ifndef TRIANGLE_H_
-#define TRIANGLE_H_
+#pragma once
 #include <iostream>
 #include <GL/glut.h>
 #include "plane.h"
@@ -20,7 +19,7 @@ protected:
 	Vector3D n0,n1,n2;
 	Vector3D t0,t1,t2;
 	Vector3D v01,v12,v20;
-	//Care are to be taken
+	//Care has to be taken
 	//Texture are outside the object
 	Texture* textura;
 	double area;
@@ -239,4 +238,3 @@ public:
 	}
 };
 
-#endif /* TRIANGLE_H_ */

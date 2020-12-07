@@ -17,10 +17,29 @@ class Rectangle: public Triangle {
 	unsigned int nu;
 	unsigned int nv;
 public:
-	Rectangle(Vector3D p0,Vector3D p1,Vector3D p2,Vector3D p3):Triangle(p0,p1,p2),p3(p3),nu(1),nv(1){}
+	Rectangle(Vector3D p0,Vector3D p1,Vector3D p2,Vector3D p3):Triangle(p0,p1,p2),p3(p3),nu(1),nv(1){
+		Vector3D vCenter=(p0+p1+p2+p3)/4;
+		setPos(vCenter);
+	}
 	virtual ~Rectangle(){}
 	Rectangle(const Rectangle &r):Triangle(r.p0,r.p1,r.p2),p3(r.p3),nu(1),nv(1){}
 	virtual Rectangle *clone(){return new Rectangle(*this);}
+	Mat asMatHomogeneous(){
+		Mat pts=Mat::zeros(4,6,CV_64F);
+		Mat M0 = pts.col(0);
+		Mat M1 = pts.col(1);
+		Mat M2 = pts.col(2);
+		Mat M3 = pts.col(3);
+		Mat M4 = pts.col(4);
+		Mat M5 = pts.col(5);
+		p0.asH().copyTo(M0);
+		p1.asH().copyTo(M1);
+		p2.asH().copyTo(M2);
+		p3.asH().copyTo(M3);
+		getNormal().asH0().copyTo(M4);
+		getCenter().asH().copyTo(M5);
+		return pts;
+	}
 	inline Vector3D getP3(){return p3;}
 	inline Texture &getTex(){return tex;}
 	inline void setTextura(Texture t){tex=t;}
@@ -61,24 +80,24 @@ public:
 			//Draw normal
 	    	Vector3D vn=this->getNormal();
 	    	// triangle position is the center of the triangle
-	    	Vector3D center=getPos();
-			glColor3f(0.0,1,0);
+	    	Vector3D center=(p0+p1+p2+p3)/4;//getCenter();//
+			glColor3f(1,0,0);
 			glLineWidth(3);
 			glBegin(GL_LINES);
 			  Vector3D up=center+vn;
 			  glVertex3f(center.getX(),center.getY(),center.getZ());
 			  glVertex3f(up.getX(),up.getY(),up.getZ());
 			glEnd();
-			glColor3f(0,1,1);
+			glColor3f(1,0,0);
 			glBegin(GL_LINE_LOOP);
 			  glVertex3f(p0.getX(),p0.getY(),p0.getZ());
 			  glVertex3f(p1.getX(),p1.getY(),p1.getZ());
 			  glVertex3f(p2.getX(),p2.getY(),p2.getZ());
 			  glVertex3f(p3.getX(),p3.getY(),p3.getZ());
 			glEnd();
-		    Triangle t=getTriangle1();
-		    t.setDrawNormals();
-		    t.render();
+		    //Triangle t=getTriangle1();
+		    //t.setDrawNormals();
+		    //t.render();
 	    }
 	}
 };

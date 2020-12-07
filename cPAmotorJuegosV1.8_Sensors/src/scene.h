@@ -9,6 +9,7 @@
  *  - One Stage
  *  - ¿One Background like ¿sky_box??
  *  - ¿One Foreground to be done?
+ *  Lights are first think to add in a stage
  *  It is the owner of the object
  */
 

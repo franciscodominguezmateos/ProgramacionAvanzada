@@ -404,7 +404,7 @@ public:
     Uniform &getUniform(string s){return uniforms[s];}
 	Uniform &operator[](string s){
 		if(uniforms.count(s)==0)
-			runtime_error(" in GLSLShaderProgram::operataor[] uniform name="+s+ "doesn't exist.");
+			throw runtime_error(" in GLSLShaderProgram::operataor[] uniform name='"+s+ "' doesn't exist.");
 		return uniforms[s];
 	}
 	void bindAttribute(GLuint attribID,string s){

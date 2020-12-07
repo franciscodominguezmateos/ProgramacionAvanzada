@@ -22,6 +22,16 @@ public:
 		return *this;
 	}*/
 	virtual ~Plane(){}
+	Mat asMatHomogeneous(){
+		Vector3D p=getNearestPoint();
+		Vector3D v=getNormal();
+		Mat pts=Mat::zeros(4,2,CV_64F);
+		Mat M0 = pts.col(0);
+		Mat M1 = pts.col(1);
+		p.asH().copyTo(M0);
+		v.asH0().copyTo(M1);
+		return pts;
+	}
 	inline float getA() const {return a;}
 	inline void setA(float a) {this->a = a;}
 	inline float getB() const {return b;}

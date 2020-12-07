@@ -26,7 +26,7 @@ public:
 	Texture():idTexture(0){}
 	virtual ~Texture(){}
 	bool isReady(){
-		return idTexture!=0;// && !img.empty();
+		return idTexture!=0 && !img.empty();
 	}
 	void init(){
 		glGenTextures(1,&idTexture);

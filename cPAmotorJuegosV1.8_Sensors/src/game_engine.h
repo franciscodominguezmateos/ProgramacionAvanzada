@@ -25,24 +25,12 @@ class GameEngine {
 public:
 	static void setGame(Game* gm){g=gm;}
 	// Callback glut functions
-	static void cbDisplay(){
-		if(g!=nullptr) g->onDisplay();
-	}
-	static void cbIdle(){
-		if(g!=nullptr) g->onIdle();
-	}
-	static void cbReshape(int width,int height){
-		if(g!=nullptr) g->onReshape(width,height);
-	}
-	static void cbKeyPressed(unsigned char key,int x,int y){
-		if(g!=nullptr) g->onKeyPressed(key,x,y);
-	}
-	static void cbMouseMoved(int x, int y){
-		if(g!=nullptr) g->onMouseMoved(x,y);
-	}
-	static void cbMousePress(int button, int state, int x, int y){
-		if(g!=nullptr) g->onMousePress(button,state,x,y);
-	}
+	static void cbDisplay()                                      {if(g!=nullptr) g->onDisplay();}
+	static void cbIdle()                                         {if(g!=nullptr) g->onIdle();}
+	static void cbReshape(int width,int height)                  {if(g!=nullptr) g->onReshape(width,height);}
+	static void cbKeyPressed(unsigned char key,int x,int y)      {if(g!=nullptr) g->onKeyPressed(key,x,y);}
+	static void cbMouseMoved(int x, int y)                       {if(g!=nullptr) g->onMouseMoved(x,y);}
+	static void cbMousePress(int button, int state, int x, int y){if(g!=nullptr) g->onMousePress(button,state,x,y);}
 	// GLUT abstraction
 	static void gameInit(int argc, char** argv){
 	    alutInit (&argc, argv);
@@ -74,7 +62,10 @@ public:
 		 glutMouseFunc(&cbMousePress);
 		 if(fullScreen) glutFullScreen();
 		 glutMainLoop();
-		 alutExit ();
+	}
+	static void exit(int i){
+		 alutExit();
+		 exit(i);
 	}
 };
 Game* GameEngine::g=nullptr;
