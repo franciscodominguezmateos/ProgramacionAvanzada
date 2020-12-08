@@ -1,9 +1,9 @@
 /*
- * sky_box.h
+ * shader_point_cloud.h
  *
  *  Created on: 07 Dec 2020
  *      Author: Francisco Dominguez
- *  It is a fragment Shader it should seem like Iñigo Quilez Shader toy
+ *  To work with 3D points and color NOT normal for the moment
  */
 #pragma once
 #include "shader.h"
@@ -18,6 +18,7 @@ class ShaderPointCloud : public Solid{
 	GLSLShaderProgram* pSpProg;
 	GLSLVAO* pstVao;
 public:
+	ShaderPointCloud(){hazFija();}
 	void init(){
 		pSpProg=new GLSLShaderProgram();
 		pSpProg->compileFromStrings(vertexShader,fragmentShader);
@@ -38,9 +39,10 @@ public:
 		colors.push_back(v.getZ());
 	}
 	void render(){
+		GLSLShaderProgram &spProg=*pSpProg;
 		glPointSize(5);
 		pSpProg->start();
-		//(*pSpProg)["T"]=posEulerAnglesToTransformationMatrix<float>(getPos(),getRot());
+		spProg["T"]=posEulerAnglesToTransformationMatrix<float>(getPos(),getRot());
 		pstVao->bindAll();
 		glDrawArrays(GL_POINTS, 0, vertices.size());
 		pstVao->unbindAll();
@@ -55,12 +57,12 @@ string ShaderPointCloud::vertexShader=R"glsl(
  
  out vec3 pass_color;
  
- //uniform mat4 T;
+ uniform mat4 T;
  uniform mat4 cameraView;
  uniform mat4 projection;
  
  void main(){
-  vec4 worldPosition=/*T**/vec4(position,1);
+  vec4 worldPosition=T*vec4(position,1);
   gl_Position=projection*cameraView*worldPosition;
   pass_color=in_color;
 }

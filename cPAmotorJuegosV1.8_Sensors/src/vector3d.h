@@ -39,6 +39,7 @@ public:
 			}
 		}
 	}
+	Vector3Dx(const Point3f p){x=p.x;y=p.y;z=p.z;}
 	Vector3Dx(const Vector3Dx<S> &v) :x(v.x), y(v.y), z(v.z) {}
 	Vector3Dx<S> *clone() { return new Vector3Dx<S>(*this); }
 	inline Vector3Dx<S> operator=(Mat m) {
