@@ -91,7 +91,7 @@ public:
     friend std::ostream &operator << (std::ostream &os, const Solid &v);
 };
 inline std::ostream &operator<<(std::ostream &os, const Solid &s){
-    os << "Pos=" << s.pos << ",Vel=" << s.vel << ",Col=" << s.color;
+    os << "Pos=" << s.pos << ",Rot=" << s.rot << ",Vel=" << s.vel << ",Col=" << s.color;
     return os;
 }
 double Solid::floorAll=0;

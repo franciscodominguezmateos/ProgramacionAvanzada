@@ -20,7 +20,7 @@ public:
  Axis(Vector3D v):
 	 Solid(),
 	 ax(v.getX()),ay(v.getY()),	 az(v.getZ()),
-	 awX(ax*0.05,ax),awY(ay*0.05,ay),awZ(az*0.05,az),
+	 awX(ax*0.025,ax),awY(ay*0.025,ay),awZ(az*0.025,az),
 	 name("Origin"){
 	 awX.setRot(Vector3D(0,90,0));
 	 awX.setCol(Vector3D(1,0,0));

@@ -18,8 +18,7 @@ class Rectangle: public Triangle {
 	unsigned int nv;
 public:
 	Rectangle(Vector3D p0,Vector3D p1,Vector3D p2,Vector3D p3):Triangle(p0,p1,p2),p3(p3),nu(1),nv(1){
-		Vector3D vCenter=(p0+p1+p2+p3)/4;
-		setPos(vCenter);
+		hazFija();
 	}
 	virtual ~Rectangle(){}
 	Rectangle(const Rectangle &r):Triangle(r.p0,r.p1,r.p2),p3(r.p3),nu(1),nv(1){}
@@ -42,6 +41,10 @@ public:
 	}
 	inline Vector3D getP3(){return p3;}
 	inline Texture &getTex(){return tex;}
+	inline Vector3D getCenter(){
+		Vector3D vCenter=(p0+p1+p2+p3)/4;
+		return vCenter;
+	}
 	inline void setTextura(Texture t){tex=t;}
 	inline void setNU(unsigned int u){nu=u;}
 	inline void setNV(unsigned int v){nv=v;}
@@ -54,6 +57,11 @@ public:
 		return vt;
 	}
 	void render(){	//Triangulo::render();
+	  glPushMatrix();
+		glTranslatef(getPos().getX(),getPos().getY(),getPos().getZ());
+		glRotatef(getRot().getX(), 1, 0, 0);
+		glRotatef(getRot().getY(), 0, 1, 0);
+		glRotatef(getRot().getZ(), 0, 0, 1);
 		Vector3D c=this->getCol();
 		glColor3f(c.getX(),c.getY(),c.getZ());
 		Vector3D vn=this->getNormal();
@@ -79,8 +87,7 @@ public:
 	    if(drawNormals){
 			//Draw normal
 	    	Vector3D vn=this->getNormal();
-	    	// triangle position is the center of the triangle
-	    	Vector3D center=(p0+p1+p2+p3)/4;//getCenter();//
+	    	Vector3D center=getCenter();//
 			glColor3f(1,0,0);
 			glLineWidth(3);
 			glBegin(GL_LINES);
@@ -99,6 +106,7 @@ public:
 		    //t.setDrawNormals();
 		    //t.render();
 	    }
+	  glPopMatrix();
 	}
 };
 

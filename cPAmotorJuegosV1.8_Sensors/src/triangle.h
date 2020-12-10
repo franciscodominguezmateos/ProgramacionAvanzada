@@ -64,8 +64,6 @@ public:
 		this->setB(vn.getY());
 		this->setC(vn.getZ());
 		this->setD(-d);
-		//center of the triangle is pos field
-		this->setPos((p0+p1+p2)/3);
 	}
 	virtual Triangle *clone(){return new Triangle(*this);}
 	inline Vector3D &getP0(){return p0;}
@@ -88,7 +86,7 @@ public:
 	inline void setT1(Vector3D &n){t1=n;}
 	inline void setT2(Vector3D &n){t2=n;}
 	inline void setTextura(Texture* &t){textura=t;}
-	inline Vector3D getCenter(){return getPos();}
+	inline Vector3D getCenter(){return (p0+p1+p2)/3;}
 	inline void setDrawNormals(bool b=true){drawNormals=b;}
 	inline void doScale(double s){
 		p0*=s;

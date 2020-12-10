@@ -40,7 +40,7 @@ public:
 	}
 	void render(){
 		GLSLShaderProgram &spProg=*pSpProg;
-		glPointSize(5);
+		glPointSize(2);
 		pSpProg->start();
 		spProg["T"]=posEulerAnglesToTransformationMatrix<float>(getPos(),getRot());
 		pstVao->bindAll();
