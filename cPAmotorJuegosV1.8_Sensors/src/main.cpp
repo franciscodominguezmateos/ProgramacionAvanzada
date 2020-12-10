@@ -215,9 +215,57 @@ void reshape(int width,int height){
 	for(View &v:vistas)
 		v.reshape(width,height);
 }
+void lds_test(){
+    String filename = "/home/francisco/Pictures/Webcam/2020-12-10-192656.jpg";
+    bool useRefine = true;
+    bool useCanny = false;
+    bool overlay = true;
 
+    Mat image = imread(filename, IMREAD_GRAYSCALE);
+
+    if( image.empty() )
+    {
+        cout << "Unable to load " << filename<<endl;
+        return;
+    }
+
+    imshow("Source Image", image);
+
+    if (useCanny)
+    {
+        Canny(image, image, 50, 200, 3); // Apply Canny edge detector
+    }
+
+    // Create and LSD detector with standard or no refinement.
+    Ptr<LineSegmentDetector> ls = useRefine ? createLineSegmentDetector(LSD_REFINE_STD) : createLineSegmentDetector(LSD_REFINE_NONE);
+
+    double start = double(getTickCount());
+    vector<Vec4f> lines_std;
+
+    // Detect the lines
+    ls->detect(image, lines_std);
+
+    double duration_ms = (double(getTickCount()) - start) * 1000 / getTickFrequency();
+    std::cout << "It took " << duration_ms << " ms." << std::endl;
+
+    // Show found lines
+    if (!overlay || useCanny)
+    {
+        image = Scalar(0, 0, 0);
+    }
+
+    ls->drawSegments(image, lines_std);
+
+    String window_name = useRefine ? "Result - standard refinement" : "Result - no refinement";
+    window_name += useCanny ? " - Canny edge detector used" : "";
+
+    imshow(window_name, image);
+
+    waitKey(0);
+}
 int main(int argc, char** argv) try{
 	srand(10);
+	lds_test();
 	//Quaternion test
 	Quaternion q1(M_PI/2,Vector3D(0,0,1));
 	Vector3D v1=q1*Vector3D(1,0,0);

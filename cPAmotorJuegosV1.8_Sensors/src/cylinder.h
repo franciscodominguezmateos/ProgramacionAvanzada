@@ -25,11 +25,11 @@ public:
 		quadratic=gluNewQuadric();
 	}
 	virtual ~Cylinder(){
-		if(quadratic!=nullptr){
-			delete quadratic;
-			quadratic=nullptr;
-		}
-
+		//Not needed in OpenGL
+		//if(quadratic!=nullptr){
+		//	delete quadratic;
+		//	quadratic=nullptr;
+		//}
 	}
 	Cylinder *clone(){
 		return new Cylinder(*this);

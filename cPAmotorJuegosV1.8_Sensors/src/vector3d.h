@@ -1,6 +1,4 @@
-//#pragma once
-#ifndef VECTOR3D__
-#define VECTOR3D__
+#pragma once
 #include <iostream>
 #include <string>
 #include <opencv2/opencv.hpp>
@@ -148,7 +146,7 @@ public:
 		S d=vn*v;
 		return Vector3Dx<S>(vn*d);
 	}
-	inline Vector3D projectOn(Vector3Dx<S> vn){
+	inline Vector3Dx<S> projectOn(Vector3Dx<S> vn){
 		//project *this on vn
 		//It is suppose vn is unit length vector
 		Vector3Dx<S> &v=*this;
@@ -165,13 +163,12 @@ public:
 Mat operator*(Mat m,Vector3D v){return m*v.asMat();}
 Mat operator+(Mat m,Vector3D v){return m+v.asMat();}
 Mat operator-(Mat m,Vector3D v){return m-v.asMat();}
-/*
-template <class T>
-inline ostream &operator<<(ostream &os, const Vector3D<T> &v) {
+
+template <class T=double>
+inline ostream &operator<<(ostream &os, const Vector3Dx<T> &v) {
 os << v.x << "," << v.y << "," << v.z;
 return os;
 }
-*/
 inline ostream &operator<<(ostream &os, const Vector3Dd &v) {
 	os << v.x << "," << v.y << "," << v.z;
 	return os;
@@ -200,7 +197,7 @@ inline Mat S(Vector3D &v){
 	return s;
 }
 // Inverse skew or Vee operator
-inline Vector3D v(Mat &S){
+inline Vector3D V(Mat &S){
 	Vector3D r(S.at<double>(2,1),S.at<double>(0,2),S.at<double>(1,0));
 	return r;
 }
@@ -223,6 +220,27 @@ inline Mat exp(Vector3D w){
 		CB=(1-cw)/theta2;
 	}
 	return I+W*CA+W2*CB;
+}
+inline double trace(Mat R){
+	return R.at<double>(0,0)+R.at<double>(1,1)+R.at<double>(2,2);
+}
+inline Vector3D log(Mat R){
+	double tr=trace(R);
+	if(tr>=2.999){//R==I
+		return Vector3D(0,0,0);
+	}
+	double theta;
+	//TODO
+	if(tr<1+0.001 && tr>1-0.001){
+		theta=3.14159265358979;
+	}
+	double cw=(tr-1)/2;
+	theta=acos(cw);
+	double sw=sin(theta);
+	Mat W=(R-R.t())/(2*sw);
+	Mat mw=W*theta;
+	Vector3D w=V(mw);
+	return w;
 }
 inline Vector3D asVector3D(Mat m){
 	if(m.rows==1)
@@ -381,7 +399,6 @@ inline Vector3D rotationMatrixToEulerAngles(Mat &R){
     return Vector3D(rad2deg(x), rad2deg(y), rad2deg(z));
 }
 
-#endif // !VECTOR3D__
 /*
 //Devolver constante de un objeto mutable v
 class Vector3D {
