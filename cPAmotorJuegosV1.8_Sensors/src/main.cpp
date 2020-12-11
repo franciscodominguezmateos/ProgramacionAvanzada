@@ -216,7 +216,9 @@ void reshape(int width,int height){
 		v.reshape(width,height);
 }
 void lds_test(){
-    String filename = "/home/francisco/Pictures/Webcam/2020-12-10-192656.jpg";
+    //String filename = "/home/francisco/Pictures/Webcam/2020-12-10-192656.jpg";
+    //String filename = "/home/francisco/Pictures/Webcam/2020-12-11-091815.jpg";
+    String filename = "/home/francisco/Pictures/Webcam/2020-12-11-093613.jpg";
     bool useRefine = true;
     bool useCanny = false;
     bool overlay = true;
