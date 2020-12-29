@@ -71,6 +71,14 @@ public:
 		glutSwapBuffers();
 		img=screen.toOpenCV();
 		smserv.setImg(img);
+		//this snippet shows the depth image
+        /*
+		double min, max;
+		Mat fboDepth=screen.toOpenCVdepth();
+		minMaxLoc(fboDepth, &min, &max);
+		cout << "maxdfbo="<<min<<","<<max<<endl;
+		imshow("holad",fboDepth);
+		*/
 	}
 	virtual void onIdle(){
 		 t+=dt;

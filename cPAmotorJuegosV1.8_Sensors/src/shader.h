@@ -245,8 +245,24 @@ public:
 	    unbind();
 	    return img;
 	}
+	Mat toOpenCV32FC4() {
+		bind();
+		//I want to read unclamped data but this doesn't seem to work
+		//I made changes in GameEngine to solve the problem but it doesn't work
+		//glClampColor(GL_CLAMP_FRAGMENT_COLOR, GL_FALSE);
+		//glClampColor(GL_CLAMP_READ_COLOR, GL_FALSE);
+	    cv::Mat img(height, width, CV_32FC4);
+	    glPixelStorei(GL_PACK_ALIGNMENT, (img.step & 3)?1:4);
+	    glPixelStorei(GL_PACK_ROW_LENGTH, img.step/img.elemSize());
+	    glReadPixels(0, 0, img.cols, img.rows, GL_BGRA, GL_FLOAT, img.data);
+	    cv::Mat flipped(img);
+	    cv::flip(img, flipped, 0);
+	    unbind();
+	    return img;
+	}
 	//27/04/2020
 	// TODO: test if it works fine
+	//28/12/020 Work perfect!!!
 	Mat toOpenCVdepth() {
 		bind();
 	    cv::Mat img(height, width, CV_32F);

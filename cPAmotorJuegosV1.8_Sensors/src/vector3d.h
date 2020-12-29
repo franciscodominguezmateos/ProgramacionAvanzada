@@ -221,11 +221,11 @@ inline Mat exp(Vector3D w){
 	}
 	return I+W*CA+W2*CB;
 }
-inline double trace(Mat R){
+inline double traceX(Mat R){
 	return R.at<double>(0,0)+R.at<double>(1,1)+R.at<double>(2,2);
 }
-inline Vector3D log(Mat R){
-	double tr=trace(R);
+inline Vector3D logX(Mat R){
+	double tr=traceX(R);
 	if(tr>=2.999){//R==I
 		return Vector3D(0,0,0);
 	}
