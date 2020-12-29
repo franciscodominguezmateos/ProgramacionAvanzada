@@ -25,16 +25,6 @@ uniform vec2 dim;
 float lum(vec4 c){return (c.r+c.g+c.b)/3.0;}
 vec2 tc(vec2 x){return x/dim;}
 vec2 rc(vec2 x){return tc(gl_FragCoord.xy+x);}
-float depth(vec2 x=vec2(0,0)){return texture(tex,rc(x)).w;}
-vec3  get3D(vec2 x=vec2(0,0)){
- float cx=320;
- float cy=240;
- float fx=640;
- float fy=480;
- vec2 p=gl_FragCoord.xy+x;
- float z=depth();
- return vec3((p.x-cx)*z/fx,(p.y-cy)*z/fy,z);
-}
 
 void main(){
  vec2 v00=rc(vec2(0,0));
@@ -44,7 +34,6 @@ void main(){
  float gy=l01-l00;
  vec3 c=vec3(gy,gy,gy);
  out_color=vec4(c.rgb+0.5,1);
-
 }
 )glsl";
 const string fragmentShaderSobelX=R"glsl(
