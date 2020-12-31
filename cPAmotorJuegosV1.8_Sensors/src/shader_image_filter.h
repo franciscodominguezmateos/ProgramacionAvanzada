@@ -12,52 +12,71 @@
 #include "texture.h"
 #include "solid.h"
 
-const string fragmentShaderSobelY=R"glsl(
-#version 330 core
+const string fragmentShaderBilateralFilter=R"glsl(
+//https://www.shadertoy.com/view/4dfGDH
+//precomputing the kernel improves the performance
+//sigma 10.0, MSIZE 15
+//const float kernel[MSIZE] = float[MSIZE](
+//0.031225216, 0.033322271, 0.035206333, 0.036826804, 0.038138565, 0.039104044, 0.039695028, 0.039894000, 0.039695028, 0.039104044, 0.038138565, 0.036826804, 0.035206333, 0.033322271, 0.031225216);
+#ifdef GL_ES
+precision mediump float;
+#endif
 
-in vec3 pixel;
+#define SIGMA 10.0
+#define BSIGMA 0.1
+#define MSIZE 15
 
-out vec4 out_color;
-
-uniform sampler2D tex;
-uniform vec2 dim;
-
-float lum(vec4 c){return (c.r+c.g+c.b)/3.0;}
-vec2 tc(vec2 x){return x/dim;}
-vec2 rc(vec2 x){return tc(gl_FragCoord.xy+x);}
-
-void main(){
- vec2 v00=rc(vec2(0,0));
- vec2 v01=rc(vec2(0,1));
- float l00=lum(texture(tex,v00));
- float l01=lum(texture(tex,v01));
- float gy=l01-l00;
- vec3 c=vec3(gy,gy,gy);
- out_color=vec4(c.rgb+0.5,1);
+float normpdf(in float x, in float sigma)
+{
+	return 0.39894*exp(-0.5*x*x/(sigma*sigma))/sigma;
 }
-)glsl";
-const string fragmentShaderSobelX=R"glsl(
-#version 330 core
 
-in vec3 pixel;
+float normpdf3(in vec3 v, in float sigma)
+{
+	return 0.39894*exp(-0.5*dot(v,v)/(sigma*sigma))/sigma;
+}
 
-out vec4 out_color;
 
-uniform sampler2D tex;
-uniform vec2 dim;
+void mainImage( out vec4 fragColor, in vec2 fragCoord )
+{
+	vec3 c = texture(iChannel0, vec2(0.0, 1.0)-(fragCoord.xy / iResolution.xy)).rgb;
+	if (fragCoord.x < iMouse.x)
+	{
+		fragColor = vec4(c, 1.0);
+		
+	} else {
+		
+		//declare stuff
+		const int kSize = (MSIZE-1)/2;
+		float kernel[MSIZE];
+		vec3 final_colour = vec3(0.0);
+		
+		//create the 1-D kernel
+		float Z = 0.0;
+		for (int j = 0; j <= kSize; ++j)
+		{
+			kernel[kSize+j] = kernel[kSize-j] = normpdf(float(j), SIGMA);
+		}
+		
+		vec3 cc;
+		float factor;
+		float bZ = 1.0/normpdf(0.0, BSIGMA);
+		//read out the texels
+		for (int i=-kSize; i <= kSize; ++i)
+		{
+			for (int j=-kSize; j <= kSize; ++j)
+			{
+				cc = texture(iChannel0, vec2(0.0, 1.0)-(fragCoord.xy+vec2(float(i),float(j))) / iResolution.xy).rgb;
+				factor = normpdf3(cc-c, BSIGMA)*bZ*kernel[kSize+j]*kernel[kSize+i];
+				Z += factor;
+				final_colour += factor*cc;
 
-float lum(vec4 c){return (c.r+c.g+c.b)/3.0;}
-vec2 tc(vec2 x){return x/dim;}
-vec2 rc(vec2 x){return tc(gl_FragCoord.xy+x);}
-
-void main(){
- vec2 v00=rc(vec2(0,0));
- vec2 v10=rc(vec2(1,0));
- float l00=lum(texture(tex,v00));
- float l10=lum(texture(tex,v10));
- float gx=l10-l00;
- vec3 c=vec3(gx,gx,gx);
- out_color=vec4(c.rgb+0.5,1);
+			}
+		}
+		
+		
+		fragColor = vec4(final_colour/Z, 1.0);
+	}
 }
 )glsl";
 const string fragmentShaderSobelXXXX=R"glsl(
@@ -106,26 +125,23 @@ void main(){
 )glsl";
 
 class ShaderImageFilter : public Solid{
+protected:
 	static vector<GLfloat> vertices;
 	static string vertexShader;
 	string fragmentShader;
 	GLSLShaderProgram spProg;
 	GLSLVAO* pVao;
-	GLSLFBO* pFbo;
-	Texture* pTex;
+	GLSLFBO* pFbo;//Output 32FC4 fourth channel not used
+	Texture* pTex;//Input  32FC4 four channels same value
 public:
-	ShaderImageFilter(int w=640,int h=480):pTex(new Texture()),pFbo(new GLSLFBO(w,h)){
+	ShaderImageFilter(int w=640,int h=480):pFbo(new GLSLFBO(w,h)),pTex(new Texture()){
 		pVao=new GLSLVAO();
 		pVao->init();
 		pVao->createAttribute(0,vertices,3);
 		pTex->init();
 		pFbo->init();
-		init();
 	}
-	void init(){
-		fragmentShader=fragmentShaderSobelY;
-		spProg.compileFromStrings(vertexShader,fragmentShader);
-	}
+	virtual void init()=0;
 	void setFragmentShader(string &fs){
 		fragmentShader=fs;
 		spProg.compileFromStrings(vertexShader,fragmentShader);
@@ -134,7 +150,7 @@ public:
 	void setImage(Mat img){
 		pTex->setImage(img);
 		//Vec2 dim={float(img.cols),float(img.rows)};
-		Vec2 dim={img.cols,img.rows};
+		Vec2 dim={float(img.cols),float(img.rows)};
 		setDim(dim);
 	}
 	void setDim(Vec2 d){spProg.start();spProg["dim"]=d;spProg.stop();}
