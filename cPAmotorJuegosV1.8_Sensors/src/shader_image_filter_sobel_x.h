@@ -31,9 +31,9 @@ void main(){
  out_color=vec4(c.rgb+0.5,1);
 }
 )glsl";
-class ShaderImageSobelX:public ShaderImageFilter{
+class ShaderImageFilterSobelX:public ShaderImageFilter{
 public:
-	ShaderImageSobelX(int w=640,int h=480):ShaderImageFilter(w,h){
+	ShaderImageFilterSobelX(int w=640,int h=480):ShaderImageFilter(w,h){
 			init();
 	}
 	void init(){
