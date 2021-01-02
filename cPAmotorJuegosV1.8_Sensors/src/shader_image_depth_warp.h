@@ -10,6 +10,7 @@
  *
  */
 #pragma once
+#include "depth_image.h"
 #include "shader_image_filter.h"
 const string fragmentShaderWarp=R"glsl(
 #version 330 core
@@ -69,14 +70,38 @@ void main(){
  }
 )glsl";
 class ShaderImageDepthWarp:public ShaderImageFilter{
+	DepthImage di0,di1;
+	Mat T;//pose
 public:
-	ShaderImageDepthWarp(int w=640,int h=480):ShaderImageFilter(w,h){
+	ShaderImageDepthWarp(DepthImage &d0,DepthImage &d1,Mat &t):
+		ShaderImageFilter(d0.rows(),d0.cols()),di0(d0),di1(d1),T(t){
 			init();
+			Mat i1D0=getImg1Depth0();
+			setImage(i1D0);
+			spProg.start();
+			 spProg["T"]=T;
+			spProg.stop();
 	}
 	void init(){
 		fragmentShader=fragmentShaderWarp;
 		spProg.compileFromStrings(vertexShader,fragmentShader);
 	}
+	//return colors from di1 and depth from di0
+	Mat getImg1Depth0(){
+		DepthImage &di=di1;
+		Mat cimg=di.getImg();
+		cimg.convertTo(cimg,CV_32FC3);
+		cimg/=255;
+		vector<Mat> channels;
+		cv::split(cimg, channels);
+		Mat dimg=di0.getDepth();
+		Mat img;
+		img.convertTo(img,CV_32FC4);
+		vector<Mat> vd = { channels[0], channels[1],channels[2], dimg };
+		merge(vd, img);
+		return img;
+	}
+
 };
 
 
