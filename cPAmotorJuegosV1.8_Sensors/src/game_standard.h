@@ -75,11 +75,11 @@ public:
 			 camera->setLookAtPos(v);
 			 break;
 		 case 't':
-			 v=camera->getLookAtPos()+Vector3D(0,-0.01);
+			 v=camera->getLookAtPos()+Vector3D(0, 0.01);
 			 camera->setLookAtPos(v);
 			 break;
 		 case 'g':
-			 v=camera->getLookAtPos()+Vector3D(0,0.01);
+			 v=camera->getLookAtPos()+Vector3D(0,-0.01);
 			 camera->setLookAtPos(v);
 			 break;
 		 }

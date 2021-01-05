@@ -13,9 +13,13 @@
 #include <sstream>
 #include <stdexcept>
 #include <algorithm>
+#include <chrono>
 
 using namespace std;
 
+//This is OpenCV specific it should be in other file? comething like opencv_util.h?
+#include "opencv2/opencv.hpp"
+using namespace cv;
 string cvtype2str(int type) {
  string r;
 
@@ -37,6 +41,23 @@ string cvtype2str(int type) {
  r += (chans+'0');
 
  return r;
+}
+/* TIME FUNCTIONS */
+template<typename S=double>
+S getTimeInSeconds(){
+	auto now  =chrono::high_resolution_clock::now();
+	typedef chrono::duration<S> scalar_seconds;
+	auto s_secs = chrono::duration_cast<scalar_seconds>(now);
+	return s_secs.count();
+}
+template<typename S=double>
+S getDurationInSeconds(chrono::steady_clock::time_point &before){
+	chrono::steady_clock::time_point now  =chrono::steady_clock::now();
+	auto dur=now-before;
+	typedef chrono::duration<S> scalar_seconds;
+	auto s_secs = chrono::duration_cast<scalar_seconds>(dur);
+	return s_secs.count();
+
 }
 /* BITWISE FUNCTIONS */
 #define BIT_ON(bf,b)  (bf) = ((bf) |  (b))
@@ -127,6 +148,10 @@ inline string &replaceChars(string &text,const string &chars="\t\n\v\f\r",char r
 inline string& removeQuotes(string &s){
 	return trim(s,"\t\"\n\v\f\r ");
 }
+//TODO
+//take more than one space (To use in GLSLShader::parseUniformNames)
+//inline string &leftOneSpace(string &s){
+//}
 string toString(ifstream &f){
 	string s;
 	if(f.is_open()){
@@ -158,31 +183,36 @@ void operator>>(stringstream &f,vector<string> &v){
 		v.push_back(s);
 }
 
-/* EXTENSIONS */
+/* FILE EXTENSIONS */
 inline string takeAwayExtension(string &s){
 	vector<string> vs=split(s,'.');	return vs[0];}
 inline string getExtension(string &s){
 	vector<string> vs=split(s,'.');	return vs[vs.size()-1];}
 
 /* NUMBERS TOOLS */
-inline bool nearZero(double d,double threshold=0.0001){return fabs(d)<threshold;}
-inline bool nearEquals(double d0,double d1,double threshold=0.0001){return nearZero(d1-d0,threshold);}
-inline double linearMap(double x,double i0,double i1,double o0,double o1){
-	double difi=i1-i0;
-	double difo=o1-o0;
-	double v=(x-i0)/difi;
-	double r=o0+difo*v;
+template<typename S=double>
+inline bool nearZero(S d,S threshold=0.0001){return abs(d)<threshold;}
+template<typename S=double>
+inline bool nearEquals(S d0,S d1,S threshold=0.0001){return nearZero<S>(d1-d0,threshold);}
+template<typename S=double>
+inline S linearMap(S x,S i0,S i1,S o0=0,S o1=1){
+	S difi=i1-i0;
+	S difo=o1-o0;
+	S v=(x-i0)/difi;
+	S r=o0+difo*v;
 	// Clamp values
 	if(r>o1) r=o1;
 	if(r<o0) r=o0;
 	return r;
 }
-
 /* ANGULAR CONVERSION */
 static const double DEG2RAD=M_PI/180.0;
 static const double RAD2DEG=180.0/M_PI;
-inline double deg2rad(double a){return a*DEG2RAD;}
-inline double rad2deg(double r){return r*RAD2DEG;}
+template<typename S=double>
+inline S deg2rad(S a){return a*(S)DEG2RAD;}
+template<typename S=double>
+inline S rad2deg(S r){return r*(S)RAD2DEG;}
+
 /* VECTOR */
 // from: http://www.jclay.host/dev-journal/simple_cpp_argmax_argmin.html
 template <typename T, typename A>

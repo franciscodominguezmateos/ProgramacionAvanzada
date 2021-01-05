@@ -88,8 +88,8 @@ public:
 		float dist=abuv/normuv;
 		return dist;
 	}
-	inline bool contains(Vector3D p){return nearZero(distance(p),0.05);}
-	inline bool intersect(Line l){return nearZero(distance(l),0.05);}
+	inline bool contains(Vector3D p){return nearZero(distance(p),0.05f);}
+	inline bool intersect(Line l){return nearZero(distance(l),0.05f);}
 	inline Vector3D getPoint(float t){return p+v*t;}
 	inline Vector3D intersectionPoint(Line l){
 		float px0=p.getX();
@@ -113,7 +113,7 @@ public:
 		Vector3D p1=l.p+l.v*k;
 		Vector3D dif=p1-p0;
 		float    dis=dif.length();
-		if(!nearZero(dis,0.05)){
+		if(!nearZero(dis,0.05f)){
 			/*cout << "p0="<< p0 <<endl;
 			cout << "p1="<< p1 <<endl;
 			cout << "dis="<<dis << endl;*/

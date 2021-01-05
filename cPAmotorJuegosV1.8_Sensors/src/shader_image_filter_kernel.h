@@ -26,13 +26,13 @@ out vec4 out_color;
 uniform sampler2D tex;
 uniform vec2 dim;
 uniform mat3 kernel;
+#define MSIZE 3
 
 float lum(vec4 c){return (c.r+c.g+c.b)/3.0;}
 vec2 tc(vec2 x){return x/dim;}
 vec2 rc(vec2 x=vec2(0,0)){return tc(gl_FragCoord.xy+x);}
 vec4 getColor(vec2 x=vec2(0,0)){return texture(tex,rc(x));}
 
-#define MSIZE 3
 
 void main(){
 	//declare stuff
@@ -47,7 +47,7 @@ void main(){
 			vec3 c = getColor().rgb;
 			factor = kernel[kSize+j[kSize+i];
 			Z += factor;
-			final_colour += factor*c;
+			final_colour += c*factor;
 		}
 	}
 	out_color = vec4(final_colour/Z, 1.0);
