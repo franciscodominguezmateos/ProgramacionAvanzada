@@ -277,33 +277,40 @@ inline Mat eulerAnglesToRotationMatrix(Vector3D theta){
 }
 template<class S=double>
 inline Mat posEulerAnglesToTransformationMatrix(Vector3D pos,Vector3D theta){
+    //cout <<"R="<<theta<<endl;
 	theta=theta*DEG2RAD;
+    //cout <<"R="<<theta<<endl;
     // Calculate rotation about x axis
-    Mat R_x = (Mat_<S>(4,4) <<
+    Mat_<S> R_x = (Mat_<S>(4,4) <<
                1,       0,                            0, 0,
                0,       cos(theta[0]),   -sin(theta[0]), 0,
                0,       sin(theta[0]),    cos(theta[0]), 0,
                0,       0,                            0, 1);
+    //printMat<S>(R_x);
     // Calculate rotation about y axis
-    Mat R_y = (Mat_<S>(4,4) <<
+    Mat_<S> R_y = (Mat_<S>(4,4) <<
                cos(theta[1]),    0,      sin(theta[1]), 0,
                 0,               1,                  0, 0,
                -sin(theta[1]),   0,      cos(theta[1]), 0,
                0,       0,                           0, 1);
+    //printMat<S>(R_y);
     // Calculate rotation about z axis
-    Mat R_z = (Mat_<S>(4,4) <<
+    Mat_<S> R_z = (Mat_<S>(4,4) <<
                cos(theta[2]),    -sin(theta[2]),      0, 0,
                sin(theta[2]),     cos(theta[2]),      0, 0,
                0,                 0,                  1, 0,
                0,                 0,                  0, 1);
     // Calculate translation
-    Mat T = (Mat_<S>(4,4) <<
+    //printMat<S>(R_z);
+    Mat_<S> T = (Mat_<S>(4,4) <<
                1,    0,      0, pos[0],
                0,    1,      0, pos[1],
                0,    0,      1, pos[2],
                0,    0,      0, 1);
+    //printMat<S>(T);
     // Combined rotation matrix
     Mat_<S> R (T*R_x * R_y * R_z);
+    //printMat<S>(R);
     return R;
 }
 Mat getRotation(Mat &t){
@@ -321,7 +328,15 @@ Mat buildTransformation(Mat R,Mat t){
 	Mat m=Mat::zeros(1,4,r.type());
 	//I don't know the real type I guess float
 	// TO FIX
-	m.at<float>(0,3)=1;
+	if(r.type()==CV_32F) {
+		m.at<float >(0,3)=1;
+	}
+	else {
+		if(r.type()==CV_64F)
+			m.at<double>(0,3)=1;
+		else
+			throw runtime_error("Unknown type in vector3D.h::buildTransformation()");
+	}
 	r.push_back(m);
 	return r;
 }

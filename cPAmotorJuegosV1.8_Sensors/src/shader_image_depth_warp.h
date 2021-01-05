@@ -20,14 +20,17 @@ in vec3 pixel;
 out vec4 out_color;
 
 uniform sampler2D tex;
-uniform vec2 dim;//image dimensions
-uniform mat4 T;  //camera pose
+//image dimensions
+uniform vec2 dim;
+//camera pose from 1 to 0
+uniform mat4 T;  
 
 //camera intrinsic parameters
-const float cx=320;
-const float cy=240;
-const float fx=640;
-const float fy=480;
+const float level=1;
+const float cx= 319.5/level;
+const float cy= 239.5/level;
+const float fx= 480.2/level;
+const float fy= 480.0/level;
 
 float lum(vec4 c){return (c.r+c.g+c.b)/3.0;}
 vec2     tc(vec2 x=vec2(0,0)){return x/dim;}
@@ -36,10 +39,10 @@ float depth(vec2 x=vec2(0,0)){return texture(tex,rc(x)).w;}  //Relative
 vec3  color(vec2 x=vec2(0,0)){return texture(tex,tc(x)).rgb;}//Absolute
 vec3  get3D(vec2 x=vec2(0,0)){
  vec2 p=gl_FragCoord.xy+x;
- float z=depth();
+ float z=depth(x);
  return vec3((p.x-cx)*z/fx,(p.y-cy)*z/fy,z);
 }
-vec2 project(vec3 p){ return vec2(p.x*fx/p.z+cx,py*fy/p.z+cy); }
+vec2 project(vec3 p){ return vec2(p.x*fx/p.z+cx,p.y*fy/p.z+cy); }
 bool is2DPointInImage(vec2 p){
 	if (p.x<0     ) return false;
 	if (p.y<0     ) return false;
@@ -48,10 +51,10 @@ bool is2DPointInImage(vec2 p){
 	return true;
 }
 //warping function
-vec2 w(vec2 x){
+vec2 w(){
   vec3 p=get3D();
-  vec3 Tp=T*p;
-  return project(Tp);
+  vec4 Tp=T*vec4(p,1);
+  return project(Tp.xyz);
 }
 void main(){
  //if good depth point
@@ -62,19 +65,20 @@ void main(){
    out_color=vec4(c,1);
   }
   else{
-   out_color=vec4(0,0,1,0);
+   out_color=vec4(0,0,0,0);
   }
  }
  else{ 
-  out_color=vec4(1,0,0,0);
+  out_color=vec4(0,0,0,0);
  }
+}
 )glsl";
 class ShaderImageDepthWarp:public ShaderImageFilter{
 	DepthImage di0,di1;
 	Mat T;//pose
 public:
-	ShaderImageDepthWarp(DepthImage &d0,DepthImage &d1,Mat &t):
-		ShaderImageFilter(d0.rows(),d0.cols()),di0(d0),di1(d1),T(t){
+	ShaderImageDepthWarp(DepthImage &d0,DepthImage &d1,const Mat &t):
+		ShaderImageFilter(d0.cols(),d0.rows()),di0(d0),di1(d1),T(t){
 			init();
 			Mat i1D0=getImg1Depth0();
 			setImage(i1D0);
@@ -87,17 +91,20 @@ public:
 		spProg.compileFromStrings(vertexShader,fragmentShader);
 	}
 	//return colors from di1 and depth from di0
+	//better gray scale, grad x and grad y from di1 and depth from di0
 	Mat getImg1Depth0(){
 		DepthImage &di=di1;
-		Mat cimg=di.getImg();
+		/*Mat cimg=di.getImg();
 		cimg.convertTo(cimg,CV_32FC3);
 		cimg/=255;
 		vector<Mat> channels;
 		cv::split(cimg, channels);
+		*/
 		Mat dimg=di0.getDepth();
 		Mat img;
 		img.convertTo(img,CV_32FC4);
-		vector<Mat> vd = { channels[0], channels[1],channels[2], dimg };
+		//vector<Mat> vd = { channels[0], channels[1],channels[2], dimg };
+		vector<Mat> vd = { di.getGray(), di.getGradXImg(),di.getGradYImg(), dimg };
 		merge(vd, img);
 		return img;
 	}

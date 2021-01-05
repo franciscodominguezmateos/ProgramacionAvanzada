@@ -40,7 +40,7 @@ public:
 	 virtual ~Solid(){}
 	 virtual Solid *clone (){return new Solid(*this);}
 	 virtual Mat  getTransformationMat(){return posEulerAnglesToTransformationMatrix(getPos(),getRot()); }
-	 virtual void setTransforamtionMat(Mat m){
+	 virtual void setTransformationMat(Mat m){
 		 setPos(getTranslation(m));
 		 Mat R=getRotation(m);
 		 setRot(rotationMatrixToEulerAngles(R));

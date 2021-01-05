@@ -17,8 +17,13 @@ class ShaderPointCloud : public Solid{
 	static string fragmentShader;
 	GLSLShaderProgram* pSpProg;
 	GLSLVAO* pstVao;
+	Mat T;
 public:
-	ShaderPointCloud(){hazFija();}
+	void setT(Mat t){T=t;}
+	ShaderPointCloud(){
+		hazFija();
+		T=posEulerAnglesToTransformationMatrix<float>(getPos(),getRot());
+	}
 	void init(){
 		pSpProg=new GLSLShaderProgram();
 		pSpProg->compileFromStrings(vertexShader,fragmentShader);
@@ -33,16 +38,25 @@ public:
 		vertices.push_back(v.getY());
 		vertices.push_back(v.getZ());
 	}
+	void addVertices(vector<Vector3D> &vv){
+		for(Vector3D &p:vv){
+			addVertex(Vector3D(p.getX(),-p.getY(),-p.getZ()));
+		}
+	}
 	void addColor(Vector3D v){
 		colors.push_back(v.getX());
 		colors.push_back(v.getY());
 		colors.push_back(v.getZ());
 	}
+	void addColors(vector<Vector3D> &vv){
+		for(Vector3D &c:vv)	addColor(c);
+	}
 	void render(){
 		GLSLShaderProgram &spProg=*pSpProg;
 		glPointSize(2);
 		pSpProg->start();
-		spProg["T"]=posEulerAnglesToTransformationMatrix<float>(getPos(),getRot());
+		//Mat T=posEulerAnglesToTransformationMatrix<float>(getPos(),getRot());
+		spProg["T"]=T;
 		pstVao->bindAll();
 		glDrawArrays(GL_POINTS, 0, vertices.size());
 		pstVao->unbindAll();

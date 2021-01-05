@@ -27,10 +27,10 @@ vec2 tc(vec2 x){return x/dim;}
 vec2 rc(vec2 x){return tc(gl_FragCoord.xy+x);}
 float depth(vec2 x=vec2(0,0)){return texture(tex,rc(x)).w;}
 vec3  get3D(vec2 x=vec2(0,0)){
- float cx=320;
- float cy=240;
- float fx=640;
- float fy=480;
+ float cx= 319.5;
+ float cy= 239.5;
+ float fx= 480.2;
+ float fy=-480.0;
  vec2 p=gl_FragCoord.xy+x;
  float z=depth();
  return vec3((p.x-cx)*z/fx,(p.y-cy)*z/fy,z);
@@ -56,7 +56,7 @@ void main(){
  out_color=vec4(gx+0.5,gy+0.5,0,1);
 }
 )glsl";
-
+//this may inherit from Shadertoy
 class ShaderImageFilter : public Solid{
 protected:
 	static vector<GLfloat> vertices;
@@ -67,11 +67,14 @@ protected:
 	GLSLFBO* pFbo;//Output 32FC4 fourth channel not used
 	Texture* pTex;//Input  32FC4 four channels same value
 public:
-	ShaderImageFilter(int w=640,int h=480):pFbo(new GLSLFBO(w,h)),pTex(new Texture()){
+	ShaderImageFilter(int w=640,int h=480,Texture* ptex=nullptr):pFbo(new GLSLFBO(w,h)),pTex(ptex){
 		pVao=new GLSLVAO();
 		pVao->init();
 		pVao->createAttribute(0,vertices,3);
-		pTex->init();
+		if(pTex==nullptr){
+			pTex=new Texture();
+			pTex->init();
+		}
 		pFbo->init();
 		init();
 	}
@@ -93,6 +96,9 @@ public:
 	Mat filter(Mat m){
 		setImage(m);
 		render();
+		return getResult();
+	}
+	Mat getResult(){
 		Mat r=pFbo->toOpenCV32FC4();
 		return r;
 	}

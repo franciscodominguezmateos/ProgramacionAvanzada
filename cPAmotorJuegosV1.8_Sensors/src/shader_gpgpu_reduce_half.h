@@ -8,9 +8,39 @@
  */
 
 #pragma once
+#include "shader_image_filter.h"
+const string fragmentShaderReduceHalf=R"glsl(
+#version 330 core
 
-class ShaderReduceHalf{
+in vec3 pixel;
 
+out vec4 out_color;
+
+uniform sampler2D tex;
+uniform vec2 dim;
+
+vec2 rc(vec2 x){return tc(gl_FragCoord.xy*2+x);}
+vec4 getValues(vec2 x){return texture(tex,rc(x));}
+
+//reduce operation to apply
+vec4 opt(vec4 v00,vec4 v10,vec4 v01,vec4 v11){return (v00+v10+v01+v11)/4.0;}
+
+void main(){
+ vec4 v00=getValues(vec2(0,0));
+ vec4 v10=getValues(vec2(1,0));
+ vec4 v01=getValues(vec2(0,1));
+ vec4 v11=getValues(vec2(1,1));
+ out_color=opt(v00,v10,v01,v11);
+}
+)glsl";
+class ShaderReduceHalf:public ShaderImageFilter{
+public:
+	ShaderReduceHalf(int w=640,int h=480):ShaderImageFilter(w>>1,h>>1){
+			init();
+	}
+	void init(){
+		fragmentShader=fragmentShaderReduceHalf;
+		spProg.compileFromStrings(vertexShader,fragmentShader);
+	}
 };
-
 

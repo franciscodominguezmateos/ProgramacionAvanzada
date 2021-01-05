@@ -59,19 +59,27 @@ public:
 		Vector3D v;
 		 switch(key){
 		 case 'p':
-			 v=camera->getLookAtPos()+Vector3D(0.1,0,0);
+			 v=camera->getLookAtPos()+Vector3D(0.01,0,0);
 			 camera->setLookAtPos(v);
 			 break;
 		 case 'o':
-			 v=camera->getLookAtPos()+Vector3D(-0.1,0,0);
+			 v=camera->getLookAtPos()+Vector3D(-0.01,0,0);
 			 camera->setLookAtPos(v);
 			 break;
 		 case 'q':
-			 v=camera->getLookAtPos()+Vector3D(0,0,-0.1);
+			 v=camera->getLookAtPos()+Vector3D(0,0,-0.01);
 			 camera->setLookAtPos(v);
 			 break;
 		 case 'a':
-			 v=camera->getLookAtPos()+Vector3D(0,0,0.1);
+			 v=camera->getLookAtPos()+Vector3D(0,0,0.01);
+			 camera->setLookAtPos(v);
+			 break;
+		 case 't':
+			 v=camera->getLookAtPos()+Vector3D(0,-0.01);
+			 camera->setLookAtPos(v);
+			 break;
+		 case 'g':
+			 v=camera->getLookAtPos()+Vector3D(0,0.01);
 			 camera->setLookAtPos(v);
 			 break;
 		 }
