@@ -9,108 +9,7 @@
 #include "shader.h"
 #include "texture.h"
 #include "solid.h"
-
-class ShaderToy : public Solid{
-	static vector<GLfloat> vertices;
-	static string vertexShader;
-	static string fragmentShader;
-	//start time
-	chrono::steady_clock::time_point sTime;
-	//time from start
-	float iTime;
-	float iTimeDelta;
-	int   iFrame;
-	float iFrameRate;
-	//xy = current pixel coords (if LMB is down). zw = click pixel
-	Vec4  iMouse;
-	GLSLShaderProgram spProg;
-	GLSLVAO* pstVao;
-	Texture* iChannel0;
-	//z is aspect ratio, usually 1.0
-	Vec3  iResolution;
-public:
-	ShaderToy():
-		Solid(),
-		sTime(chrono::steady_clock::now()),
-		iTime(0),
-		iTimeDelta(0.33),
-		iFrame(0),
-		iFrameRate(30),
-		iChannel0(new Texture()){
-		spProg.compileFromStrings(vertexShader,fragmentShader);
-		pstVao=new GLSLVAO();
-		pstVao->init();
-		pstVao->createAttribute(0,vertices,3);
-		iChannel0->init();
-		Vec3 dim={640.0f,480.0f,1.0f};
-		setiResolution(dim);
-	}
-	Texture* getiChannel0(){return iChannel0;}
-	void setImage(Mat img){
-		iChannel0->setImage(img);
-		//Vec2 dim={float(img.cols),float(img.rows)};
-		Vec3 dim={(float)img.cols,(float)img.rows,1.0};
-		setiResolution(dim);
-	}
-	void setiResolution(Vec3 d){iResolution=d;spProg.start();spProg["iResolution"]=d;spProg.stop();}
-	void setDynamicParams(){
-		//this function is called in render() then not needed to start and stop
-		//spProg.start();
-		spProg["iTime"]     =iTime;
-		//spProg["iTimeDelta"]=iTimeDelta;
-		spProg["iFrame"]    =iFrame;
-		//spProg["iFrameRate"]=iFrameRate;
-		//spProg["iMouse"]    =iMouse;
-		//spProg.stop();
-	}
-	inline float getTimeFromStartInSeconds(){return getDurationInSeconds<float>(sTime);}
-	void render(){
-		iTime=getTimeFromStartInSeconds();
-		glDepthMask(GL_FALSE);
-		spProg.start();
-		setDynamicParams();
-		iChannel0->bind();
-		pstVao->bindAll();
-		glDrawArrays(GL_TRIANGLES, 0, vertices.size());
-		pstVao->unbindAll();
-		iChannel0->unbind();
-		spProg.stop();
-		glDepthMask(GL_TRUE);
-		iTimeDelta=iTime-getTimeFromStartInSeconds();
-		iFrame+=1;
-		iFrameRate=1.0/iTimeDelta;
-	}
-};
-//This vertex does nothing
-string ShaderToy::vertexShader=R"glsl(
-#version 330 core
-
-in vec3 in_vertex;
-//Must have same name that in fragmentShader
-out vec3 pixel;
-
-void main(){
-    pixel=in_vertex/2+0.5;
-    gl_Position=vec4(in_vertex,1.0);
-}
-)glsl";
-
-string ShaderToy::fragmentShader=R"glsl(
-#version 330 core
-
-in vec3 pixel;
-
-out vec4 out_color;
-
-//XXuniform sampler2D iChannel0;
-//z is aspect ratio, usually 1.0
-uniform vec3 iResolution;
-uniform float iTime;
-//XXuniform float iTimeDelta;
-uniform int iFrame;
-//XXuniform float iFrameRate;
-//XXuniform vec4 iMouse;
-
+const string shaderToyCode=R"glsl(
 // Created by inigo quilez - iq/2019
 // License Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
 //
@@ -188,7 +87,7 @@ vec4 opU( vec4 d1, vec4 d2 )
 
 //------------------------------------------------------------------
 
-#define ZERO (min(iFrame,0))
+#define ZERO (min(iFrame ,0))
 
 //------------------------------------------------------------------
 
@@ -614,6 +513,137 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     // output    
     fragColor = vec4( tot, 1.0 );
 }
+)glsl";
+
+
+class ShaderToy : public Solid{
+	static vector<GLfloat> vertices;
+	static string vertexShader;
+	static string fragmentShaderBaseBegin;
+	static string fragmentShaderBaseEnd;
+	static vector<string> parameters;
+	//start time
+	chrono::steady_clock::time_point sTime;
+	//time from start
+	float iTime;
+	float iTimeDelta;
+	int   iFrame;
+	float iFrameRate;
+	//xy = current pixel coords (if LMB is down). zw = click pixel
+	Vec4  iMouse;
+	GLSLShaderProgram spProg;
+	GLSLVAO* pstVao;
+	Texture* iChannel0;
+	//z is aspect ratio, usually 1.0
+	Vec3  iResolution;
+	map<string,bool> declared;
+public:
+	ShaderToy():Solid(),
+				sTime(chrono::steady_clock::now()),
+				iTime(0),
+				iTimeDelta(0.33),
+				iFrame(0),
+				iFrameRate(30),
+				iChannel0(new Texture()){
+		pstVao=new GLSLVAO();
+		pstVao->init();
+		pstVao->createAttribute(0,vertices,3);
+		iChannel0->init();
+		for(string &p:parameters) declared[p]=false;
+	}
+	virtual void init(){
+		setFragmentShader(shaderToyCode);
+		Vec3 dim={640.0f*2,480.0f,1.0f};
+		setiResolution(dim);
+	}
+	virtual void initFromFileName(const string &fileName){
+		ifstream ifs(fileName);
+		string stCode;
+		ifs>>stCode;
+		setFragmentShader(stCode);
+		Vec3 dim={640.0f*2,480.0f,1.0f};
+		setiResolution(dim);
+	}
+	//This doesn't avoid declaration compiler error because compiler is smarter but helps
+	string inferUniformDeclarations(const string &stCode){
+		ostringstream sout;
+		//stCode has to have a space after iTime to differenciate from iTimeDelta
+		if(contains(stCode,"iTime "))     {sout<<"uniform float iTime;"     <<endl;declared["iTime"]      =true;}
+		if(contains(stCode,"iTimeDelta")) {sout<<"uniform float iTimeDelta;"<<endl;declared["iTimeDelta"] =true;}
+		//stCode has to have a space after iFrame to differenciate from iFrameRate
+		if(contains(stCode,"iFrame "))    {sout<<"uniform int iFrame;"      <<endl;declared["iFrame"]     =true;}
+		if(contains(stCode,"iFrameRate")) {sout<<"uniform float iFrameRate;"<<endl;declared["iFrameRate"] =true;}
+		if(contains(stCode,"iMouse"))     {sout<<"uniform vec4 iMouse;"     <<endl;declared["iMouse"]     =true;}
+		if(contains(stCode,"iResolution")){sout<<"uniform vec3 iResolution;"<<endl;declared["iResolution"]=true;}
+		string sr=sout.str();
+		return sr;
+	}
+	void setFragmentShader(const string &fs){
+		string fragmentShader=fragmentShaderBaseBegin+inferUniformDeclarations(fs)+fs+fragmentShaderBaseEnd;
+		spProg.compileFromStrings(vertexShader,fragmentShader);
+	}
+	Texture* getiChannel0(){return iChannel0;}
+	void setImage(Mat img){
+		iChannel0->setImage(img);
+		//Vec2 dim={float(img.cols),float(img.rows)};
+		Vec3 dim={(float)img.cols,(float)img.rows,1.0};
+		setiResolution(dim);
+	}
+	void setiResolution(Vec3 d){iResolution=d;spProg.start();spProg["iResolution"]=d;spProg.stop();}
+	void setDynamicParams(){
+		//this function is called in render() then not needed to start and stop
+		//spProg.start();
+		if(declared["iTime"])     spProg["iTime"]     =iTime;
+		if(declared["iTimeDelta"])spProg["iTimeDelta"]=iTimeDelta;
+		if(declared["iFrame"])    spProg["iFrame"]    =iFrame;
+		if(declared["iFrameRate"])spProg["iFrameRate"]=iFrameRate;
+		if(declared["iMouse"])    spProg["iMouse"]    =iMouse;
+		//spProg.stop();
+	}
+	inline float getTimeFromStartInSeconds(){return getDurationInSeconds<float>(sTime);}
+	void render(){
+		iTime=getTimeFromStartInSeconds();
+		glDepthMask(GL_FALSE);
+		spProg.start();
+		setDynamicParams();
+		iChannel0->bind();
+		pstVao->bindAll();
+		glDrawArrays(GL_TRIANGLES, 0, vertices.size());
+		pstVao->unbindAll();
+		iChannel0->unbind();
+		spProg.stop();
+		glDepthMask(GL_TRUE);
+		iTimeDelta=iTime-getTimeFromStartInSeconds();
+		iFrame+=1;
+		iFrameRate=1.0/iTimeDelta;
+		//cout << "iTimeDelta="<< iTimeDelta<<"iFrameRate="<<iFrameRate<<endl;
+	}
+};
+vector<string> ShaderToy::parameters={"iTime","iTimeDelta","iFrame","iFrameRate","iMouse","iResolution"};
+//This vertex does nothing
+string ShaderToy::vertexShader=R"glsl(
+#version 330 core
+
+in vec3 in_vertex;
+//Must have same name that in fragmentShader
+out vec3 pixel;
+
+void main(){
+    pixel=in_vertex/2+0.5;
+    gl_Position=vec4(in_vertex,1.0);
+}
+)glsl";
+
+string ShaderToy::fragmentShaderBaseBegin=R"glsl(
+#version 330 core
+
+in vec3 pixel;
+
+out vec4 out_color;
+
+)glsl";
+
+string ShaderToy::fragmentShaderBaseEnd=R"glsl(
 void main(){ mainImage(out_color,gl_FragCoord.xy);}
 )glsl";
 //Just a square

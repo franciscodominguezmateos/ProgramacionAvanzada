@@ -288,9 +288,8 @@ public:
 	    //30/04/2020
 		//06/05/2020: automatic extraction of uniform name variables
 		//      just parse lines and extract names the ones that begin with uniform
-		stringstream sstr(sourceCode);
 		vector<string> lines;
-		sstr>>lines;
+		sourceCode>>lines;
 		for(string line:lines){
 			trim(line);
 			trim(line,";");

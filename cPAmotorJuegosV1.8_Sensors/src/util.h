@@ -94,6 +94,9 @@ pair<bool, int > findInVector(const std::vector<T>  & vecOfElements, const T  & 
 inline float getRand(float max,float min){
 	float n=max-min;int ir=rand()%10000; return min+n*(float)ir/10000;}
 inline float getRand(float max){return getRand(max,0);}
+
+/* STRING TOOLS: */
+inline bool contains(const string &doc,const string &word){return doc.find(word)!=string::npos;}
 /* SPLITTING */
 inline vector<string> split(string s,char delimiter=' '){
 	   vector<string> tokens;
@@ -124,11 +127,9 @@ inline vector<string> split_first(string s,char delimiter=' '){
 		   tokens.push_back(token);
 	   return tokens;
 	}
-
-/* STRING TOOLS: */
 /* TRIMMING */
 inline string& ltrim(std::string& str, const std::string& chars = "\t\n\v\f\r "){
-	    str.erase(0, str.find_first_not_of(chars));return str;}
+	str.erase(0, str.find_first_not_of(chars));return str;}
 inline string& rtrim(std::string& str, const std::string& chars = "\t\n\v\f\r "){
     str.erase(str.find_last_not_of(chars) + 1);return str;}
 inline string& trim(std::string& str, const std::string& chars = "\t\n\v\f\r "){
@@ -149,7 +150,7 @@ inline string& removeQuotes(string &s){
 	return trim(s,"\t\"\n\v\f\r ");
 }
 //TODO
-//take more than one space (To use in GLSLShader::parseUniformNames)
+//remove more than one space (To use in GLSLShader::parseUniformNames)
 //inline string &leftOneSpace(string &s){
 //}
 string toString(ifstream &f){
@@ -182,7 +183,10 @@ void operator>>(stringstream &f,vector<string> &v){
 	while(getline(f,s))
 		v.push_back(s);
 }
-
+inline void operator>>(string &s,vector<string> &lines){
+	stringstream sstr(s);
+	sstr>>lines;
+}
 /* FILE EXTENSIONS */
 inline string takeAwayExtension(string &s){
 	vector<string> vs=split(s,'.');	return vs[0];}
