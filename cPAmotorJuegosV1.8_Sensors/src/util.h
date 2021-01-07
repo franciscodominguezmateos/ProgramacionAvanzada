@@ -42,7 +42,9 @@ string cvtype2str(int type) {
 
  return r;
 }
+/**********************************************************************************************/
 /* TIME FUNCTIONS */
+/**********************************************************************************************/
 template<typename S=double>
 S getTimeInSeconds(){
 	auto now  =chrono::high_resolution_clock::now();
@@ -59,7 +61,9 @@ S getDurationInSeconds(chrono::steady_clock::time_point &before){
 	return s_secs.count();
 
 }
+/**********************************************************************************************/
 /* BITWISE FUNCTIONS */
+/**********************************************************************************************/
 #define BIT_ON(bf,b)  (bf) = ((bf) |  (b))
 #define BIT_OFF(bf,b) (bf) = ((bf) & ~(b))
 #define BIT_STATUS(bf,b) ((bf) & (b))
@@ -89,14 +93,16 @@ pair<bool, int > findInVector(const std::vector<T>  & vecOfElements, const T  & 
 	return result;
 }
 
+/**********************************************************************************************/
 /* RANDOMNESS */
+/**********************************************************************************************/
 //TODO change order first min then max
 inline float getRand(float max,float min){
 	float n=max-min;int ir=rand()%10000; return min+n*(float)ir/10000;}
 inline float getRand(float max){return getRand(max,0);}
-
-/* STRING TOOLS: */
-inline bool contains(const string &doc,const string &word){return doc.find(word)!=string::npos;}
+/**********************************************************************************************/
+/*                                 S T R I N G   T O O L S                                    */
+/**********************************************************************************************/
 /* SPLITTING */
 inline vector<string> split(string s,char delimiter=' '){
 	   vector<string> tokens;
@@ -183,17 +189,43 @@ void operator>>(stringstream &f,vector<string> &v){
 	while(getline(f,s))
 		v.push_back(s);
 }
-inline void operator>>(string &s,vector<string> &lines){
+inline void operator>>(const string &s,vector<string> &lines){
 	stringstream sstr(s);
 	sstr>>lines;
 }
+/* Contains an Replace strings*/
+inline bool contains(const string &doc,const string &word){return doc.find(word)!=string::npos;}
+//if word is in line return doc
+//              else return line
+inline string replaceLineIfContains(const string &word,const string &line,const string &doc){
+	if(contains(line,word))
+		return doc;
+	return line;
+}
+//For ALL line in doc
+//if wordsLine is in line concat newDoc
+//                   else concat line
+inline string replaceLinesIfContains(const string &wordsLine,const string &doc,const string &newLines){
+	vector<string> lines;
+	doc>>lines;
+	ostringstream sout;
+	for(string &line:lines){
+		sout<<replaceLineIfContains(wordsLine,line,newLines)<<endl;
+	}
+	string sr=sout.str();
+	return sr;
+}
+/**********************************************************************************************/
 /* FILE EXTENSIONS */
+/**********************************************************************************************/
 inline string takeAwayExtension(string &s){
 	vector<string> vs=split(s,'.');	return vs[0];}
 inline string getExtension(string &s){
 	vector<string> vs=split(s,'.');	return vs[vs.size()-1];}
 
+/**********************************************************************************************/
 /* NUMBERS TOOLS */
+/**********************************************************************************************/
 template<typename S=double>
 inline bool nearZero(S d,S threshold=0.0001){return abs(d)<threshold;}
 template<typename S=double>
@@ -217,7 +249,20 @@ inline S deg2rad(S a){return a*(S)DEG2RAD;}
 template<typename S=double>
 inline S rad2deg(S r){return r*(S)RAD2DEG;}
 
+/**********************************************************************************************/
 /* VECTOR */
+/**********************************************************************************************/
+template<typename S=double>
+string to_string(const vector<S> &vf){
+	ostringstream sout;
+	int l=vf.size();
+	for(int i=0;i<l;i++){
+		sout<<vf[i];
+		if(i!=l-1)
+			sout<<",";
+	}
+	return sout.str();
+}
 // from: http://www.jclay.host/dev-journal/simple_cpp_argmax_argmin.html
 template <typename T, typename A>
 int arg_max(std::vector<T, A> const& vec) {
