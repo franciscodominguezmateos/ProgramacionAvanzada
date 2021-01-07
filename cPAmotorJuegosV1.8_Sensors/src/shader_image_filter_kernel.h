@@ -8,15 +8,6 @@
 #pragma once
 #include "shader_image_filter.h"
 const string fragmentShaderKernel=R"glsl(
-//https://www.shadertoy.com/view/4dfGDH
-//precomputing the kernel improves the performance
-//sigma 10.0, MSIZE 15
-//const float kernel[MSIZE] = float[MSIZE](
-//0.031225216, 0.033322271, 0.035206333, 0.036826804, 0.038138565, 0.039104044, 0.039695028, 0.039894000, 0.039695028, 0.039104044, 0.038138565, 0.036826804, 0.035206333, 0.033322271, 0.031225216);
-
-#ifdef GL_ES
-precision mediump float;
-#endif
 #version 330 core
 
 in vec3 pixel;
@@ -32,7 +23,6 @@ float lum(vec4 c){return (c.r+c.g+c.b)/3.0;}
 vec2 tc(vec2 x){return x/dim;}
 vec2 rc(vec2 x=vec2(0,0)){return tc(gl_FragCoord.xy+x);}
 vec4 getColor(vec2 x=vec2(0,0)){return texture(tex,rc(x));}
-
 
 void main(){
 	//declare stuff

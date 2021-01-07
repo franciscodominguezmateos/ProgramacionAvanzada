@@ -81,7 +81,8 @@ public:
 		return kernel;
 	}
 	void init(){
-		string fs=fragmentShaderBilateralFilter;
+		fragmentShader=fragmentShaderBilateralFilter;
+		string &fs=fragmentShader;
 		fs=replaceLinesIfContains("#define SIGMA" ,fs,"#define SIGMA " +to_string(sigma));
 		fs=replaceLinesIfContains("#define BSIGMA",fs,"#define BSIGMA "+to_string(bsigma));
 		fs=replaceLinesIfContains("#define MSIZE" ,fs,"#define MSIZE " +to_string(msize));
