@@ -6,7 +6,6 @@
  *  Treat data as images of 32FC4
  *  Input is a image of w,h size and output is w/2,h/2
  */
-
 #pragma once
 #include "shader_image_filter.h"
 const string fragmentShaderReduceHalf=R"glsl(
@@ -34,12 +33,18 @@ void main(){
 }
 )glsl";
 class ShaderReduceHalf:public ShaderImageFilter{
+	string optCode;
 public:
-	ShaderReduceHalf(int w=640,int h=480):ShaderImageFilter(w>>1,h>>1){
+	ShaderReduceHalf(int w=640,int h=480,string oc="vec4 opt(vec4 v00,vec4 v10,vec4 v01,vec4 v11){return (v00+v10+v01+v11)/4.0;}"):
+			ShaderImageFilter(w>>1,h>>1),
+			optCode(oc){
 			init();
 	}
 	void init(){
 		fragmentShader=fragmentShaderReduceHalf;
+		string &fs=fragmentShader;
+		fs=replaceLinesIfContains("vec4 opt" ,fs,optCode);
+		spProg.compileFromStrings(vertexShader,fs);
 		spProg.compileFromStrings(vertexShader,fragmentShader);
 	}
 };

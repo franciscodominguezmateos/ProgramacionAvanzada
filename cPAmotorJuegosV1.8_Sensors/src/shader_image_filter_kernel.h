@@ -4,7 +4,6 @@
  *  Created on: 31 Dec 2020
  *      Author: Francisco Dominguez
  */
-
 #pragma once
 #include "shader_image_filter.h"
 const string fragmentShaderKernel=R"glsl(

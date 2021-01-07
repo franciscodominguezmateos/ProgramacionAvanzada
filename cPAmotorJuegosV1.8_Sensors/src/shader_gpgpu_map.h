@@ -5,7 +5,6 @@
  *      Author: Francisco Dominguez
  *  Treat data as images of 32FC4
  */
-
 #pragma once
 #include "shader_image_filter.h"
 const string fragmentShaderMap=R"glsl(
@@ -26,14 +25,17 @@ void main(){
 }
 )glsl";
 class ShaderMap:public ShaderImageFilter{
+	string optCode;
 public:
-	ShaderMap(int w=640,int h=480):ShaderImageFilter(w,h){
-			init();
+	ShaderMap(int w=640,int h=480,string oc="vec4 opt(vec4 v){return v/2;}"):
+			ShaderImageFilter(w,h),
+			optCode(oc){
+		init();
 	}
 	void init(){
 		fragmentShader=fragmentShaderMap;
 		string &fs=fragmentShader;
-		fs=replaceLinesIfContains("vec4 opt" ,fs,"vec4 opt(vec4 v){return v/2;}");
+		fs=replaceLinesIfContains("vec4 opt" ,fs,optCode);
 		spProg.compileFromStrings(vertexShader,fs);
 	}
 };
