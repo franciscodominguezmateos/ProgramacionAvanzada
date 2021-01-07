@@ -17,24 +17,20 @@ uniform sampler2D tex;
 uniform vec2 dim;
 uniform mat3 kernel;
 #define MSIZE 3
+const int kSize = (MSIZE-1)/2;
 
-float lum(vec4 c){return (c.r+c.g+c.b)/3.0;}
-vec2 tc(vec2 x){return x/dim;}
-vec2 rc(vec2 x=vec2(0,0)){return tc(gl_FragCoord.xy+x);}
-vec4 getColor(vec2 x=vec2(0,0)){return texture(tex,rc(x));}
-
+//relative to current point in pixels
+vec3 getColor(vec2 x=vec2(0,0)){return texture(tex,(gl_FragCoord.xy+x)/dim.xy).rgb;}
 void main(){
 	//declare stuff
-	const int kSize = (MSIZE-1)/2;
 	vec3 final_colour = vec3(0.0);
-
-	float factor;
+	float factor=0.0;
     float Z=0.0;
 	//read out the texels
 	for (int i=-kSize; i <= kSize; i++)	{
 		for (int j=-kSize; j <= kSize; j++)	{
-			vec3 c = getColor().rgb;
-			factor = kernel[kSize+j[kSize+i];
+			vec3 c = getColor(vec2(float(i),float(j)));
+			factor = kernel[kSize+j][kSize+i];
 			Z += factor;
 			final_colour += c*factor;
 		}
@@ -43,9 +39,18 @@ void main(){
 }
 )glsl";
 class ShaderImageFilterKernel:public ShaderImageFilter{
+	Mat kernel;
 public:
-	ShaderImageFilterKernel(int w=640,int h=480):ShaderImageFilter(w,h){
-			init();
+	ShaderImageFilterKernel(int w=640,int h=480,Mat m=Mat::ones(3,3,CV_32F)):
+			ShaderImageFilter(w,h),
+			kernel(m){
+		init();
+		setKernel(kernel);
+	}
+	void setKernel(Mat &m){
+		spProg.start();
+		spProg["kernel"]=m;
+		spProg.stop();
 	}
 	void init(){
 		fragmentShader=fragmentShaderKernel;
