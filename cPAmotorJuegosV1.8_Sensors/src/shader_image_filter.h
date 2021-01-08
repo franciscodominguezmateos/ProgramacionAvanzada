@@ -64,8 +64,8 @@ protected:
 	string fragmentShader;
 	GLSLShaderProgram spProg;
 	GLSLVAO* pVao;
-	GLSLFBO* pFbo;//Output 32FC4 fourth channel not used
-	Texture* pTex;//Input  32FC4 four channels same value
+	GLSLFBO* pFbo;//Output 32FC4 fourth channel not used or not
+	Texture* pTex;//Input  32FC4 four channels same value or not
 public:
 	ShaderImageFilter(int w=640,int h=480,Texture* ptex=nullptr):pFbo(new GLSLFBO(w,h)),pTex(ptex){
 		pVao=new GLSLVAO();

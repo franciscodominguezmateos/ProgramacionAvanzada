@@ -1,8 +1,9 @@
 /*
- * shader_image_sobel_x.h
+ * shader_image_filter_kernel.h
  *
  *  Created on: 31 Dec 2020
  *      Author: Francisco Dominguez
+ *  Kernel size must be 3x3
  */
 #pragma once
 #include "shader_image_filter.h"

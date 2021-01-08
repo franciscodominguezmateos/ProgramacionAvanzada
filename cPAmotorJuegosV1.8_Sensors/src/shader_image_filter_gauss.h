@@ -68,7 +68,7 @@ public:
 		string &fs=fragmentShader;
 		fs=replaceLinesIfContains("#define MSIZE" ,fs,"#define MSIZE " +to_string(msize));
 		fs=replaceLinesIfContains("const float kernel[MSIZE]" ,fs,"const float kernel[MSIZE]=float[MSIZE](" +to_string(precompute_kernel())+");");
-		cout <<"ShaderImageFilterGauss:"<<endl<<fs<<endl;
+		//cout <<"ShaderImageFilterGauss:"<<endl<<fs<<endl;
 		spProg.compileFromStrings(vertexShader,fs);
 	}
 };

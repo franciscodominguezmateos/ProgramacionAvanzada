@@ -7,7 +7,7 @@
  *  text is a 32FC4 color depth texture but:
  *  - .xyz is color from di1
  *  - .w   is depth from di0
- *
+ *  +08/01/2021 get intrinsic parameter from DepthImage di0 and set as const float inside shader
  */
 #pragma once
 #include "depth_image.h"
@@ -22,7 +22,7 @@ out vec4 out_color;
 uniform sampler2D tex;
 //image dimensions
 uniform vec2 dim;
-//camera pose from 1 to 0
+//camera pose from 0 to 1 T10=T01.inv()
 uniform mat4 T;  
 
 //camera intrinsic parameters
@@ -88,7 +88,14 @@ public:
 	}
 	void init(){
 		fragmentShader=fragmentShaderWarp;
-		spProg.compileFromStrings(vertexShader,fragmentShader);
+		string &fs=fragmentShader;
+		fs=replaceLinesIfContains("const float level" ,fs,"const float level=" +to_string(di0.getLevel())+";");
+		fs=replaceLinesIfContains("const float cx"    ,fs,"const float cx="    +to_string(di0.getCx())+";");
+		fs=replaceLinesIfContains("const float cy"    ,fs,"const float cy="    +to_string(di0.getCy())+";");
+		fs=replaceLinesIfContains("const float fx"    ,fs,"const float fx="    +to_string(di0.getFx())+";");
+		fs=replaceLinesIfContains("const float fy"    ,fs,"const float fy="    +to_string(di0.getFx())+";");
+		//cout <<"ShaderImageDepthWarp:"<<endl<<fs<<endl;
+		spProg.compileFromStrings(vertexShader,fs);
 	}
 	//return colors from di1 and depth from di0
 	//better gray scale, grad x and grad y from di1 and depth from di0
