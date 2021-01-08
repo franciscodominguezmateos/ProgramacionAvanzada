@@ -47,8 +47,7 @@ public:
 			kernel(m){
 		init();
 		setKernel(kernel);
-		Vec2 dm={640,480};
-		setDim(dm);
+		workOutDim(ptex,w,h);
 	}
 	void setKernel(Mat &m){
 		spProg.start();

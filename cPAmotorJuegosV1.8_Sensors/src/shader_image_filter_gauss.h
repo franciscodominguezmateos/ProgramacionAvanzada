@@ -55,8 +55,7 @@ public:
 			sigma(s),
 			msize(ms){
 		init();
-		Vec2 dm={w,h};
-		setDim(dm);
+		workOutDim(ptex,w,h);
 	}
 	float normpdf(const float x, const float sigma){
 		return 0.39894*exp(-0.5*x*x/(sigma*sigma))/sigma;

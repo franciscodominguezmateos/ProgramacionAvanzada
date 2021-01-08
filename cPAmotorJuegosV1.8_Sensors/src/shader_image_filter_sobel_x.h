@@ -36,8 +36,7 @@ public:
 	ShaderImageFilterSobelX(Texture* ptex=nullptr,int w=640,int h=480):
 			ShaderImageFilter(ptex,w,h){
 		init();
-		Vec2 dm={640,480};
-		setDim(dm);
+		workOutDim(ptex,w,h);
 	}
 	void init(){
 		fragmentShader=fragmentShaderSobelX;

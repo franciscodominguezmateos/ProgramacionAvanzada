@@ -93,6 +93,16 @@ public:
 		Vec2 dim={float(img.cols),float(img.rows)};
 		setDim(dim);
 	}
+	void workOutDim(Texture* ptex,int w,int h){
+		if(ptex==nullptr){
+			Vec2 dm={w,h};
+			setDim(dm);
+		}
+		else{
+			Vec2 dm={ptex->getWidth(),ptex->getHeight()};
+			setDim(dm);
+		}
+	}
 	void setDim(Vec2 d){spProg.start();spProg["dim"]=d;spProg.stop();}
 	Mat filter(Mat m){
 		setImage(m);

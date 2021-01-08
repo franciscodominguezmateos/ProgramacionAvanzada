@@ -1,18 +1,18 @@
 /*
- * shader_image_depth_warp.h
+ * shader_image_depth_direct_j.h
  *
- *  Created on: 2 Jan 2021
+ *  Created on: 8 Jan 2021
  *      Author: Francisco Dominguez
  *  It should make a image warp from depth di0 to di1 given a pose T
  *  text is a 32FC4 color depth texture but:
- *  - .xyz is color from di1
+ *  - .xyz is x=gradientX, y=gradientY and z=residual of di1-di0
  *  - .w   is depth from di0
  *  +08/01/2021 get intrinsic parameter from DepthImage di0 and set as const float inside shader
  */
 #pragma once
 #include "depth_image.h"
 #include "shader_image_filter.h"
-const string fragmentShaderWarp=R"glsl(
+const string fragmentShaderDirectJ=R"glsl(
 #version 330 core
 
 in vec3 pixel;
@@ -56,28 +56,61 @@ vec2 w(){
   vec4 Tp=T*vec4(p,1);
   return project(Tp.xyz);
 }
+//gradient X is in x and gradient Y is in y
+vec2 grad(){
+  return color().xy;
+}
 void main(){
- //if good depth point
- if(depth()>0.0){//0 values of depth are bad values
-  vec2 x=w();
-  if(is2DPointInImage(x)){
-   vec3 c=color(x);
-   out_color=vec4(c,1);
-  }
-  else{
-   out_color=vec4(0,0,0,0);
-  }
- }
- else{ 
-  out_color=vec4(0,0,0,0);
- }
+  //3D point at di0 frame
+  vec3 p0=get3D();
+  //3D point at di1 frame
+  vec4 p =T*vec4(p0,1);
+  vec2 g=grad();
+  float x2=p.x*p.x;
+  float y2=p.y*p.y;
+  float z2=p.z*p.z;
+
+#if 1
+  float Jw00=-fx*p.x*p.y/z2;
+  float Jw01= fx*(1+x2/z2);
+  float Jw02=-fx*p.y/p.z;
+  
+  float Jw10=-fy*(1+y2/z2);
+  float Jw11= fy*p.x*p.y/z2;
+  float Jw12= fy*p.x/p.z;
+  
+  vec2 c0=vec2(Jw00,Jw10);
+  vec2 c1=vec2(Jw01,Jw11);
+  vec2 c2=vec2(Jw02,Jw12);
+  float j0=dot(g,c0);
+  float j1=dot(g,c1);
+  float j2=dot(g,c2);
+  out_color=vec4(j0,j1,j2,depth());
+
+#else
+  float Jw03= fx/p.z;
+  float Jw04= 0;
+  float Jw05=-fx*p.x/z2;
+  
+  float Jw13= 0;
+  float Jw14= fy/p.z;
+  float Jw15=-fy*p.y/z2;
+  vec2 c3=vec2(Jw03,Jw13);
+  vec2 c4=vec2(Jw04,Jw14);
+  vec2 c5=vec2(Jw05,Jw15);
+
+  float j3=dot(g,c3);
+  float j4=dot(g,c4);
+  float j5=dot(g,c5);
+  out_color=vec4(j3,j4,j5,depth());
+#endif
 }
 )glsl";
-class ShaderImageDepthWarp:public ShaderImageFilter{
+class ShaderImageDepthDirectJ:public ShaderImageFilter{
 	DepthImage di0,di1;
 	Mat T;//pose
 public:
-	ShaderImageDepthWarp(DepthImage &d0,DepthImage &d1,const Mat &t):
+	ShaderImageDepthDirectJ(DepthImage &d0,DepthImage &d1,const Mat &t):
 		ShaderImageFilter(nullptr,d0.cols(),d0.rows()),di0(d0),di1(d1),T(t){
 			init();
 			Mat i1D0=getImg1Depth0();
@@ -87,7 +120,7 @@ public:
 			spProg.stop();
 	}
 	void init(){
-		fragmentShader=fragmentShaderWarp;
+		fragmentShader=fragmentShaderDirectJ;
 		string &fs=fragmentShader;
 		fs=replaceLinesIfContains("const float level" ,fs,"const float level=" +to_string(di0.getLevel())+";");
 		fs=replaceLinesIfContains("const float cx"    ,fs,"const float cx="    +to_string(di0.getCx())+";");

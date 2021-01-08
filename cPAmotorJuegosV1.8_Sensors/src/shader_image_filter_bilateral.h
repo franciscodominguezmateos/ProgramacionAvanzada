@@ -67,8 +67,7 @@ public:
 			bsigma(bs),
 			msize(ms){
 		init();
-		Vec2 dm={640,480};
-		setDim(dm);
+		workOutDim(ptex,w,h);
 	}
 	float normpdf(const float x, const float sigma){
 		return 0.39894*exp(-0.5*x*x/(sigma*sigma))/sigma;

@@ -39,8 +39,7 @@ public:
 			ShaderImageFilter(ptex,w>>1,h>>1),
 			optCode(oc){
 			init();
-			Vec2 dm={640,480};
-			setDim(dm);
+			workOutDim(ptex,w,h);
 	}
 	void init(){
 		fragmentShader=fragmentShaderReduceHalf;
