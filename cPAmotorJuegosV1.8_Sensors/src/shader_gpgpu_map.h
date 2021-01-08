@@ -27,10 +27,12 @@ void main(){
 class ShaderMap:public ShaderImageFilter{
 	string optCode;
 public:
-	ShaderMap(int w=640,int h=480,string oc="vec4 opt(vec4 v){return v/2;}"):
-			ShaderImageFilter(w,h),
+	ShaderMap(Texture* ptex=nullptr,string oc="vec4 opt(vec4 v){return v/2;}",int w=640,int h=480):
+			ShaderImageFilter(ptex,w,h),
 			optCode(oc){
 		init();
+		Vec2 dm={640,480};
+		setDim(dm);
 	}
 	void init(){
 		fragmentShader=fragmentShaderMap;

@@ -61,12 +61,14 @@ class ShaderImageFilterBilateral:public ShaderImageFilter{
 	float bsigma;
 	int msize;
 public:
-	ShaderImageFilterBilateral(int w=640,int h=480,float s=10,float bs=0.1,int ms=15):
-			ShaderImageFilter(w,h),
+	ShaderImageFilterBilateral(Texture* ptex=nullptr,float s=10,float bs=0.1,int ms=15,int w=640,int h=480):
+			ShaderImageFilter(ptex,w,h),
 			sigma(s),
 			bsigma(bs),
 			msize(ms){
 		init();
+		Vec2 dm={640,480};
+		setDim(dm);
 	}
 	float normpdf(const float x, const float sigma){
 		return 0.39894*exp(-0.5*x*x/(sigma*sigma))/sigma;

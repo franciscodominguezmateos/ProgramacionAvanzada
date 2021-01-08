@@ -33,8 +33,11 @@ void main(){
 )glsl";
 class ShaderImageFilterSobelX:public ShaderImageFilter{
 public:
-	ShaderImageFilterSobelX(int w=640,int h=480):ShaderImageFilter(w,h){
-			init();
+	ShaderImageFilterSobelX(Texture* ptex=nullptr,int w=640,int h=480):
+			ShaderImageFilter(ptex,w,h){
+		init();
+		Vec2 dm={640,480};
+		setDim(dm);
 	}
 	void init(){
 		fragmentShader=fragmentShaderSobelX;

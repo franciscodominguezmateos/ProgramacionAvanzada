@@ -23,12 +23,13 @@ using namespace cv;
 
 class Texture {
 	GLuint idTexture;
+	int width,height;
 	Mat img;
 public:
-	Texture():idTexture(0){}
-	virtual ~Texture(){}
+	Texture(int w=0,int h=0):idTexture(0),width(w),height(h){}
+	virtual ~Texture(){glDeleteTextures(1,&idTexture);}
 	bool isReady(){
-		return idTexture!=0 && !img.empty();
+		return idTexture!=0;//&& !img.empty();
 	}
 	void init(){
 		glGenTextures(1,&idTexture);
@@ -39,13 +40,18 @@ public:
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	}
 	Mat getImage(){return img;}
+	inline void setSize(int w,int h){width=w;height=h;}
+	inline int getWidth() {return width;}
+	inline int getHeight(){return height;}
 	void setImage(Mat i){
+		setSize(i.cols,i.rows);
 		flip(i,img,0);
 		//reflexion
 		//flip(img,img,1);
 		upload();
 	}
 	void setImageFlipped(Mat i){
+		setSize(i.cols,i.rows);
 		img=i;
 		upload();
 	}
@@ -75,23 +81,28 @@ public:
 			if(img.type()==CV_32FC4)
 				glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA32F,img.cols,img.rows,0,GL_BGRA,GL_FLOAT,img.ptr());
 		}
-
 	}
 	void asRenderTexture8UC3(int w,int h){
-		glBindTexture(GL_TEXTURE_2D, idTexture);
+		//glBindTexture(GL_TEXTURE_2D, idTexture);
+		bind();
 		glTexImage2D(GL_TEXTURE_2D, 0,GL_RGB, w, h, 0,GL_RGB, GL_UNSIGNED_BYTE, 0);
 		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, idTexture, 0);
+		unbind();
 	}
 	void asRenderTexture32FC4(int w,int h){
-		glBindTexture(GL_TEXTURE_2D, idTexture);
+		bind();
+		//glBindTexture(GL_TEXTURE_2D, idTexture);
 		glTexImage2D (GL_TEXTURE_2D, 0,GL_RGBA, w, h, 0,GL_RGBA, GL_FLOAT, 0);
 		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, idTexture, 0);
+		unbind();
 	}
 	void asRenderTexture(int w,int h){asRenderTexture32FC4(w,h);}
 	void asDepthTexture(int w,int h){
-		glBindTexture(GL_TEXTURE_2D, idTexture);
+		bind();
+		//glBindTexture(GL_TEXTURE_2D, idTexture);
 		glTexImage2D (GL_TEXTURE_2D, 0,GL_DEPTH_COMPONENT24, w, h, 0,GL_DEPTH_COMPONENT, GL_FLOAT, 0);
 		glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, idTexture, 0);
+		unbind();
 	}
 };
 

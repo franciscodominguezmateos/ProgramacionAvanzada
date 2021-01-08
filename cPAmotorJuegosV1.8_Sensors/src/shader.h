@@ -219,7 +219,8 @@ class GLSLFBO{
 	Texture depth;
 public:
 	//If we don't call init() toOpenCV get the default screen pixels
-	GLSLFBO(int w,int h):width(w),height(h),id(0){}
+	GLSLFBO(int w,int h):width(w),height(h),id(0),color(w,h),depth(w,h){}
+	virtual ~GLSLFBO(){glDeleteFramebuffers(1, &id);}
 	void init(){
 		glGenFramebuffers(1, &id);
 		glBindFramebuffer(GL_FRAMEBUFFER, id);
@@ -227,11 +228,18 @@ public:
 		color.asRenderTexture(width,height);
 		depth.init();
 		depth.asDepthTexture(width,height);
+		// define the index array for the outputs
+		//GLuint attachments[1] = { GL_COLOR_ATTACHMENT0 };
+		//glDrawBuffers(1,  attachments);
 		if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 			throw runtime_error("Error in GLSLFBO::init() not frame buffer complete.");
+		//printLimits();
 	}
-	inline void setWidth(int w) {width=w;}
-	inline void setHeight(int h){height=h;}
+	inline Texture &getColorTex(){return color;}
+	inline Texture &getDepthTex(){return depth;}
+	inline void setSize(int w,int h){width=w;height=h;}
+	inline void setWidth(int w) {width=w; color.setSize(width,height);depth.setSize(width,height);}
+	inline void setHeight(int h){height=h;color.setSize(width,height);depth.setSize(width,height);}
 	inline void bind()  {glBindFramebuffer(GL_FRAMEBUFFER, id);}
 	inline void unbind(){glBindFramebuffer(GL_FRAMEBUFFER, 0); }
 	Mat toOpenCV() {
@@ -274,6 +282,52 @@ public:
 	    unbind();
 	    return img;
 	}
+	void printLimits() {
+	    int res;
+	    //8
+	    glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &res);
+	    printf("Max Color Attachments: %d\n", res);
+	    //32768
+	    glGetIntegerv(GL_MAX_FRAMEBUFFER_WIDTH, &res);
+	    printf("Max Framebuffer Width: %d\n", res);
+	    //32768
+	    glGetIntegerv(GL_MAX_FRAMEBUFFER_HEIGHT, &res);
+	    printf("Max Framebuffer Height: %d\n", res);
+	    //32
+	    glGetIntegerv(GL_MAX_FRAMEBUFFER_SAMPLES, &res);
+	    printf("Max Framebuffer Samples: %d\n", res);
+	    //2048
+	    glGetIntegerv(GL_MAX_FRAMEBUFFER_LAYERS, &res);
+	    printf("Max Framebuffer Layers: %d\n", res);
+	}
+	/*from:https://www.lighthouse3d.com/tutorials/opengl_framebuffer_objects/
+	void printFramebufferInfo(GLenum target, GLuint fbo) {
+
+	    int res, i = 0;
+	    GLint buffer;
+
+	    glBindFramebuffer(target,fbo);
+
+	    do {
+	        glGetIntegerv(GL_DRAW_BUFFER0+i, &buffer);
+
+	        if (buffer != GL_NONE) {
+
+	            printf("Shader Output Location %d - color attachment %d\n",
+	                        i, buffer - GL_COLOR_ATTACHMENT0);
+
+	            glGetFramebufferAttachmentParameteriv(target, buffer,
+	                        GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE, &res);
+	            printf("\tAttachment Type: %s\n",
+	                        res==GL_TEXTURE?"Texture":"Render Buffer");
+	            glGetFramebufferAttachmentParameteriv(target, buffer,
+	                        GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME, &res);
+	            printf("\tAttachment object name: %d\n",res);
+	        }
+	        ++i;
+
+	    } while (buffer != GL_NONE);
+	}*/
 };
 class GLSLShader{
 	GLuint shaderID;

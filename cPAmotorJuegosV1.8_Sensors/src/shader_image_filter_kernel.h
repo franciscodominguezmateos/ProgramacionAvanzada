@@ -42,11 +42,13 @@ void main(){
 class ShaderImageFilterKernel:public ShaderImageFilter{
 	Mat kernel;
 public:
-	ShaderImageFilterKernel(int w=640,int h=480,Mat m=Mat::ones(3,3,CV_32F)):
-			ShaderImageFilter(w,h),
+	ShaderImageFilterKernel(Texture* ptex=nullptr,Mat m=Mat::ones(3,3,CV_32F),int w=640,int h=480):
+			ShaderImageFilter(ptex,w,h),
 			kernel(m){
 		init();
 		setKernel(kernel);
+		Vec2 dm={640,480};
+		setDim(dm);
 	}
 	void setKernel(Mat &m){
 		spProg.start();

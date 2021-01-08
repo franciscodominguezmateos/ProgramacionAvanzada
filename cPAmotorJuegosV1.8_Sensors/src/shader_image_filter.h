@@ -67,20 +67,21 @@ protected:
 	GLSLFBO* pFbo;//Output 32FC4 fourth channel not used or not
 	Texture* pTex;//Input  32FC4 four channels same value or not
 public:
-	ShaderImageFilter(int w=640,int h=480,Texture* ptex=nullptr):pFbo(new GLSLFBO(w,h)),pTex(ptex){
+	ShaderImageFilter(Texture* ptex=nullptr,int w=640,int h=480):pFbo(new GLSLFBO(w,h)),pTex(ptex){
 		pVao=new GLSLVAO();
 		pVao->init();
 		pVao->createAttribute(0,vertices,3);
+		pFbo->init();
+		//init();
 		if(pTex==nullptr){
 			pTex=new Texture();
 			pTex->init();
 		}
-		pFbo->init();
-		init();
 	}
 	virtual void init(){
 		setFragmentShader(fragmentShaderTest);
 	}
+	inline Texture &getOutTex(){return pFbo->getColorTex();}
 	void setFragmentShader(const string &fs){
 		fragmentShader=fs;
 		spProg.compileFromStrings(vertexShader,fragmentShader);
@@ -96,9 +97,9 @@ public:
 	Mat filter(Mat m){
 		setImage(m);
 		render();
-		return getResult();
+		return downloadResult();
 	}
-	Mat getResult(){
+	Mat downloadResult(){
 		Mat r=pFbo->toOpenCV32FC4();
 		return r;
 	}

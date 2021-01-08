@@ -35,10 +35,12 @@ void main(){
 class ShaderReduceHalf:public ShaderImageFilter{
 	string optCode;
 public:
-	ShaderReduceHalf(int w=640,int h=480,string oc="vec4 opt(vec4 v00,vec4 v10,vec4 v01,vec4 v11){return (v00+v10+v01+v11)/4.0;}"):
-			ShaderImageFilter(w>>1,h>>1),
+	ShaderReduceHalf(Texture* ptex=nullptr,string oc="vec4 opt(vec4 v00,vec4 v10,vec4 v01,vec4 v11){return (v00+v10+v01+v11)/4.0;}",int w=640,int h=480):
+			ShaderImageFilter(ptex,w>>1,h>>1),
 			optCode(oc){
 			init();
+			Vec2 dm={640,480};
+			setDim(dm);
 	}
 	void init(){
 		fragmentShader=fragmentShaderReduceHalf;

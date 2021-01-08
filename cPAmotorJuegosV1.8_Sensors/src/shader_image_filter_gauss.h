@@ -38,18 +38,25 @@ void main(){
 			final_colour += c*factor;
 		}
 	}
-    out_color = vec4(final_colour/Z, 1.0);
+    if(dim.x<300){
+        out_color = vec4(1,0,0, 1.0);
+    }
+    else{
+        out_color = vec4(final_colour/Z, 1.0);
+    }
 }
 )glsl";
 class ShaderImageFilterGauss:public ShaderImageFilter{
 	float sigma;
 	int msize;
 public:
-	ShaderImageFilterGauss(int w=640,int h=480,float s=1.5,int ms=15):
-			ShaderImageFilter(w,h),
+	ShaderImageFilterGauss(Texture* ptex=nullptr,float s=1.5,int ms=15,int w=640,int h=480):
+			ShaderImageFilter(ptex,w,h),
 			sigma(s),
 			msize(ms){
 		init();
+		Vec2 dm={w,h};
+		setDim(dm);
 	}
 	float normpdf(const float x, const float sigma){
 		return 0.39894*exp(-0.5*x*x/(sigma*sigma))/sigma;
