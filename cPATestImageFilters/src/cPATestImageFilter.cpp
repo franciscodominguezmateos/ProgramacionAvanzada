@@ -16,6 +16,8 @@
 #include "shader_image_filter_sobel_x.h"
 #include "shader_image_filter_sobel_y.h"
 #include "shader_image_filter_bilateral.h"
+#include "shader_image_filter_gauss.h"
+#include "shader_image_filter_kernel.h"
 #include "depth_image.h"
 
 using namespace std;
@@ -97,6 +99,28 @@ public:
 		cout << "maxfbo="<<min<<","<<max<<endl;
 		//dimg/=max;
 		imshow("holaB",fboImg);
+
+		ShaderImageFilterGauss sifg;
+		fboImg=sifg.filter(di.getImgDepth());
+		minMaxLoc(fboImg, &min, &max);
+		cout << "maxfbo="<<min<<","<<max<<endl;
+		//dimg/=max;
+		imshow("holaG",fboImg);
+
+		ShaderImageFilterKernel sifk;
+		Mat k=(Mat_<float>(3,3)<<1,0,-1,
+				                 1,0,-1,
+								 1,0,-1);
+		k=k*1.0/18.0;
+		//k=(Mat_<float>(3,3)<<0,0,0,
+		//		               0,1,0,
+		//					   0,0,0);
+		sifk.setKernel(k);
+		fboImg=sifk.filter(di.getImgDepth());
+		minMaxLoc(fboImg, &min, &max);
+		cout << "maxfbo="<<min<<","<<max<<endl;
+		//dimg/=max;
+		imshow("holaK",fboImg);
 
 		ax=new Axis();
 		stage.add(ax);
