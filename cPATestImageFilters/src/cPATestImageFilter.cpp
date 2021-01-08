@@ -92,6 +92,14 @@ public:
 		//dimg/=max;
 		imshow("ShaderImageFilter",fboImg);
 
+		ShaderImageFilterGauss sifg(&sif.getOutTex());
+		//fboImg=sifg.filter(di.getImgDepth());
+		sifg.render();
+		fboImg=sifg.downloadResult();
+		minMaxLoc(fboImg, &min, &max);
+		cout << "maxfsifg="<<min<<","<<max<<endl;
+		//dimg/=max;
+		imshow("holaG",fboImg);
 
 		ShaderImageFilterBilateral sifb;
 		fboImg=sifb.filter(di.getImgDepth());
@@ -99,13 +107,6 @@ public:
 		cout << "maxfbo="<<min<<","<<max<<endl;
 		//dimg/=max;
 		imshow("holaB",fboImg);
-
-		ShaderImageFilterGauss sifg;
-		fboImg=sifg.filter(di.getImgDepth());
-		minMaxLoc(fboImg, &min, &max);
-		cout << "maxfbo="<<min<<","<<max<<endl;
-		//dimg/=max;
-		imshow("holaG",fboImg);
 
 		ShaderImageFilterKernel sifk;
 		Mat k=(Mat_<float>(3,3)<<1,0,-1,
