@@ -116,6 +116,7 @@ public:
 		if(contains(stCode,"iFrameRate")) {sout<<"uniform float iFrameRate;"<<endl;declared["iFrameRate"] =true;}
 		if(contains(stCode,"iMouse"))     {sout<<"uniform vec4 iMouse;"     <<endl;declared["iMouse"]     =true;}
 		if(contains(stCode,"iResolution")){sout<<"uniform vec3 iResolution;"<<endl;declared["iResolution"]=true;}
+		if(contains(stCode,"iChannel0"))  {sout<<"uniform sampler2D iChannel0;"<<endl;declared["iResolution"]=true;}
 		string sr=sout.str();
 		cout <<"Uniforms infered from shader toy code:"<<endl<<sr<<endl;
 		return sr;
@@ -128,11 +129,13 @@ public:
 	Texture* getiChannel0(){return iChannel0;}
 	void setImage(Mat img){
 		iChannel0->setImage(img);
-		//Vec2 dim={float(img.cols),float(img.rows)};
-		Vec3 dim={(float)img.cols,(float)img.rows,1.0};
-		setiResolution(dim);
+		setiResolution(img.cols,img.rows);
 	}
 	void setiResolution(Vec3 d){iResolution=d;spProg.start();spProg["iResolution"]=d;spProg.stop();}
+	void setiResolution(int w,int h,float d=1){
+		Vec3 dim={float(w),float(h),d};
+		setiResolution(dim);
+	}
 	void setDynamicParams(){
 		//this function is called in render() then not needed to start and stop
 		//spProg.start();
@@ -162,7 +165,7 @@ public:
 		//cout << "iTimeDelta="<< iTimeDelta<<"iFrameRate="<<iFrameRate<<endl;
 	}
 };
-vector<string> ShaderToy::parameters={"iTime","iTimeDelta","iFrame","iFrameRate","iMouse","iResolution"};
+vector<string> ShaderToy::parameters={"iTime","iTimeDelta","iFrame","iFrameRate","iMouse","iResolution","iChannel0"};
 //This vertex does nothing
 string ShaderToy::vertexShader=R"glsl(
 #version 330 core
