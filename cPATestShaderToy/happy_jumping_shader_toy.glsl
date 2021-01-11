@@ -174,7 +174,7 @@ vec4 map( in vec3 pos, float atime )
         
     // eye
     {
-    float blink = pow(0.5+0.5*sin(2.1*iTime),20.0);
+    float blink = pow(0.5+0.005*sin(2.1*iTime),20.0);
     float eyeball = sdSphere(hq-vec3(0.08,0.27,0.06),0.065+0.02*blink);
     res.x = smin( res.x, eyeball, 0.03 );
     
@@ -203,7 +203,7 @@ vec4 map( in vec3 pos, float atime )
     
     // bubbles
     {
-    vec3 vp = vec3( mod(abs(pos.x),3.0)-1.5,pos.y,mod(pos.z+1.5,3.0)-1.5);
+    vec3 vp = vec3( mod(abs(pos.x),3.0)-1.5, pos.y, mod(pos.z+1.5,3.0)-1.5 );
     vec2 id = vec2( floor(pos.x/3.0), floor((pos.z+1.5)/3.0) );
     float fid = id.x*11.1 + id.y*31.7;
     float fy = fract(fid*1.312+atime*0.1);
@@ -216,7 +216,7 @@ vec4 map( in vec3 pos, float atime )
     d2 -= 0.03*smoothstep(-1.0,1.0,sin(18.0*pos.x)+sin(18.0*pos.y)+sin(18.0*pos.z));
     d2 *= 0.6;
     d2 = min(d2,2.0);
-    d = smin( d, d2, 0.32 );
+    //d = smin( d, d2, 0.32 );
     if( d<res.x ) { res = vec4(d,1.0,0.0,1.0); hsha=sqrt(siz); }
     }
 
@@ -362,7 +362,7 @@ vec3 render( in vec3 ro, in vec3 rd, float time )
         }
         else if( res.y>3.5 ) // eyeball
         { 
-            col = vec3(0.0);
+            col = vec3(0.0,0.05,0.0);
         } 
         else if( res.y>2.5 ) // iris
         { 
@@ -464,7 +464,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
         // camera bounce
         float t4 = abs(fract(time*0.5)-0.5)/0.5;
         float bou = -1.0 + 2.0*t4;
-        ro += 0.06*sin(time*12.0+vec3(0.0,2.0,4.0))*smoothstep( 0.85, 1.0, abs(bou) );
+        //ro += 0.06*sin(time*12.0+vec3(0.0,2.0,4.0))*smoothstep( 0.85, 1.0, abs(bou) );
 
         // camera-to-world rotation
         mat3 ca = setCamera( ro, ta, 0.0 );
