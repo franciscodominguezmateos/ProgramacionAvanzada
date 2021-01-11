@@ -51,7 +51,7 @@ public:
 		View*   &view =scene->getView();
 		Camera* &cam  =scene->getCamera();
 		Mat cameraViewMat=cam->getMat();
-		Mat projection=view->getProyeccion()->getMat();
+		Mat projection=view->getProjection()->getMat();
 		for(GLSLShaderProgram* &pSp:shaders){
 			GLSLShaderProgram &sp=*pSp;
 			sp.start();

@@ -22,7 +22,7 @@ public:
 	double zFar;
 	double fov;
 public:
-	ProyeccionPerspectiva(double fov=30.0,double width=640,double height=480,double zNear=0.5,double zFar=2e12):
+	ProyeccionPerspectiva(double fov=130.0,double width=640,double height=480,double zNear=0.5,double zFar=2e12):
 		campoDeVision(fov),
 		width(width),height(height),
 		aspectRatio(width/height),
@@ -43,31 +43,35 @@ public:
 	inline double getHeight() const {return height;	}
 	inline void setHeight(double height) { aspectRatio=width/height; this->height = height;}
 	inline double getWidth() const { return width;	}
-	inline void setWidth(double width) { aspectRatio=width/height; this->width = width;}
+	inline void setWidth (double width)  { aspectRatio=width/height; this->width  = width;}
 	virtual void reshape(double width,double height){setWidth(width),setHeight(height);}
 };
 class ProyeccionCamara: public ProyeccionPerspectiva{
 	/* This class mimic a real camera from its intrinsic matrix */
 	/* Intrinsic matrix */
-	Mat camMtx;
+	Mat K;
 	/* Projection matrix */
 	double projectionMat[16];
 public:
-	ProyeccionCamara(Mat &K):camMtx(K){}
+	ProyeccionCamara(Mat &K):K(K){}
 	void reshape(double width,double height){
 		ProyeccionPerspectiva::reshape(width,height);
-		projectionMat[0]  = 2*camMtx.at<double>(0,0)/width;
+		double &fx=K.at<double>(0,0);
+		double &fy=K.at<double>(1,1);
+		double &cx=K.at<double>(0,2);
+		double &cy=K.at<double>(1,2);
+		projectionMat[0]  = 2 * fx/width;
 		projectionMat[1]  = 0;
 		projectionMat[2]  = 0;
 		projectionMat[3]  = 0;
 
 		projectionMat[4]  = 0;
-		projectionMat[5]  = 2*camMtx.at<double>(1,1)/height;
+		projectionMat[5]  = 2 * fy/height;
 		projectionMat[6]  = 0;
 		projectionMat[7]  = 0;
 
-		projectionMat[8]  =  1 -  2*camMtx.at<double>(0,2)     /width;
-		projectionMat[9]  = -1 + (2*camMtx.at<double>(1,2) + 2)/height;
+		projectionMat[8]  =  1 -  2 * cx     /width;
+		projectionMat[9]  = -1 + (2 * cy + 2)/height;
 		projectionMat[10] = (zNear + zFar)/(zNear - zFar);
 		projectionMat[11] = -1;
 
@@ -76,6 +80,7 @@ public:
 		projectionMat[14] = 2*zNear*zFar/(zNear - zFar);
 		projectionMat[15] = 0;
 	}
+	Mat getMat(){return K;}
 	/* render method build OpenGL projection matrix from OpenCV intrinsic camera matrix */
 	void render(){
 		 glMatrixMode(GL_PROJECTION);

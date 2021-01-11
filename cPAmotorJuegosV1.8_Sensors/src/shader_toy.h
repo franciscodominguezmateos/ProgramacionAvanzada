@@ -126,6 +126,7 @@ public:
 		string fragmentShader=fragmentShaderBaseBegin+inferUniformDeclarations(fs)+fs+fragmentShaderBaseEnd;
 		spProg.compileFromStrings(vertexShader,fragmentShader);
 	}
+	GLSLShaderProgram &getShaderProgram(){return spProg;}
 	Texture* getiChannel0(){return iChannel0;}
 	void setImage(Mat img){
 		iChannel0->setImage(img);

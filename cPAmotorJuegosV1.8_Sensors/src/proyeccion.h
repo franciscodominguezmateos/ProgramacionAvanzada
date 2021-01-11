@@ -38,7 +38,7 @@ vector<GLfloat> getPerspectiveGLMatrix(float fovY, float aspect, float front, fl
 {
     float tangent = tanf(fovY/2 * DEG2RAD); // tangent of half fovY
     float height = front * tangent;         // half height of near plane
-    float width = height * aspect;          // half width of near plane
+    float width  = height * aspect;          // half width of near plane
 
     // params: left, right, bottom, top, near, far
     return setFrustum(-width, width, -height, height, front, back);
@@ -63,4 +63,5 @@ public:
 	Proyeccion(){}
 	virtual ~Proyeccion(){}
 	virtual void render()=0;
+	virtual Mat getMat()=0;
 };

@@ -29,13 +29,13 @@ public:
 			this->p=new ProyeccionPerspectiva(60);
 	}
 	inline void setProyeccion(ProyeccionPerspectiva *py){p=py;}
-	inline ProyeccionPerspectiva* getProyeccion(){return p;}
+	inline ProyeccionPerspectiva* getProjection(){return p;}
 	inline void reshape(int pwindowWidth,int pwindowHeight){
 		windowWidth =pwindowWidth;
 		windowHeight=pwindowHeight;
-		px    =windowWidth*x;
+		px    =windowWidth *x;
 		py    =windowHeight*y;
-		width =windowWidth*w;
+		width =windowWidth *w;
 		height=windowHeight*h;
 		p->reshape(width,height);
 	}
