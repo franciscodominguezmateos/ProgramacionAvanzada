@@ -25,6 +25,10 @@ class GameEngine {
 	static Game* g;
 public:
 	static void setGame(Game* gm){g=gm;}
+	static void setWindowSize(double w,double h){setWindowSize(Vector3D(w,h));}
+	static void setWindowSize(Vector3D v){windowSize=v;}
+	static void setWindowPosition(double x,double y){setWindowSize(Vector3D(x,y));}
+	static void setWindowPosition(Vector3D v){windowPosition=v;}
 	// Callback glut functions
 	static void cbDisplay()                                      {if(g!=nullptr) g->onDisplay();}
 	static void cbIdle()                                         {if(g!=nullptr) g->onIdle();}
@@ -37,8 +41,8 @@ public:
 	    alutInit (&argc, argv);
 		glutInit(&argc,argv);
 		glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
-		glutInitWindowSize(640*2,480);
-		glutInitWindowPosition(300,300);
+		glutInitWindowSize(windowSize.getX(),windowSize.getY());
+		glutInitWindowPosition(windowPosition.getX(),windowPosition.getY());
 		if(g==nullptr)
 			glutCreateWindow("No game object set :-P");
 		else
@@ -76,3 +80,5 @@ public:
 };
 Game* GameEngine::g=nullptr;
 bool GameEngine::fullScreen=false;
+Vector3D GameEngine::windowSize(640,480);
+Vector3D GameEngine::windowPosition(300,300);

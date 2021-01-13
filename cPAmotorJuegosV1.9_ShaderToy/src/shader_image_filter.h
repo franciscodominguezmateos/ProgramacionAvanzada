@@ -95,11 +95,11 @@ public:
 	}
 	void workOutDim(Texture* ptex,int w,int h){
 		if(ptex==nullptr){
-			Vec2 dm={w,h};
+			Vec2 dm={float(w),float(h)};
 			setDim(dm);
 		}
 		else{
-			Vec2 dm={ptex->getWidth(),ptex->getHeight()};
+			Vec2 dm={float(ptex->getWidth()),float(ptex->getHeight())};
 			setDim(dm);
 		}
 	}

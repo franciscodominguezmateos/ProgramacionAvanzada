@@ -11,7 +11,6 @@
 #include "cubo_elastico.h"
 #include "fondo_textura.h"
 #include "luz.h"
-#include "proyeccion_perspectiva.h"
 #include "pose_estimation_chessboard.h"
 #include "material.h"
 #include "modelo_material.h"
@@ -33,6 +32,7 @@
 #include "arrow.h"
 #include "axis.h"
 #include "cube.h"
+#include "projection_camera.h"
 
 using namespace cv;
 
@@ -71,10 +71,10 @@ Mat K=(Mat_<double>(3,3) <<
 
 Mat dist=Mat::zeros(4,1,cv::DataType<double>::type); // Assuming no lens distortion
 CameraAR *camAR;
-ProyeccionCamara pCam(K);
+ProjectionCamera pCam(K);
 PoseEstimationChessBoard peChessBoard(K,dist);
 
-ProyeccionPerspectiva proyeccion;
+ProjectionPerspective proyeccion;
 vector<View> vistas={{0.0,0.0,1,1,&proyeccion}};
 vector<Camera> camaras(vistas.size());
 
