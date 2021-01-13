@@ -13,49 +13,17 @@
 #include "texture.h"
 #include "solid.h"
 const string shaderToyCode=R"glsl(
-// Created by inigo quilez - iq/2013
+// Created by inigo quilez - iq/2013 https://www.shadertoy.com/view/MsfGzM
 // License Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
-
-void mainImage( out vec4 fragColor, in vec2 fragCoord )
-{
-	vec2 p = (2.0*fragCoord-iResolution.xy)/min(iResolution.y,iResolution.x);
-	
-    // background color
-    vec3 bcol = vec3(1.0,0.8,0.7-0.07*p.y)*(1.0-0.25*length(p));
-
-    // animate
-    float tt = mod(iTime ,1.5)/1.5;
-    float ss = pow(tt,.2)*0.5 + 0.5;
-    ss = 1.0 + ss*0.5*sin(tt*6.2831*3.0 + p.y*0.5)*exp(-tt*4.0);
-    p *= vec2(0.5,1.5) + ss*vec2(0.5,-0.5);
-
-    // shape
-#if 0
-    p *= 0.8;
-    p.y = -0.1 - p.y*1.2 + abs(p.x)*(1.0-abs(p.x));
-    float r = length(p);
-	float d = 0.5;
-#else
-	p.y -= 0.25;
-    float a = atan(p.x,p.y)/3.141593;
-    float r = length(p);
-    float h = abs(a);
-    float d = (13.0*h - 22.0*h*h + 10.0*h*h*h)/(6.0-5.0*h);
-#endif
-    
-	// color
-	float s = 0.75 + 0.75*p.x;
-	s *= 1.0-0.4*r;
-	s = 0.3 + 0.7*s;
-	s *= 0.5+0.5*pow( 1.0-clamp(r/d, 0.0, 1.0 ), 0.1 );
-	vec3 hcol = vec3(1.0,0.5*r,0.3)*s;
-	
-    vec3 col = mix( bcol, hcol, smoothstep( -0.01, 0.01, d-r) );
-
-    fragColor = vec4(col,1.0);
-})glsl";
-
-
+// Two Tweets
+float f(vec3 p) { 
+	p.z+=iTime ;return length(.05*cos(9.*p.y*p.x)+cos(p)-.1*cos(9.*(p.z+.3*p.x-p.y)))-1.; 
+}
+void mainImage( out vec4 c, vec2 p ){
+    vec3 d=.5-vec3(p,1)/iResolution.x,o=d;for(int i=0;i<128;i++)o+=f(o)*d;
+    c = vec4(abs(f(o-d)*vec3(0,1,2)+f(o-.6)*vec3(2,1,0))*(1.-.1*o.z),1.0);
+}
+)glsl";
 class ShaderToy : public Solid{
 	static vector<GLfloat> vertices;
 	static string vertexShader;
@@ -170,24 +138,18 @@ vector<string> ShaderToy::parameters={"iTime","iTimeDelta","iFrame","iFrameRate"
 //This vertex does nothing
 string ShaderToy::vertexShader=R"glsl(
 #version 330 core
-
 in vec3 in_vertex;
 //Must have same name that in fragmentShader
 out vec3 pixel;
-
 void main(){
     pixel=in_vertex/2+0.5;
     gl_Position=vec4(in_vertex,1.0);
 }
 )glsl";
-
 string ShaderToy::fragmentShaderBaseBegin=R"glsl(
 #version 330 core
-
 in vec3 pixel;
-
 out vec4 out_color;
-
 )glsl";
 string ShaderToy::fragmentShaderUniformsDec=R"glsl(
 uniform float iTime;
@@ -197,7 +159,6 @@ uniform float iFrameRate;
 uniform vec4 iMouse;
 uniform vec3 iResolution;
 )glsl";
-
 string ShaderToy::fragmentShaderBaseEnd=R"glsl(
 void main(){ mainImage(out_color,gl_FragCoord.xy);}
 )glsl";
