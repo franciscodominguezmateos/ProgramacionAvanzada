@@ -13,6 +13,7 @@
 #include "axis.h"
 #include "rectangle.h"
 #include "shader_toy.h"
+#include "pose_util.h"
 
 using namespace std;
 
@@ -61,6 +62,7 @@ public:
 		//st->initFromFileName("shader_toy_sample.stc");
 		st->initFromFileName("raymarching_for_dummies_shader_toy.glsl");
 		//st->initFromFileName("distance_pn_continous_shader_toy.glsl");
+		stage.add(st);
 
 		ax=new Axis();
 		stage.add(ax);
@@ -78,7 +80,17 @@ public:
 		r->setNU(10);
 		r->setNV(10);
 	    stage.add(r);
-		stage.add(st);
+		//we need to transpose the matrix since OpenGL
+		Mat p=getView()->getProjection()->getMat().t();
+		cout << "p="<<endl;
+		printMat<float>(p);
+		//Z values in projective mode is positive and OpenGL is negative
+		Mat v=(Mat_<float>(4,1)<<0,0,-0.5,1);
+		Mat zn=p*v;
+		cout<<"zn="<<zn<<endl<<zn.at<float>(2,0)/zn.at<float>(3,0)<<endl;
+		v=(Mat_<float>(4,1)<<0,0,-2e4,1);
+		Mat zf=p*v;
+		cout<<"zf="<<zf<<endl<<zf.at<float>(2,0)/zf.at<float>(3,0)<<endl;
 	}
 	void update(double dt){
 		if (waitKey(1) == 27) exit(0);
@@ -86,14 +98,18 @@ public:
 			GLSLShaderProgram &sp=st->getShaderProgram();
 			try{
 				sp.start();
-				Mat T=getCamera()->getMat().inv();
-				sp["camera"]=T;
+				Mat camera=getCamera()->getMat();
+				//Pose of camera or Transformation from camera 2 world
+				sp["camera"   ]=camera.inv();
+				//Camera matrix  or Transformation from world 2 camera
+				sp["cameraInv"]=camera;
 				Mat p=getView()->getProjection()->getMat();
 				sp["projectionInv"]=p.inv();
 				sp["projection"   ]=p;
 				sp.stop();
 			}
 			catch(runtime_error &re){
+				//do not pay attention to uniform errors
 				//cout << re.what()<<endl;
 			}
 		}
