@@ -56,11 +56,11 @@ public:
 
 		st=new ShaderToy();
 		//st->init();
+		//st->initFromFileName("heart_beats_shader_toy.glsl");
 		//st->initFromFileName("happy_jumping_shader_toy.glsl");
 		//st->initFromFileName("shader_toy_sample.stc");
 		st->initFromFileName("raymarching_for_dummies_shader_toy.glsl");
 		//st->initFromFileName("distance_pn_continous_shader_toy.glsl");
-		stage.add(st);
 
 		ax=new Axis();
 		stage.add(ax);
@@ -72,12 +72,13 @@ public:
 		//Mat imgGround=imread("brick_pavement_0077_01_preview.jpg");
 		Mat imgGround=imread("brown_brick_texture_map.jpg");
 		texGround.setImage(imgGround);
-		float l=20;
-		Rectangle* r=new Rectangle(Vector3D(-l,0,-l),Vector3D(-l,0,l),Vector3D(l,0,l),Vector3D(l,0,-l));
+		float l=10;
+		Rectangle* r=new Rectangle(Vector3D(-l,1.1,-l),Vector3D(-l,1.1,l),Vector3D(l,0,l),Vector3D(l,0,-l));
 		r->setTextura(texGround);
 		r->setNU(10);
 		r->setNV(10);
-	    //stage.add(r);
+	    stage.add(r);
+		stage.add(st);
 	}
 	void update(double dt){
 		if (waitKey(1) == 27) exit(0);
@@ -87,8 +88,9 @@ public:
 				sp.start();
 				Mat T=getCamera()->getMat().inv();
 				sp["camera"]=T;
-				Mat p=getView()->getProjection()->getMat().inv();
-				sp["projectionInv"]=p;
+				Mat p=getView()->getProjection()->getMat();
+				sp["projectionInv"]=p.inv();
+				sp["projection"   ]=p;
 				sp.stop();
 			}
 			catch(runtime_error &re){

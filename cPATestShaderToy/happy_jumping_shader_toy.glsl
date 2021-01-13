@@ -216,7 +216,7 @@ vec4 map( in vec3 pos, float atime )
     d2 -= 0.03*smoothstep(-1.0,1.0,sin(18.0*pos.x)+sin(18.0*pos.y)+sin(18.0*pos.z));
     d2 *= 0.6;
     d2 = min(d2,2.0);
-    //d = smin( d, d2, 0.32 );
+    d = smin( d, d2, 0.32 );
     if( d<res.x ) { res = vec4(d,1.0,0.0,1.0); hsha=sqrt(siz); }
     }
 
