@@ -118,7 +118,7 @@ public:
 	inline float getTimeFromStartInSeconds(){return getDurationInSeconds<float>(sTime);}
 	void render(){
 		iTime=getTimeFromStartInSeconds();
-		glDepthMask(GL_FALSE);
+		//glDepthMask(GL_FALSE);
 		spProg.start();
 		setDynamicParams();
 		iChannel0->bind();
@@ -127,7 +127,7 @@ public:
 		pstVao->unbindAll();
 		iChannel0->unbind();
 		spProg.stop();
-		glDepthMask(GL_TRUE);
+		//glDepthMask(GL_TRUE);
 		iTimeDelta=iTime-getTimeFromStartInSeconds();
 		iFrame+=1;
 		iFrameRate=1.0/iTimeDelta;
