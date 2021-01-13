@@ -8,7 +8,7 @@
 #pragma once
 #include "camera.h"
 /*
- * This camera set OpemGL model view Matrix
+ * This camera set OpenGL model view Matrix
  * from a OpenCV rotation vector and
  * from a OpenCV translation vector
  */
