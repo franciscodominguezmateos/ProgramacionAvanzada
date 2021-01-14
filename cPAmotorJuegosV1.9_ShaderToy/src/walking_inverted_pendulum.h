@@ -14,7 +14,7 @@ class WalkingInvertedPendulum: public Pendulo {
 public:
 	WalkingInvertedPendulum(Solid *pt1,Solid *pt2):Pendulo(pt1,pt2){getParticula(0)->setFija(true);}
 	void update(double dt){
-		Pendulo::update(dt);
+		Pendulo::update(dt/10.0);
 		Solid* pt1=getParticula(0);
 		Solid* pt2=getParticula(1);
 		 // Walk (inverted pendulum)

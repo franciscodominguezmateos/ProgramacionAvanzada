@@ -4,20 +4,15 @@
  *  Created on: 3 Nov 2016
  *      Author: francisco
  */
-
-#ifndef COMPOSITE_H_
-#define COMPOSITE_H_
-#include <iostream>
+#pragma once
 #include <vector>
-#include <GL/glut.h>
-
 #include "solid.h"
-#include "vector3d.h"
 
-using namespace std;
+class Composite;
+using CompositePtr=Composite*;
 
 class Composite:public Solid {
-	vector<Solid*> solids;
+	vector<SolidPtr> solids;
 public:
 	Composite(){}
 	Composite(const Composite &c){
@@ -40,7 +35,7 @@ public:
 		 }
 		 solids.clear();//no es necesario se llama en el destructor de vector
 	}
-	Composite *clone(){
+	CompositePtr clone(){
 		return new Composite(*this);
 	}
 	void render(){
@@ -53,10 +48,8 @@ public:
 	}
 	template<class T=Solid>
 	vector<T*> getSolids(){return solids;}
-	Solid* &getSolid(int i){return solids[i];}
-	Solid* &operator[](int i){return solids[i];}
+	SolidPtr &getSolid(int i){return solids[i];}
+	SolidPtr &operator[](int i){return solids[i];}
 	void add(Solid *s){solids.push_back(s);}
 	int size(){return solids.size();}
 };
-
-#endif /* COMPOSITE_H_ */

@@ -127,6 +127,7 @@ public:
 			p->update(dt);
 	}
 	inline void update(double dt){
+		dt/=10.0;
 		acumulaFuerzasElasticas();
 		updateParticles(dt);
 	}

@@ -21,16 +21,18 @@
 using namespace std;
 using namespace cv;
 
+class Texture;
+using TexturePtr=Texture*;
+
 class Texture {
 	GLuint idTexture;
 	int width,height;
 	Mat img;
 public:
 	Texture(int w=0,int h=0):idTexture(0),width(w),height(h){}
-	virtual ~Texture(){glDeleteTextures(1,&idTexture);}
-	bool isReady(){
-		return idTexture!=0;//&& !img.empty();
-	}
+	Texture(Mat img):idTexture(0),width(img.cols),height(img.rows),img(img){}
+	Texture(string fileName):Texture(imread(fileName)){}
+	virtual ~Texture(){}//glDeleteTextures(1,&idTexture);}
 	void init(){
 		glGenTextures(1,&idTexture);
 		glBindTexture(GL_TEXTURE_2D, idTexture);
@@ -38,6 +40,7 @@ public:
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		if(!img.empty()) setImage(img);
 	}
 	Mat getImage(){return img;}
 	inline void setSize(int w,int h){width=w;height=h;}
@@ -54,6 +57,9 @@ public:
 		setSize(i.cols,i.rows);
 		img=i;
 		upload();
+	}
+	bool isReady(){
+		return idTexture!=0;//&& !img.empty();
 	}
 	void bind(){
 		if(!isReady())

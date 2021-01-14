@@ -6,6 +6,8 @@
  */
 #pragma once
 #include "game_engine.h"
+#include "scene.h"
+#include "sensors.h"
 #include "sky_box.h"
 #include <AL/alut.h>
 
@@ -14,7 +16,7 @@ using namespace std;
 
 class Game{
 	string title;
-	vector<Scene*> scenes;
+	vector<ScenePtr> scenes;
 	vector<GLSLShaderProgram*> shaders;
 	SensorEventProcessor seProcessor;
 	SocketMJPEGServer  smserv;
@@ -33,6 +35,8 @@ public:
 	double getTime(){return t;}
 	double getDTime(){return dt;}
 	void   setDTime(double d){dt=d;}
+	vector<ScenePtr> &getScenes(){return scenes;}
+	ScenePtr &getScene(int i){return scenes[i];}
 	void addShader(GLSLShaderProgram* sp){shaders.push_back(sp);}
 	void addScene(Scene* &scene){scenes.push_back(scene);}
 	void addScene(View* v,Camera* cam,Stage* s){

@@ -9,17 +9,18 @@
 #ifndef STAGE_H_
 #define STAGE_H_
 #include <vector>
-#include "vector3d.h"
 #include "luz.h"
 #include "solid.h"
 using namespace std;
+class Stage;
+using StagePtr=Stage*;
 
 class Stage {
-	vector<Solid*> solidos;
+	vector<SolidPtr> solidos;
 public:
 	Stage(){}
 	Stage(const Stage &e){
-		for(Solid *s:e.solidos){
+		for(SolidPtr s:e.solidos){
 			solidos.push_back(s->clone());
 		}
 	}
@@ -44,14 +45,14 @@ public:
 			s->update(dt);
 		}
 	}
-	vector<Solid*> getSolidos(){return solidos;}
-	Solid* getLastSolido(){int last=solidos.size()-1;return solidos[last];}
-	void setLastSolido(Solid *s){int last=solidos.size()-1;solidos[last]=s;}
-	void add(Solid *s){solidos.push_back(s);}
+	vector<SolidPtr> getSolidos(){return solidos;}
+	SolidPtr getLastSolido(){int last=solidos.size()-1;return solidos[last];}
+	void setLastSolido(SolidPtr s){int last=solidos.size()-1;solidos[last]=s;}
+	void add(SolidPtr s){solidos.push_back(s);}
 	friend std::ostream &operator << (std::ostream &os, const Stage &v);
 };
 inline std::ostream &operator<<(std::ostream &os, const Stage &e){
-	for(Solid *s:e.solidos){
+	for(SolidPtr s:e.solidos){
 		os << *s <<endl;
 	}
     return os;

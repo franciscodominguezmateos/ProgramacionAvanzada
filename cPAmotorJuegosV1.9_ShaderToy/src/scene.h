@@ -17,24 +17,26 @@
 #include "view.h"
 #include "camera.h"
 #include "stage.h"
+class Scene;
+using ScenePtr=Scene*;
 
 class Scene {
-	View*   view;
-	Camera* camera;
-	Stage*  stage;
+	ViewPtr   view;
+	CameraPtr camera;
+	StagePtr  stage;
 public:
-	Scene(View* view,Camera* camera,Stage* stage):view(view),camera(camera),stage(stage){}
+	Scene(ViewPtr view,CameraPtr camera,StagePtr stage):view(view),camera(camera),stage(stage){}
 	virtual ~Scene(){
 		delete view;
 		delete camera;
 		delete stage;
 	}
-	Camera* &getCamera() {return camera;}
-	void     setCamera(Camera* camera) {this->camera = camera;}
-	Stage* &getStage() {return stage;}
-	void    setStage(Stage* stage) {this->stage = stage;}
-	View* &getView() {return view;}
-	void   getView(View* view) {this->view = view;}
+	CameraPtr &getCamera() {return camera;}
+	void       setCamera(CameraPtr camera) {this->camera = camera;}
+	StagePtr  &getStage()  {return stage;}
+	void       setStage(StagePtr stage) {this->stage = stage;}
+	ViewPtr   &getView()   {return view;}
+	void       setView(ViewPtr view) {this->view = view;}
 	inline void render(){
 		view->render();
 	    glLoadIdentity();

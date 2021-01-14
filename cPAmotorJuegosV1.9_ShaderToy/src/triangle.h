@@ -38,7 +38,6 @@ public:
         v01=p1-p0;
         v12=p2-p1;
         v20=p0-p2;
-
 		// VERY IMPORTANT triangles points order is uncounterclock
 		Vector3D vn=v01.X(v12);
 		//Area of a triangle is half the length of the cross product
@@ -141,7 +140,7 @@ public:
 			//Draw normal
 	    	Vector3D vn=this->getNormal();
 	    	// triangle position is the center of the triangle
-	    	Vector3D center=getPos();
+	    	Vector3D center=getCenter();
 			glColor3f(1.0,0,0);
 			glLineWidth(2);
 			glBegin(GL_LINES);

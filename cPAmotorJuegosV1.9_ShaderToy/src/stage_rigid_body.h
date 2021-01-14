@@ -68,6 +68,7 @@ public:
 		}
 	}
 	void update(double dt){
+		dt=dt/100;
 		SolidRigidBody* dummy=new SolidRigidBody(1,1,1);
 		dummy->hazFija();
 		vector<Contact> contacts;

@@ -9,6 +9,8 @@
 #include "projection.h"
 
 using namespace cv;
+class ProjectionPerspective;
+using ProjectionPerspectivePtr=ProjectionPerspective*;
 
 class ProjectionPerspective: public Projection {
 public:

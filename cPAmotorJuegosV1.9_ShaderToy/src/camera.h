@@ -7,14 +7,15 @@
 
 #pragma once
 #include <cmath>
-#include <GL/glut.h>
 #include "opencv2/opencv.hpp"
 
 #include "solid.h"
-#include "vector3d.h"
 #include "util.h"
 
 using namespace cv;
+
+class Camera;
+using CameraPtr=Camera*;
 
 class Camera:public Solid {
 	Vector3D lookAtPos;

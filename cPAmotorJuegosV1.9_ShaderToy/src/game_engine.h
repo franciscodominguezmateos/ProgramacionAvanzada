@@ -11,8 +11,6 @@
 #include <string>
 
 #include "vector3d.h"
-#include "scene.h"
-#include "sensors.h"
 #include "game.h"
 
 using namespace cv;

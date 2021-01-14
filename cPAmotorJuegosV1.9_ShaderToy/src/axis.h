@@ -5,11 +5,11 @@
  *      Author: Francisco Dominguez
  */
 #pragma once
-#include <GL/glut.h>
-
 #include "solid.h"
-#include "vector3d.h"
 #include "arrow.h"
+
+class Axis;
+using AxisPtr=Axis*;
 
 class Axis: public Solid{
  float ax,ay,az;

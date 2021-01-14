@@ -7,30 +7,22 @@
  *  Default mouse and key events to cope with camera
  *  You can inherit and redefine init(), update() and event methods
  */
-
 #pragma once
 #include "game.h"
 
 class GameStandard: public Game,public SensorObserver {
-	View*   view;
-	Camera* camera;
-	Stage*  stage;
 	int mx,my;
 public:
-	GameStandard(string title):
-		Game(title),
-		view  (new View()),
-		camera(new Camera()),
-		stage (new Stage()),mx(0),my(0){
-		camera->setPos(Vector3D(0,0,10));
-		addScene(view,camera,stage);
+	GameStandard(string title):	Game(title),mx(0),my(0){
+		addScene(new View(),new Camera(),new Stage());
 		addSensorObserver(this);
+		getCamera()->setPos(Vector3D(0,0,10));
 	}
-	void add(Solid* s){stage->add(s);}
+	void add(SolidPtr s){getStage()->add(s);}
 	virtual void mouseMoved(int x, int y){
 	    if (mx>=0 && my>=0) {
-	    	Vector3D r=camera->getRot()+Vector3D(y-my,x-mx,0);
-	    	camera->setRot(r);
+	    	Vector3D r=getCamera()->getRot()+Vector3D(y-my,x-mx,0);
+	    	getCamera()->setRot(r);
 	    }
 	    mx = x;
 	    my = y;
@@ -45,61 +37,58 @@ public:
 	        my = -1;
 	    }
 	    if (button==3){
-	    	Vector3D pos=camera->getPos();
+	    	Vector3D pos=getCamera()->getPos();
 	    	pos=pos*0.9;
-	    	camera->setPos(pos);
+	    	getCamera()->setPos(pos);
 	    }
 	    if (button==4){
-	    	Vector3D pos=camera->getPos();
+	    	Vector3D pos=getCamera()->getPos();
 	    	pos=pos*1.1;
-	    	camera->setPos(pos);
+	    	getCamera()->setPos(pos);
 	    }
 	}
 	virtual void keyPressed(char key,int x,int y){
 		Vector3D v;
 		 switch(key){
 		 case 'p':
-			 v=camera->getLookAtPos()+Vector3D(0.01,0,0);
-			 camera->setLookAtPos(v);
+			 v=getCamera()->getLookAtPos()+Vector3D(0.01,0,0);
+			 getCamera()->setLookAtPos(v);
 			 break;
 		 case 'o':
-			 v=camera->getLookAtPos()+Vector3D(-0.01,0,0);
-			 camera->setLookAtPos(v);
+			 v=getCamera()->getLookAtPos()+Vector3D(-0.01,0,0);
+			 getCamera()->setLookAtPos(v);
 			 break;
 		 case 'q':
-			 v=camera->getLookAtPos()+Vector3D(0,0,-0.01);
-			 camera->setLookAtPos(v);
+			 v=getCamera()->getLookAtPos()+Vector3D(0,0,-0.01);
+			 getCamera()->setLookAtPos(v);
 			 break;
 		 case 'a':
-			 v=camera->getLookAtPos()+Vector3D(0,0,0.01);
-			 camera->setLookAtPos(v);
+			 v=getCamera()->getLookAtPos()+Vector3D(0,0,0.01);
+			 getCamera()->setLookAtPos(v);
 			 break;
 		 case 't':
-			 v=camera->getLookAtPos()+Vector3D(0, 0.01);
-			 camera->setLookAtPos(v);
+			 v=getCamera()->getLookAtPos()+Vector3D(0, 0.01);
+			 getCamera()->setLookAtPos(v);
 			 break;
 		 case 'g':
-			 v=camera->getLookAtPos()+Vector3D(0,-0.01);
-			 camera->setLookAtPos(v);
+			 v=getCamera()->getLookAtPos()+Vector3D(0,-0.01);
+			 getCamera()->setLookAtPos(v);
 			 break;
 		 }
 	}
 	virtual void onSensorEvent(SensorEventData &e){
-		if(e["device"]=="mouse"){
+		if(e["device"]=="mouse" && e["id"]=="0"){
 			if(e["event"]=="MouseMoved")
 				mouseMoved(e.getInt("x"),e.getInt("y"));
 			if(e["event"]=="MousePress")
 				mousePress(e.getInt("button"),e.getInt("state"),e.getInt("x"),e.getInt("y"));
 		}
-		if(e["device"]=="keyboard")
+		if(e["device"]=="keyboard" && e["id"]=="0")
 			keyPressed(e.getChar("key"),e.getInt("x"),e.getInt("y"));
 	}
 	virtual ~GameStandard(){}
-	Camera* &getCamera() {return camera;}
-	void setCamera(Camera *&camera) {	this->camera = camera;}
-	Stage*& getStage() {return stage;}
-	void setStage(Stage *&stage) {this->stage = stage;}
-	View*& getView() {return view;}
-	void setView(View *&view) {this->view = view;}
+	CameraPtr &getCamera() {return getScene(0)->getCamera();}
+	StagePtr  &getStage()  {return getScene(0)->getStage();}
+	ViewPtr   &getView()   {return getScene(0)->getView();}
 };
 

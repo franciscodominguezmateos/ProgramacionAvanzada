@@ -9,7 +9,8 @@
 #include <GL/glut.h>
 #include "projection_perspective.h"
 #include "projection.h"
-
+class View;
+using ViewPtr=View*;
 class View {
 	//relative values
 	double x,y,w,h;

@@ -5,8 +5,14 @@
  *      Author: francisco
  */
 #pragma once
+#include <iostream>
 #include <GL/glut.h>
 #include "vector3d.h"
+
+using namespace std;
+
+class Solid;
+using SolidPtr=Solid*;
 
 class Solid {
 	 Vector3D pos;

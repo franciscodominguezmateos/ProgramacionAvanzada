@@ -10,6 +10,8 @@
 
 #include "texture.h"
 #include "triangle.h"
+class Rectangle;
+using RectanglePtr=Rectangle*;
 
 class Rectangle: public Triangle {
 	Vector3D p3;
