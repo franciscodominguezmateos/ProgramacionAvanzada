@@ -115,6 +115,8 @@ public:
 	}
 	void render(){
 		glDepthMask(GL_FALSE);
+		//Blend mix A channel with RGB
+		glDisable(GL_BLEND);
 		pFbo->bind();
 		spProg.start();
 		pTex->bind();
@@ -124,6 +126,7 @@ public:
 		pTex->unbind();
 		spProg.stop();
 		pFbo->unbind();
+		glEnable(GL_BLEND);
 		glDepthMask(GL_TRUE);
 	}
 };

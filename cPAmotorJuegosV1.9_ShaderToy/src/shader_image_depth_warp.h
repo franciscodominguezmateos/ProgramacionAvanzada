@@ -19,6 +19,11 @@ in vec3 pixel;
 
 out vec4 out_color;
 
+//RGBD image
+// r= gray scale from img1
+// g= x gradient of img0 or 1? Not used
+// b= y gradient of img0 or 1? Not used
+// w= is depth divided by depthScale
 uniform sampler2D tex;
 //image dimensions
 uniform vec2 dim;
@@ -31,11 +36,14 @@ const float cx= 319.5/level;
 const float cy= 239.5/level;
 const float fx= 480.2/level;
 const float fy= 480.0/level;
+//this is done to normalize
+//since, for the moment, I can't ouput unclamped color values
+const float depthScale=10;
 
 float lum(vec4 c){return (c.r+c.g+c.b)/3.0;}
 vec2     tc(vec2 x=vec2(0,0)){return x/dim;}
 vec2     rc(vec2 x=vec2(0,0)){return tc(gl_FragCoord.xy+x);}
-float depth(vec2 x=vec2(0,0)){return texture(tex,rc(x)).w;}  //Relative
+float depth(vec2 x=vec2(0,0)){return texture(tex,rc(x)).w*depthScale;}  //Relative
 vec3  color(vec2 x=vec2(0,0)){return texture(tex,tc(x)).rgb;}//Absolute
 vec3  get3D(vec2 x=vec2(0,0)){
  vec2 p=gl_FragCoord.xy+x;
@@ -58,11 +66,12 @@ vec2 w(){
 }
 void main(){
  //if good depth point
- if(depth()>0.0){//0 values of depth are bad values
+ float d=depth();
+ if(d>0.0){//0 values of depth are bad values
   vec2 x=w();
   if(is2DPointInImage(x)){
    vec3 c=color(x);
-   out_color=vec4(c,1);
+   out_color=vec4(c,d/depthScale);
   }
   else{
    out_color=vec4(0,0,0,0);
@@ -76,9 +85,12 @@ void main(){
 class ShaderImageDepthWarp:public ShaderImageFilter{
 	DepthImage di0,di1;
 	Mat T;//pose
+	//vallue to normalize/divide in order to get shader values from 0 to 1
+	//this valuee is max range in metres
+	float depthScale;
 public:
 	ShaderImageDepthWarp(DepthImage &d0,DepthImage &d1,const Mat &t):
-		ShaderImageFilter(nullptr,d0.cols(),d0.rows()),di0(d0),di1(d1),T(t){
+		ShaderImageFilter(nullptr,d0.cols(),d0.rows()),di0(d0),di1(d1),T(t),depthScale(10){
 			init();
 			Mat i1D0=getImg1Depth0();
 			setImage(i1D0);
@@ -89,11 +101,12 @@ public:
 	void init(){
 		fragmentShader=fragmentShaderWarp;
 		string &fs=fragmentShader;
-		fs=replaceLinesIfContains("const float level" ,fs,"const float level=" +to_string(di0.getLevel())+";");
-		fs=replaceLinesIfContains("const float cx"    ,fs,"const float cx="    +to_string(di0.getCx())+";");
-		fs=replaceLinesIfContains("const float cy"    ,fs,"const float cy="    +to_string(di0.getCy())+";");
-		fs=replaceLinesIfContains("const float fx"    ,fs,"const float fx="    +to_string(di0.getFx())+";");
-		fs=replaceLinesIfContains("const float fy"    ,fs,"const float fy="    +to_string(di0.getFx())+";");
+		fs=replaceLinesIfContains("const float level"     ,fs,"const float level=" +to_string(di0.getLevel())+";");
+		fs=replaceLinesIfContains("const float cx"        ,fs,"const float cx="    +to_string(di0.getCx())+";");
+		fs=replaceLinesIfContains("const float cy"        ,fs,"const float cy="    +to_string(di0.getCy())+";");
+		fs=replaceLinesIfContains("const float fx"        ,fs,"const float fx="    +to_string(di0.getFx())+";");
+		fs=replaceLinesIfContains("const float fy"        ,fs,"const float fy="    +to_string(di0.getFx())+";");
+		fs=replaceLinesIfContains("const float depthScale",fs,"const float depthScale="    +to_string(depthScale)+";");
 		//cout <<"ShaderImageDepthWarp:"<<endl<<fs<<endl;
 		spProg.compileFromStrings(vertexShader,fs);
 	}
@@ -107,7 +120,7 @@ public:
 		vector<Mat> channels;
 		cv::split(cimg, channels);
 		*/
-		Mat dimg=di0.getDepth();
+		Mat dimg=di0.getDepth()/depthScale;
 		Mat img;
 		img.convertTo(img,CV_32FC4);
 		//vector<Mat> vd = { channels[0], channels[1],channels[2], dimg };
