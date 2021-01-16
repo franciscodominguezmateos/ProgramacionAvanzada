@@ -5,6 +5,9 @@
  *      Author: Francisco Dominguez
  */
 #pragma once
+class Uniform;
+using UniformPtr=Uniform*;
+
 class Uniform{
 	static const GLint NOT_FOUND=-1;
 	string name;

@@ -76,10 +76,10 @@ public:
 			 return;
 		 vel=vel+f/m*dt;
 		 pos=pos+vel*dt;
-		 if(abs(pos.getX())>50.0){
+		 if(abs(pos.getX())>5.0){
 			 vel.setX(vel.getX()*-0.99);
 		 }
-		 if(abs(pos.getZ())>50){
+		 if(abs(pos.getZ())>5.0){
 		 	 vel.setZ(vel.getZ()*-0.99);
 		 }
 		 if(pos.getY()<suelo){

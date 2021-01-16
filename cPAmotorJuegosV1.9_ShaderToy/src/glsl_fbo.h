@@ -7,6 +7,9 @@
 #pragma once
 //11/04/2020 To test this class
 //13/04/2020 Works like a charm
+class GLSLFBO;
+using GLSLFBOPtr=GLSLFBO*;
+
 class GLSLFBO{
 	int width,height;
 	GLuint id;

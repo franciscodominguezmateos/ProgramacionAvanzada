@@ -5,6 +5,9 @@
  *      Author: Francisco Dominguez
  */
 #pragma once
+class GLSLShader;
+using GLSLShaderPtr=GLSLShader*;
+
 class GLSLShader{
 	GLuint shaderID;
     //30/04/2020

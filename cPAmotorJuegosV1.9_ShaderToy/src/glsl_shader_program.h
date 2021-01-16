@@ -5,6 +5,9 @@
  *      Author: Francisco Dominguez
  */
 #pragma once
+class GLSLShaderProgram;
+using GLSLShaderProgramPtr=GLSLShaderProgram*;
+
 class GLSLShaderProgram {
 	GLuint programID;
 	GLuint vertexShaderID;

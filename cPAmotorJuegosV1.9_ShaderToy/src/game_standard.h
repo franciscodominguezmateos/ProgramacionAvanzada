@@ -51,27 +51,27 @@ public:
 		Vector3D v;
 		 switch(key){
 		 case 'p':
-			 v=getCamera()->getLookAtPos()+Vector3D(0.01,0,0);
+			 v=getCamera()->getLookAtPos()+Vector3D(0.05,0,0);
 			 getCamera()->setLookAtPos(v);
 			 break;
 		 case 'o':
-			 v=getCamera()->getLookAtPos()+Vector3D(-0.01,0,0);
+			 v=getCamera()->getLookAtPos()+Vector3D(-0.05,0,0);
 			 getCamera()->setLookAtPos(v);
 			 break;
 		 case 'q':
-			 v=getCamera()->getLookAtPos()+Vector3D(0,0,-0.01);
+			 v=getCamera()->getLookAtPos()+Vector3D(0,0,-0.05);
 			 getCamera()->setLookAtPos(v);
 			 break;
 		 case 'a':
-			 v=getCamera()->getLookAtPos()+Vector3D(0,0,0.01);
+			 v=getCamera()->getLookAtPos()+Vector3D(0,0,0.05);
 			 getCamera()->setLookAtPos(v);
 			 break;
 		 case 't':
-			 v=getCamera()->getLookAtPos()+Vector3D(0, 0.01);
+			 v=getCamera()->getLookAtPos()+Vector3D(0, 0.05);
 			 getCamera()->setLookAtPos(v);
 			 break;
 		 case 'g':
-			 v=getCamera()->getLookAtPos()+Vector3D(0,-0.01);
+			 v=getCamera()->getLookAtPos()+Vector3D(0,-0.05);
 			 getCamera()->setLookAtPos(v);
 			 break;
 		 }

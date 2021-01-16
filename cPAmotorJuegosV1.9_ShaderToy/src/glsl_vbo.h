@@ -5,6 +5,9 @@
  *      Author: Francisco Dominguez
  */
 #pragma once
+class GLSLVBO;
+using GLSLVBOPtr=GLSLVBO*;
+
 class GLSLVBO{
 	static const GLuint BYTES_PER_INT=4;
 	static const GLuint BYTES_PER_FLOAT=4;

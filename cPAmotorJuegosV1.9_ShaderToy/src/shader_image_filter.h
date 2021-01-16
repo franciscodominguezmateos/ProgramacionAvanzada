@@ -63,9 +63,9 @@ protected:
 	static string vertexShader;
 	string fragmentShader;
 	GLSLShaderProgram spProg;
-	GLSLVAO* pVao;
-	GLSLFBO* pFbo;//Output 32FC4 fourth channel not used or not
-	Texture* pTex;//Input  32FC4 four channels same value or not
+	GLSLVAOPtr pVao;
+	GLSLFBOPtr pFbo;//Output 32FC4 fourth channel not used or not
+	TexturePtr pTex;//Input  32FC4 four channels same value or not
 public:
 	ShaderImageFilter(Texture* ptex=nullptr,int w=640,int h=480):pFbo(new GLSLFBO(w,h)),pTex(ptex){
 		pVao=new GLSLVAO();
@@ -92,7 +92,9 @@ public:
 		fragmentShader=fs;
 		spProg.compileFromStrings(vertexShader,fragmentShader);
 	}
-	Texture* getTexture(){return pTex;}
+	TexturePtr getTexture(){return pTex;}
+	void setTexture(TexturePtr pt){pTex=pt;}
+	void setFrameBuffer(GLSLFBOPtr fb){pFbo=fb;}
 	void setImage(Mat img){
 		pTex->setImage(img);
 		//Vec2 dim={float(img.cols),float(img.rows)};
@@ -120,7 +122,6 @@ public:
 		return r;
 	}
 	void render(){
-		glDepthMask(GL_FALSE);
 		//Blend mix A channel with RGB
 		glDisable(GL_BLEND);
 		pFbo->bind();
@@ -133,7 +134,6 @@ public:
 		spProg.stop();
 		pFbo->unbind();
 		glEnable(GL_BLEND);
-		glDepthMask(GL_TRUE);
 	}
 };
 //This vertex does nothing
