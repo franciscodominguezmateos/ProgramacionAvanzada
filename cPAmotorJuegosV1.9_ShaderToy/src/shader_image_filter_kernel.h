@@ -42,14 +42,14 @@ void main(){
 class ShaderImageFilterKernel:public ShaderImageFilter{
 	Mat kernel;
 public:
-	ShaderImageFilterKernel(Texture* ptex=nullptr,Mat m=Mat::ones(3,3,CV_32F),int w=640,int h=480):
+	ShaderImageFilterKernel(Texture* ptex=nullptr,Mat m=laplacianKernel,int w=640,int h=480):
 			ShaderImageFilter(ptex,w,h),
 			kernel(m){
 		init();
 		setKernel(kernel);
 		workOutDim(ptex,w,h);
 	}
-	void setKernel(Mat &m){
+	void setKernel(const Mat &m){
 		spProg.start();
 		spProg["kernel"]=m;
 		spProg.stop();
@@ -58,6 +58,41 @@ public:
 		fragmentShader=fragmentShaderKernel;
 		spProg.compileFromStrings(vertexShader,fragmentShader);
 	}
+	const static Mat laplacianKernel;
+	const static Mat sobelXKernel;
+	const static Mat sobelYKernel;
+	const static Mat scharrXKernel;
+	const static Mat scharrYkernel;
+	const static Mat meanKernel;
+	const static Mat identityKernel;
 };
+const Mat ShaderImageFilterKernel::laplacianKernel=(Mat_<float>(3,3)<<
+		 0, 1,0,
+	     1,-4,1,
+		 0, 1,0);
+const Mat ShaderImageFilterKernel::sobelXKernel=(Mat_<float>(3,3)<<
+		-1,-2,-1,
+		 0, 0, 0,
+		 1, 2, 1);
+const Mat ShaderImageFilterKernel::sobelYKernel=(Mat_<float>(3,3)<<
+		-1,0,1,
+		-2,0,2,
+		-1,0,1);
+const Mat ShaderImageFilterKernel::scharrXKernel=(Mat_<float>(3,3)<<
+		-3,-10,-3,
+		 0,  0, 0,
+		 3, 10, 3);
+const Mat ShaderImageFilterKernel::scharrYkernel=(Mat_<float>(3,3)<<
+		 -3,0, 3,
+		-10,0,10,
+		 -3,0, 3);
+const Mat ShaderImageFilterKernel::meanKernel=(Mat_<float>(3,3)<<
+		 1,1,1,
+		 1,1,1,
+		 1,1,1)/9.0;
+const Mat ShaderImageFilterKernel::identityKernel=(Mat_<float>(3,3)<<
+		 0,0,0,
+		 0,1,0,
+		 0,0,0);
 
 

@@ -81,6 +81,12 @@ public:
 	virtual void init(){
 		setFragmentShader(fragmentShaderTest);
 	}
+	virtual void initFromFileName(const string &fileName){
+		ifstream ifs(fileName);
+		string stCode;
+		ifs>>stCode;
+		setFragmentShader(stCode);
+	}
 	inline Texture &getOutTex(){return pFbo->getColorTex();}
 	void setFragmentShader(const string &fs){
 		fragmentShader=fs;
@@ -133,11 +139,9 @@ public:
 //This vertex does nothing
 string ShaderImageFilter::vertexShader=R"glsl(
 #version 330 core
-
 in vec3 in_vertex;
 //Must have same name that in fragmentShader
 out vec3 pixel;
-
 void main(){
     pixel=in_vertex/2+0.5;
     gl_Position=vec4(in_vertex,1.0);

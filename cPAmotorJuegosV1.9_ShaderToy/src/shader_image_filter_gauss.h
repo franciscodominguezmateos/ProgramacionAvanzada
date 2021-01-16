@@ -38,12 +38,7 @@ void main(){
 			final_colour += c*factor;
 		}
 	}
-    if(dim.x<300){
-        out_color = vec4(1,0,0, 1.0);
-    }
-    else{
-        out_color = vec4(final_colour/Z, 1.0);
-    }
+    out_color = vec4(final_colour/Z, 1.0);
 }
 )glsl";
 class ShaderImageFilterGauss:public ShaderImageFilter{

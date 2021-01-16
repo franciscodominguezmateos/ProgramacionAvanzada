@@ -94,14 +94,14 @@ public:
 	string inferUniformDeclarations(const string &stCode){
 		ostringstream sout;
 		//stCode has to have a space after iTime to differenciate from iTimeDelta
-		if(contains(stCode,"iTime "))     {sout<<"uniform float iTime;"     <<endl;declared["iTime"]      =true;}
-		if(contains(stCode,"iTimeDelta")) {sout<<"uniform float iTimeDelta;"<<endl;declared["iTimeDelta"] =true;}
+		if(contains(stCode,"iTime "))     {sout<<"uniform float iTime;"        <<endl;declared["iTime"]      =true;}
+		if(contains(stCode,"iTimeDelta")) {sout<<"uniform float iTimeDelta;"   <<endl;declared["iTimeDelta"] =true;}
 		//stCode has to have a space after iFrame to differenciate from iFrameRate
-		if(contains(stCode,"iFrame "))    {sout<<"uniform int iFrame;"      <<endl;declared["iFrame"]     =true;}
-		if(contains(stCode,"iFrameRate")) {sout<<"uniform float iFrameRate;"<<endl;declared["iFrameRate"] =true;}
-		if(contains(stCode,"iMouse"))     {sout<<"uniform vec4 iMouse;"     <<endl;declared["iMouse"]     =true;}
-		if(contains(stCode,"iResolution")){sout<<"uniform vec3 iResolution;"<<endl;declared["iResolution"]=true;}
-		if(contains(stCode,"iChannel0"))  {sout<<"uniform sampler2D iChannel0;"<<endl;declared["iResolution"]=true;}
+		if(contains(stCode,"iFrame "))    {sout<<"uniform int iFrame;"         <<endl;declared["iFrame"]     =true;}
+		if(contains(stCode,"iFrameRate")) {sout<<"uniform float iFrameRate;"   <<endl;declared["iFrameRate"] =true;}
+		if(contains(stCode,"iMouse"))     {sout<<"uniform vec4 iMouse;"        <<endl;declared["iMouse"]     =true;}
+		if(contains(stCode,"iResolution")){sout<<"uniform vec3 iResolution;"   <<endl;declared["iResolution"]=true;}
+		if(contains(stCode,"iChannel0"))  {sout<<"uniform sampler2D iChannel0;"<<endl;declared["iChannel0"]=true;}
 		string sr=sout.str();
 		cout <<"Uniforms infered from shader toy code:"<<endl<<sr<<endl;
 		return sr;
