@@ -9,8 +9,9 @@
  */
 #pragma once
 #include "game.h"
+#include "sensor_observer_standard.h"
 
-class GameStandard: public Game,public SensorObserver {
+class GameStandard: public Game,public SensorObserverStandard {
 	int mx,my;
 public:
 	GameStandard(string title):	Game(title),mx(0),my(0){
@@ -75,16 +76,6 @@ public:
 			 getCamera()->setLookAtPos(v);
 			 break;
 		 }
-	}
-	virtual void onSensorEvent(SensorEventData &e){
-		if(e["device"]=="mouse" && e["id"]=="0"){
-			if(e["event"]=="MouseMoved")
-				mouseMoved(e.getInt("x"),e.getInt("y"));
-			if(e["event"]=="MousePress")
-				mousePress(e.getInt("button"),e.getInt("state"),e.getInt("x"),e.getInt("y"));
-		}
-		if(e["device"]=="keyboard" && e["id"]=="0")
-			keyPressed(e.getChar("key"),e.getInt("x"),e.getInt("y"));
 	}
 	virtual ~GameStandard(){}
 	CameraPtr &getCamera() {return getScene(0)->getCamera();}

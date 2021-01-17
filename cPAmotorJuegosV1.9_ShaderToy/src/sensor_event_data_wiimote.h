@@ -25,7 +25,12 @@ class SensorEventDataWiiMote:public SensorEventAbstract{
 	int obuttons;
 	//new state of buttons
 	int ebuttons;
+	//Accelerometer data?
 	double x,y,z;
+	//TODO support for
+	//IR points data
+	// CWIID_RPT_NUNCHUK | CWIID_RPT_CLASSIC | CWIID_RPT_BALANCE | CWIID_EXT_MOTIONPLUS*/
+
 public:
 	SensorEventDataWiiMote():obuttons(0),ebuttons(0){}
 	void setData(SensorEventData &e){
