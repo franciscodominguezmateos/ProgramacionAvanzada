@@ -18,10 +18,10 @@ class ShaderReduceN: public ShaderReduceHalf {
 public:
 	ShaderReduceN(int n,Texture* ptex=nullptr,int w=640,int h=480,string oc="vec4 opt(vec4 v00,vec4 v10,vec4 v01,vec4 v11){return (v00+v10+v01+v11)/4.0;}"):
 		ShaderReduceHalf(ptex,w,h,oc),n(n){
+		if(ptex!=nullptr){w=getTexture()->getWidth();h=getTexture()->getHeight();}
 		vFbo.push_back(getFrameBuffer());
 		for(int i=1;i<n;i++){
 			GLSLFBOPtr pfbo=new GLSLFBO(w>>(i+1),h>>(i+1));
-			//vFbo.push_back(new GLSLFBO(getTexture()->getWidth()>>(i+1),getTexture()->getHeight()>>(i+1)));
 			vFbo.push_back(pfbo);
 			pfbo->init();
 		}
@@ -32,15 +32,11 @@ public:
 	void render(){
 		ShaderReduceHalf::render();
 		Mat fboImg=downloadResult();
-		//cout <<fboImg.cols<<","<<fboImg.rows<<endl;
-		//imshow("ShadeRenduceN0",fboImg);
 		for(int i=1;i<n;i++){
 			setTexture(&vFbo[i-1]->getColorTex());
 			setFrameBuffer(vFbo[i]);
 			ShaderReduceHalf::render();
 			fboImg=downloadResult();
-			//imshow("ShadeRenduceN"+to_string(i),fboImg);
-			//cout <<fboImg.cols<<","<<fboImg.rows<<endl;
 		}
 	}
 };

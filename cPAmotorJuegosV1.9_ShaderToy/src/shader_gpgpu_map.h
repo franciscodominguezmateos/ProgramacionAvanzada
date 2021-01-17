@@ -20,11 +20,11 @@ uniform vec2 dim;
 //reduce operation to apply
 vec4 square(vec4 v) {return v*v;}
 //Init for argmax and argmin reductions
-vec4 initarg(vec4 v){return vec4(v.x,gl_fragCoord.x/dim.x,gl_fragCoord.y/dim.y,1.0);}
+vec4 initarg(vec4 v){return vec4(v.x,gl_FragCoord.x/dim.x,gl_FragCoord.y/dim.y,1.0);}
 vec4 opt(vec4 v){return v/2;}
 
 void main(){
- out_color=opt(texture(tex,gl_FragCoord/dim);
+ out_color=opt(texture(tex,gl_FragCoord.xy/dim));
 }
 )glsl";
 class ShaderMap:public ShaderImageFilter{
