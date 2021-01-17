@@ -24,6 +24,5 @@ class SensorObserverStandard: public SensorObserver {
 		if(e["device"]=="keyboard" && e["id"]=="0")
 			keyPressed(e.getChar("key"),e.getInt("x"),e.getInt("y"));
 	}
-
 };
 

@@ -46,6 +46,7 @@ public:
 	inline void setSize(int w,int h){width=w;height=h;}
 	inline int getWidth() {return width;}
 	inline int getHeight(){return height;}
+	inline GLuint id(){return idTexture;}
 	void setImage(Mat i){
 		setSize(i.cols,i.rows);
 		flip(i,img,0);

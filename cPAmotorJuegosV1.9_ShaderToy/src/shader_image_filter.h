@@ -78,6 +78,7 @@ public:
 			pTex->init();
 		}
 	}
+	~ShaderImageFilter(){delete pVao;}
 	virtual void init(){
 		setFragmentShader(fragmentShaderTest);
 	}
@@ -93,25 +94,22 @@ public:
 		spProg.compileFromStrings(vertexShader,fragmentShader);
 	}
 	TexturePtr getTexture(){return pTex;}
-	void setTexture(TexturePtr pt){pTex=pt;}
+	void setTexture(TexturePtr pt){pTex=pt;workOutDim(pt);}
 	void setFrameBuffer(GLSLFBOPtr fb){pFbo=fb;}
+	GLSLFBOPtr getFrameBuffer(){return pFbo;}
 	void setImage(Mat img){
 		pTex->setImage(img);
 		//Vec2 dim={float(img.cols),float(img.rows)};
 		Vec2 dim={float(img.cols),float(img.rows)};
 		setDim(dim);
 	}
-	void workOutDim(Texture* ptex,int w,int h){
-		if(ptex==nullptr){
-			Vec2 dm={float(w),float(h)};
-			setDim(dm);
-		}
-		else{
-			Vec2 dm={float(ptex->getWidth()),float(ptex->getHeight())};
-			setDim(dm);
-		}
+	void workOutDim(Texture* ptex,int w=640,int h=480){
+		if(ptex==nullptr){setDim(w,h);}
+		else             {setDim(ptex->getWidth(),ptex->getHeight());}
 	}
 	void setDim(Vec2 d){spProg.start();spProg["dim"]=d;spProg.stop();}
+	void setDim(float w,float h){Vec2 dm={w,h};setDim(dm);}
+	void setDim(int w,int h){setDim(float(w),float(h));}
 	Mat filter(Mat m){
 		setImage(m);
 		render();
@@ -122,6 +120,8 @@ public:
 		return r;
 	}
 	void render(){
+		//cout << "pTex "<<pTex->id()<<":"<<pTex->getWidth()<<","<<pTex->getHeight()<<endl;
+		//cout << "pFbo "<<pFbo->getColorTex().id()<<":"<<pFbo->getWidth()<<","<<pFbo->getHeight()<<endl;
 		//Blend mix A channel with RGB
 		glDisable(GL_BLEND);
 		pFbo->bind();

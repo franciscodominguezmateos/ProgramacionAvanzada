@@ -18,7 +18,7 @@ class GLSLFBO{
 public:
 	//If we don't call init() toOpenCV get the default screen pixels
 	GLSLFBO(int w,int h):width(w),height(h),id(0),color(w,h),depth(w,h){}
-	virtual ~GLSLFBO(){glDeleteFramebuffers(1, &id);}
+	virtual ~GLSLFBO(){glDeleteFramebuffers(1, &id);}//release textures too}
 	void init(){
 		glGenFramebuffers(1, &id);
 		glBindFramebuffer(GL_FRAMEBUFFER, id);
@@ -38,6 +38,8 @@ public:
 	inline void setSize(int w,int h){width=w;height=h;}
 	inline void setWidth(int w) {width=w; color.setSize(width,height);depth.setSize(width,height);}
 	inline void setHeight(int h){height=h;color.setSize(width,height);depth.setSize(width,height);}
+	inline int getWidth(){return width;}
+	inline int getHeight(){return height;}
 	inline void bind()  {glBindFramebuffer(GL_FRAMEBUFFER, id);}
 	inline void unbind(){glBindFramebuffer(GL_FRAMEBUFFER, 0); }
 	Mat toOpenCV() {
