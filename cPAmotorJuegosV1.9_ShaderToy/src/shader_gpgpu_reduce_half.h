@@ -5,6 +5,8 @@
  *      Author: Francisco Dominguez
  *  Treat data as images of 32FC4
  *  Input is a image of w,h size and output is w/2,h/2
+ *  Thi is a support function in order to implement gpgpu reduce operation
+ *  Default behaviour is just a pyrDown 2x2-mean/box filter function
  */
 #pragma once
 #include "shader_image_filter.h"
@@ -19,7 +21,7 @@ uniform sampler2D tex;
 uniform vec2 dim;
 
 vec2 tc(vec2 x){return x/dim;}
-vec2 rc(vec2 x){return tc(gl_FragCoord.xy*2+x);}
+vec2 rc(vec2 x){return tc((gl_FragCoord.xy-vec2(0.5,0.5))*2+x);}
 vec4 getValues(vec2 x){return texture(tex,rc(x));}
 
 //reduce operation to apply

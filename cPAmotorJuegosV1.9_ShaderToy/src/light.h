@@ -4,16 +4,14 @@
  *  Created on: Oct 30, 2017
  *      Author: Francisco Dominguez
  */
-
-#ifndef LUZ_H_
-#define LUZ_H_
+#pragma once
 #include <assert.h>
 #include <GL/glut.h>
 
 #include "solid.h"
 #include "vector3d.h"
 
-class Luz:public Solid {
+class Light:public Solid {
 	// here you can see const vs constexpr
 	static const unsigned char NLIGHTS=8;
 	static constexpr GLenum ids[]={
@@ -31,18 +29,17 @@ public:
 	static void init(){
 		idCount=0;
 	}
-	Luz(Vector3D p):Solid(p),idLight(idCount++){
+	Light(Vector3D p):Solid(p),idLight(idCount++){
 		assert(idCount<=NLIGHTS);
 		glEnable(ids[idLight]);
 		this->hazFija();
 	}
-	Luz():Luz(Vector3D(5,10,5)){}
+	Light():Light(Vector3D(5,10,5)){}
 	void render(){
 	    GLfloat lightpos[]={(GLfloat)getPos().getX(),(GLfloat)getPos().getY(),(GLfloat)getPos().getZ(),0.0};
 	    glLightfv(ids[idLight],GL_POSITION,lightpos);
 	}
 };
 //Private static initialization
-unsigned char Luz::idCount=0;
-constexpr GLenum Luz::ids[];
-#endif /* LUZ_H_ */
+unsigned char Light::idCount=0;
+constexpr GLenum Light::ids[];

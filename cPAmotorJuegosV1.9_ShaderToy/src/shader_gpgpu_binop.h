@@ -29,6 +29,7 @@ vec4 greenScreen(vec4 v0,vec4 v1){
  if(v1==vec4(0,0,0,1)) return v0;
  return v1;
 }
+vec4 undistorRectify
 vec4 opt (vec4 v0,vec4 v1){return (v0+v1)/2.0;}
 
 void main(){
@@ -54,8 +55,8 @@ public:
 		cout <<fs<<endl;
 		spProg.compileFromStrings(vertexShader,fs);
 		spProg.start();
-		spProg["tex" ]=0;
-		spProg["tex1"]=1;
+		spProg["tex" ]=0;//GL_TEXTURE0
+		spProg["tex1"]=1;//GL_TEXTURE1
 		spProg.stop();
 	}
 

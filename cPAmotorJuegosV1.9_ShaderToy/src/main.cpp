@@ -11,7 +11,6 @@
 #include "pendulo.h"
 #include "cubo_elastico.h"
 #include "fondo_textura.h"
-#include "luz.h"
 #include "pose_estimation_chessboard.h"
 #include "material.h"
 #include "modelo_material.h"
@@ -33,6 +32,7 @@
 #include "arrow.h"
 #include "axis.h"
 #include "cube.h"
+#include "light.h"
 #include "projection_camera.h"
 #include "shader_toy.h"
 
@@ -47,9 +47,9 @@ public:
 		Camera &cam   =*getCamera();
 		Stage  &stage =*getStage();
 		//cam.setPos(Vector3D(0,0,10));
-		Luz* lightFront=new Luz(Vector3D(-1,1,1));
+		Light* lightFront=new Light(Vector3D(-1,1,1));
 		stage.add(lightFront);
-		stage.add(new Luz(Vector3D(1,1,1)));
+		stage.add(new Light(Vector3D(1,1,1)));
 
 		ShaderToy* st=new ShaderToy();
 		st->init();

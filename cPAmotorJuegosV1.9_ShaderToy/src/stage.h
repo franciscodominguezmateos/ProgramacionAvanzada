@@ -9,7 +9,8 @@
 #ifndef STAGE_H_
 #define STAGE_H_
 #include <vector>
-#include "luz.h"
+
+#include "light.h"
 #include "solid.h"
 using namespace std;
 class Stage;
