@@ -5,7 +5,6 @@
 #include "game_engine.h"
 #include "game_standard.h"
 #include "vector3d.h"
-#include "esfera.h"
 #include "rosco.h"
 #include "pared.h"
 #include "pendulo.h"
@@ -35,6 +34,8 @@
 #include "light.h"
 #include "projection_camera.h"
 #include "shader_toy.h"
+#include "fourier_serie.h"
+#include "sphere.h"
 
 class cPAmotorJuegosShaderToy:public GameStandard{
 	TexturePtr pTexGround;
@@ -115,6 +116,42 @@ public:
 		 MarioKart* cme=new MarioKart();
 		 cme->setVel(Vector3D(1,0,1));
 		 stage.add(cme);
+			int N=4;
+			FourierSerie fs(N);
+			vector<C> x;
+			x.push_back(C(-2,-2));
+			x.push_back(C(-2, 2));
+			x.push_back(C( 1, 1));
+			x.push_back(C( 2,-2));
+			for(int i=0;i<N;i++){
+				SpherePtr s=new Sphere(0.1);
+				s->setPos(Vector3D(x[i].real(),0,x[i].imag()));
+				s->setCol(Vector3D(1,0,0));
+				stage.add(s);
+			}
+			for(int k=0;k<N;k++){
+				cout << "X"<<k<<"="<<fs.direct(x,k)<<endl;
+			}
+			vector<C> X=fs.direct(x);
+			for(double n=0;n<4;n+=0.01){
+				C x=fs.inverse(X,n);
+				cout << "n"<<n<<"="<<x<<endl;
+				SpherePtr s=new Sphere(0.02);
+				s->setPos(Vector3D(x.real(),0,x.imag()));
+				s->setCol(Vector3D(1,1,0));
+				stage.add(s);
+			}
+			vector<C> oX=X;
+			X=vector<C>(oX.begin(),oX.begin()+3);
+			for(double n=0;n<4;n+=0.01){
+				C x=fs.inverse(X,n);
+				cout << "n"<<n<<"="<<x<<endl;
+				SpherePtr s=new Sphere(0.03);
+				s->setPos(Vector3D(x.real(),0,x.imag()));
+				s->setCol(Vector3D(1,0,1));
+				stage.add(s);
+			}
+
 	}
 	void update(double dt){
 		 Mat i;

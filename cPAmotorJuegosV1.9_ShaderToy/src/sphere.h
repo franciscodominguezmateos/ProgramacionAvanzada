@@ -1,17 +1,15 @@
-#ifndef ESFERA_H_
-#define ESFERA_H_
-#include <GL/glut.h>
-
+#pragma once
 #include "solid.h"
 #include "vector3d.h"
-
-class Esfera: public Solid{
+class Sphere;
+using SpherePtr=Sphere*;
+class Sphere: public Solid{
  double r;
 public:
- Esfera():Solid(),r(1){}
- Esfera(const Esfera &e):Solid(e),r(e.r){}
- Esfera *clone(){
-	 return new Esfera(*this);
+ Sphere(double r=1):Solid(),r(r){}
+ Sphere(const Sphere &e):Solid(e),r(e.r){}
+ Sphere *clone(){
+	 return new Sphere(*this);
  }
  inline float getR(){return r;}
  inline void setR(float rp){r=rp;}
@@ -22,11 +20,11 @@ public:
 	   glutSolidSphere(r,10,10);
 	 glPopMatrix();
  }
- friend std::ostream &operator << (std::ostream &os, const Esfera &v);
+ friend std::ostream &operator << (std::ostream &os, const Sphere &v);
 };
-inline std::ostream &operator<<(std::ostream &os, const Esfera &e){
+inline std::ostream &operator<<(std::ostream &os, const Sphere &e){
 	os << static_cast<const Solid&>( e );
 	os <<",R="<< e.r;
     return os;
 }
-#endif
+
