@@ -5,7 +5,6 @@
  *      Author: Francisco Dominguez
  *  Abstraction of a pixelwise binary operation
  */
-
 #pragma once
 #include "shader_gpgpu_map.h"
 const string fragmentShaderBinOp=R"glsl(
@@ -59,7 +58,6 @@ public:
 		spProg["tex1"]=1;//GL_TEXTURE1
 		spProg.stop();
 	}
-
 	void setTex0(TexturePtr tex){pTex =tex;}
 	void setTex1(TexturePtr tex){pTex1=tex;}
 	void render(){

@@ -35,6 +35,7 @@
 #include "projection_camera.h"
 #include "shader_toy.h"
 #include "fourier_serie.h"
+#include "eratosthenes_sieve.h"
 #include "sphere.h"
 
 class cPAmotorJuegosShaderToy:public GameStandard{
@@ -45,6 +46,9 @@ class cPAmotorJuegosShaderToy:public GameStandard{
 public:
 	cPAmotorJuegosShaderToy(string title):GameStandard(title),cap(0){}
 	void init(){
+		string glv((char*)glGetString(GL_VERSION));
+		cout << "OpenGL:" <<  glv <<endl;
+
 		Camera &cam   =*getCamera();
 		Stage  &stage =*getStage();
 		//cam.setPos(Vector3D(0,0,10));
@@ -151,6 +155,10 @@ public:
 				s->setCol(Vector3D(1,0,1));
 				stage.add(s);
 			}
+			EratosthenesSieve es(100);
+			//for(unsigned int &prime:es.getPrimes())
+			//	cout << prime << endl;
+			cout << es.getPrimes().size()<<endl;
 
 	}
 	void update(double dt){
@@ -257,8 +265,6 @@ int main(int argc, char** argv) try{
 	srand(10);
 	GameEngine::setGame(&motorJuegosShaderToy);
 	GameEngine::gameInit(argc,argv);
-	string glv((char*)glGetString(GL_VERSION));
-	cout << "OpenGL:" <<  glv <<endl;
 	GameEngine::gameMainLoop();
 
 	lds_test();
