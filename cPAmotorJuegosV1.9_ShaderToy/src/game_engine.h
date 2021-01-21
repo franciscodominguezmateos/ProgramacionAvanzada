@@ -38,7 +38,8 @@ public:
 	static void gameInit(int argc, char** argv){
 	    alutInit (&argc, argv);
 		glutInit(&argc,argv);
-		glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
+		//glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
+		glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_ALPHA | GLUT_DEPTH | GLUT_STENCIL);
 		glutInitWindowSize(windowSize.getX(),windowSize.getY());
 		glutInitWindowPosition(windowPosition.getX(),windowPosition.getY());
 		if(g==nullptr)

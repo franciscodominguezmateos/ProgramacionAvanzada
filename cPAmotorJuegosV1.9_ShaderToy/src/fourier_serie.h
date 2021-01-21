@@ -5,8 +5,9 @@
  *      Author: Francisco Dominguez
  *  Playing with fourier series and complex numbers, inspired by:
  *  https://iquilezles.org/www/articles/fourier/fourier.htm
+ *  Actualy fourier series coefficients are just dot product of base and data
+ *  X=x*base -> dot product is just a correlation
  */
-
 #pragma once
 #include <complex>
 #include <vector>
@@ -21,7 +22,7 @@ public:
 	FourierSerie(int n):N(n){}
 	C direct(vector<C> x, double k){
 		C Xk(0,0);
-		for(double n=0;n<N;n++){
+		for(double n=0;n<x.size();n++){
 			int in=int(n);
 			Xk+=x[in]*exp(-i*PI2*k*n/N);
 		}
@@ -36,7 +37,7 @@ public:
 	}
 	C inverse(vector<C> X,double n){
 		C xn(0,0);
-		for(double k=0;k<N;k++){
+		for(double k=0;k<X.size();k++){
 			int ik=int(k);
 			xn+=X[ik]*exp(i*PI2*k*n/N);
 		}

@@ -34,6 +34,7 @@ public:
 	virtual void update(double dt){}
 	double getTime(){return t;}
 	double getDTime(){return dt;}
+	GLSLFBO &getScreen(){return screen;}
 	void   setDTime(double d){dt=d;}
 	vector<ScenePtr> &getScenes(){return scenes;}
 	ScenePtr &getScene(int i){return scenes[i];}

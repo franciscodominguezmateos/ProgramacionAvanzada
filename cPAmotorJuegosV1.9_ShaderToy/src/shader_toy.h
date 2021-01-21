@@ -137,6 +137,8 @@ public:
 	void render(){
 		iTime=getTimeFromStartInSeconds();
 		if(!depthTest)glDepthMask(GL_FALSE);
+		//Blend mix A channel with RGB
+		glDisable(GL_BLEND);
 		spProg.start();
 		setDynamicParams();
 		iChannel0->bind();
@@ -150,6 +152,7 @@ public:
 		iFrame+=1;
 		iFrameRate=1.0/iTimeDelta;
 		//cout << "iTimeDelta="<< iTimeDelta<<"iFrameRate="<<iFrameRate<<endl;
+		glEnable(GL_BLEND);
 	}
 };
 vector<string> ShaderToy::parameters={"iTime","iTimeDelta","iFrame","iFrameRate","iMouse","iResolution","iChannel0"};

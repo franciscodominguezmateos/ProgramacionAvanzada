@@ -6,6 +6,7 @@
  */
 #pragma once
 #include <vector>
+#include <algorithm>
 #include "solid.h"
 
 class Composite;
@@ -16,15 +17,7 @@ class Composite:public Solid {
 public:
 	Composite(){}
 	Composite(const Composite &c){
-		//cout<<"dentro de cc"<<endl;
-		//Copia plana
-		//solidos=c.solidos;
-		//Copia Plana engañosa
-		//por que parece profunca
-		//for(Solido *s:c.solidos){
-		//	solidos.push_back(s);
-		//}
-		//Copia profunda
+		//deep copy
 		for(Solid *s:c.solids){
 			solids.push_back(s->clone());
 		}
@@ -46,10 +39,22 @@ public:
 			s->render();
 		glPopMatrix();
 	}
-	template<class T=Solid>
-	vector<T*> getSolids(){return solids;}
+	vector<SolidPtr> &getSolids(){return solids;}
+	int size(){return solids.size();}
 	SolidPtr &getSolid(int i){return solids[i];}
 	SolidPtr &operator[](int i){return solids[i];}
-	void add(Solid *s){solids.push_back(s);}
-	int size(){return solids.size();}
+	SolidPtr getLastSolido(){int last=solids.size()-1;return solids[last];}
+	void setLastSolido(SolidPtr s){int last=solids.size()-1;solids[last]=s;}
+	void add(SolidPtr s){solids.push_back(s);}
+	void remove(SolidPtr sp){
+		std::remove(solids.begin(),solids.end(),sp);
+		delete sp;
+	}
 };
+/*inline std::ostream &operator<<(std::ostream &os, const Composite &e){
+	for(SolidPtr s:e.solids){
+		os << *s <<endl;
+	}
+    return os;
+}*/
+

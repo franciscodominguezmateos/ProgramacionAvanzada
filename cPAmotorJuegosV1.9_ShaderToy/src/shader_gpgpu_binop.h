@@ -28,7 +28,12 @@ vec4 greenScreen(vec4 v0,vec4 v1){
  if(v1==vec4(0,0,0,1)) return v0;
  return v1;
 }
-vec4 undistorRectify
+//texture tex is image to remap, tex1 coordinates in x and y
+//v0 is not used and uv=v1.xy/dim is the normalized coord to take the color from tex
+vec4 remap(vec v0,vec v1){
+  vec2 uv=v1.xy/dim;
+  return texture(tex,uv);
+}
 vec4 opt (vec4 v0,vec4 v1){return (v0+v1)/2.0;}
 
 void main(){

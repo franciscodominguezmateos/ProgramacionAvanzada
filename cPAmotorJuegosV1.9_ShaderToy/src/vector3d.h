@@ -123,7 +123,7 @@ public:
 		if (nearZero(magnitude))
 			throw runtime_error(" in Vector3D::normalize(): magnitude near to zero.");
 		magnitude = 1.0f / magnitude;
-		Vector3Dx<S> r=self/magnitude;
+		Vector3Dx<S> r=self*magnitude;
 		return r;
 	}
 	//Change the length of this vector but not the direction

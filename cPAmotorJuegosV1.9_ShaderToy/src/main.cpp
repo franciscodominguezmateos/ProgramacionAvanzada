@@ -120,47 +120,59 @@ public:
 		 MarioKart* cme=new MarioKart();
 		 cme->setVel(Vector3D(1,0,1));
 		 stage.add(cme);
-			int N=4;
-			FourierSerie fs(N);
-			vector<C> x;
-			x.push_back(C(-2,-2));
-			x.push_back(C(-2, 2));
-			x.push_back(C( 1, 1));
-			x.push_back(C( 2,-2));
-			for(int i=0;i<N;i++){
-				SpherePtr s=new Sphere(0.1);
-				s->setPos(Vector3D(x[i].real(),0,x[i].imag()));
-				s->setCol(Vector3D(1,0,0));
-				stage.add(s);
-			}
-			for(int k=0;k<N;k++){
-				cout << "X"<<k<<"="<<fs.direct(x,k)<<endl;
-			}
-			vector<C> X=fs.direct(x);
-			for(double n=0;n<4;n+=0.01){
-				C x=fs.inverse(X,n);
-				cout << "n"<<n<<"="<<x<<endl;
-				SpherePtr s=new Sphere(0.02);
-				s->setPos(Vector3D(x.real(),0,x.imag()));
-				s->setCol(Vector3D(1,1,0));
-				stage.add(s);
-			}
-			vector<C> oX=X;
-			X=vector<C>(oX.begin(),oX.begin()+3);
-			for(double n=0;n<4;n+=0.01){
-				C x=fs.inverse(X,n);
-				cout << "n"<<n<<"="<<x<<endl;
-				SpherePtr s=new Sphere(0.03);
-				s->setPos(Vector3D(x.real(),0,x.imag()));
-				s->setCol(Vector3D(1,0,1));
-				stage.add(s);
-			}
-			EratosthenesSieve es(100);
-			//for(unsigned int &prime:es.getPrimes())
-			//	cout << prime << endl;
-			cout << es.getPrimes().size()<<endl;
 
-	}
+		 //Fourier Interpolation
+		 //20/01/2021 It doesn't do what I want
+ 		int N=4;
+		FourierSerie fsx(N);
+		FourierSerie fsy(N);
+		vector<C> x;
+		x.push_back(C( 2, 0));
+		x.push_back(C( 2, 0));
+		x.push_back(C(-2, 0));
+		x.push_back(C(-2,-0));
+		//x.push_back(C( 2,-0));
+		vector<C> y;
+		y.push_back(C(-2, 0));
+		y.push_back(C( 2, 0));
+		y.push_back(C(-2, 0));
+		y.push_back(C( 2, 0));
+		//y.push_back(C(-3, 0));
+		for(int i=0;i<N;i++){
+			SpherePtr s=new Sphere(0.1);
+			s->setPos(Vector3D(x[i].real(),0,y[i].real()));
+			s->setCol(Vector3D(1,0,0));
+			stage.add(s);
+		}
+		vector<C> X=fsx.direct(x);
+		vector<C> Y=fsy.direct(y);
+		for(double n=0;n<1;n+=0.01){
+			C x=fsx.inverse(X,n);
+			C y=fsy.inverse(Y,n);
+			//cout << "n"<<n<<"="<<x<<endl;
+			SpherePtr s=new Sphere(0.02);
+			s->setPos(Vector3D(x.real(),0,y.real()));
+			s->setCol(Vector3D(1,1,0));
+			stage.add(s);
+		}
+		vector<C> oX=X;
+		vector<C> oY=Y;
+		X=vector<C>(oX.begin(),oX.begin()+4);
+		Y=vector<C>(oY.begin(),oY.begin()+4);
+		for(double n=0;n<N;n+=0.02){
+			C x=fsx.inverse(X,n);
+			C y=fsy.inverse(Y,n);
+			//cout << "n"<<n<<"="<<x<<endl;
+			SpherePtr s=new Sphere(0.03);
+			s->setPos(Vector3D(x.real(),0,y.real()));
+			s->setCol(Vector3D(1,0,1));
+			stage.add(s);
+		}
+		EratosthenesSieve es(100);
+		//for(unsigned int &prime:es.getPrimes())
+		//	cout << prime << endl;
+		cout << es.getPrimes().size()<<endl;
+}
 	void update(double dt){
 		 Mat i;
 		 cap>>i;
@@ -221,16 +233,14 @@ void lds_test(){
 
     Mat image = imread(filename, IMREAD_GRAYSCALE);
 
-    if( image.empty() )
-    {
+    if( image.empty() ){
         cout << "Unable to load " << filename<<endl;
         return;
     }
 
     imshow("Source Image", image);
 
-    if (useCanny)
-    {
+    if (useCanny){
         Canny(image, image, 50, 200, 3); // Apply Canny edge detector
     }
 

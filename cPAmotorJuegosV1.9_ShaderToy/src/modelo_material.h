@@ -186,6 +186,7 @@ public:
 					else if(linea[1]=='n'){
 						//Normal detected
 						Vector3D *v=parseVector3D(linea);
+						v->normalize();
 						normals.push_back(v);
 					}
 					else if(linea[1]==' '){
