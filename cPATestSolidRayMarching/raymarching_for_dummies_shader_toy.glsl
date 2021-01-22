@@ -1,3 +1,4 @@
+// This code in inspired by:
 // "ShaderToy Tutorial - Ray Marching for Dummies!" 
 // by Martijn Steinrucken aka BigWings/CountFrolic - 2018
 // License Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
@@ -15,25 +16,42 @@ float maxv3(vec3 d){return max(d.x,max(d.y,d.z));}
 float sdPlaneYO( vec3 p ){return p.y;}
 //plane at hight s
 float sdPlaneY( vec3 p, float s ){return p.y-s;}
-
 //sphere at origin
 float sdSphereO( vec3 p, float s ){return length(p)-s;}
 //sphere at any point w is radious
 float sdSphere( vec3 p, vec4 s){return length(p-s.xyz)-s.w;}
-
 //box at origin
 float sdBox( vec3 p, vec3 b ){vec3 d = abs(p) - b; return min(maxv3(d),0.0) + length(max(d,0.0));}
-
+//capsule from a to b with radious r
+float sdCapsule( vec3 p, vec3 a, vec3 b, float r )
+{
+  vec3 pa = p - a, ba = b - a;
+  float h = clamp( dot(pa,ba)/dot(ba,ba), 0.0, 1.0 );
+  return length( pa - ba*h ) - r;
+}
 //hard union vs soft union
 float opHU(float d1,float d2){return min(d1,d2);}
 // http://iquilezles.org/www/articles/smin/smin.htm
 float opSU( float a, float b, float k=0.25 ){float h = max(k-abs(a-b),0.0); return min(a, b) - h*h*0.25/k;}
+//substraction
+float opHD(float a,float b){return max(a,-b);}
+
+//three crossed capsules 2xl is capsule length and r is radious
+float sdCross(vec3 p,float l,float r){
+	float  d=sdCapsule(p,vec3(-l,0,0),vec3(l,0,0),r);
+	d=opHU(d,sdCapsule(p,vec3(0,-l,0),vec3(0,l,0),r));
+	d=opHU(d,sdCapsule(p,vec3(0,0,-l),vec3(0,0,l),r));
+	return d;
+}
 
 float getDist(vec3 p) { 
-    float d = sdSphere(p,vec4( 0,0,0,1.0));
-    d = opSU(d,sdSphere(p,vec4( cos(iTime),1,sin(iTime),1)));
+	p-=vec3(0,1,0);
+    float d = sdSphere(p,vec4( 0,cos(iTime)*2.0+2.0,0,1.0));
+    d = opSU(d,sdSphere(p,vec4( cos(iTime),1,sin(iTime),1)),2);
     d = opHU(d,sdSphere(p,vec4(-2,0,0,1)));
     d = opSU(d,sdSphere(p,vec4(-2,2,0,1)));
+    d = opHD(d,sdCross (p,1.0,0.5));
+    p+=vec3(0,1,0);
     d = opHU(d,sdSphere(p,vec4( 10,0, 10,1)));
     d = opHU(d,sdSphere(p,vec4(-10,0, 10,1)));
     d = opHU(d,sdSphere(p,vec4( 10,0,-10,1)));
@@ -51,19 +69,16 @@ float rayMarch(vec3 ro, vec3 rd) {
         dO += dS;
         if(dO>MAX_DIST || dS<SURF_DIST) break;
     }
-    
     return dO;
 }
 
 vec3 getNormal(vec3 p) {
 	float d = getDist(p);
     vec2 e = vec2(.01, 0);
-    
     vec3 n = d - vec3(
         getDist(p-e.xyy),
         getDist(p-e.yxy),
         getDist(p-e.yyx));
-    
     return normalize(n);
 }
 

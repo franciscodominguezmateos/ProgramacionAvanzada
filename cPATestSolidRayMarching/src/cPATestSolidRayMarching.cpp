@@ -3,15 +3,15 @@
 // Author      : Francisco Dominguez
 // Version     :
 // Copyright   : Your copyright notice
-// Description : Testing class ShaderToy
-// Date: 05/01/2021
+// Description : Testing class SolidRayMarching
+// Date: 15/01/2021
 //============================================================================
-
 #include <iostream>
 #include "game_engine.h"
 #include "game_standard.h"
 #include "axis.h"
 #include "rectangle.h"
+#include "sphere.h"
 #include "solid_raymarching.h"
 #include "pose_util.h"
 #include "modelo_material.h"
@@ -25,6 +25,8 @@ class TestSolidRayMarching:public GameStandard{
 	AxisPtr lookAtAxis;
 	SolidRayMarchingPtr st;
 	double stVel;
+	SpherePtr pBall;
+	GLSLFBOPtr pFbo;
 public:
 	TestSolidRayMarching(string title):GameStandard(title){}
 	virtual void mouseMoved(int x, int y){
@@ -50,12 +52,23 @@ public:
 		Camera &cam   =*pCam;
 		Stage  &stage =*pStage;
 		cam.setPos(Vector3D(0,1.65,10));
-		Luz* lightFront=new Luz(Vector3D(150.0,150.0, 100.0));
+		Light* lightFront=new Light(Vector3D(150.0,150.0, 100.0));
 		stage.add(lightFront);
-		stage.add(new Luz(Vector3D(-100.0,150.0, -150.0)));
+		stage.add(new Light(Vector3D(-100.0,150.0, -150.0)));
+
+		pFbo=new GLSLFBO(640,480);
+		pFbo->init();
+
+		pBall=new Sphere(0.1);
+		pBall->setPos(Vector3D(0.5,0.5,0.0));
+		pBall->setVel(Vector3D(0.01,0.001,0.0));
+		//pBall->hazFija();
+		stage.add(pBall);
 
 		st=new SolidRayMarching();
-		st->initFromFileName("raymarching_for_dummies_shader_toy.glsl");
+		//st->initFromFileName("raymarching_for_dummies_shader_toy.glsl");
+		//st->initFromFileName("shader_toy_sample_raymarching.glsl");
+		st->initFromFileName("happy_jumping_raymarching.glsl");
 		stage.add(st);
 
 		ax=new Axis();
@@ -70,18 +83,17 @@ public:
 		//Mat imgGround=imread("brown_brick_texture_map.jpg");
 		texGround.setImage(imgGround);
 		float l=10;
-		Rectangle* r=new Rectangle(Vector3D(-l,1.1,-l),Vector3D(-l,1.1,l),Vector3D(l,0,l),Vector3D(l,0,-l));
+		Rectangle* r=new Rectangle(Vector3D(-l,0,-l),Vector3D(-l,0,l),Vector3D(l,0,l),Vector3D(l,0,-l));
 		r->setTextura(texGround);
 		r->setNU(10);
 		r->setNV(10);
-	    stage.add(r);
+	    //stage.add(r);
 
 		ModeloMaterial* mm=new ModeloMaterial("TheAmazingSpiderman.obj");
 		mm->setPos(Vector3D(0,0,-3));
-		mm->setScale(1.125);
-		mm->setVel(Vector3D(getRand(1,-1),0,getRand(1,-1)));
+		mm->setScale(0.125);
+		mm->setVel(Vector3D(getRand(1,-1)/40,0,getRand(1,-1)/40));
 		stage.add(mm);
-
 	}
 	void update(double dt){
 		if (waitKey(1) == 27) exit(0);
@@ -97,7 +109,22 @@ public:
 				Mat p=getView()->getProjection()->getMat();
 				sp["projectionInv"]=p.inv();
 				sp["projection"   ]=p;
+				sp["pose"]=pBall->getPos();
 				sp.stop();
+				Mat img=getScreen().toOpenCV32FC4();
+				//Mat img=getScreen().toOpenCV();
+				//st->setFbo(pFbo);
+				//st->render();
+				//pFbo->unbind();
+				//Mat img=pFbo->toOpenCV32FC4();
+				Vec4f v4f=img.at<Vec4f>(img.rows-1,0);
+				float r=v4f[2];
+				float g=v4f[1];
+				float b=v4f[0];
+				float a=v4f[3];
+				Vector3D vp(r,g,b);
+				cout << "00="<<vp*100<<" a:"<<a<<" p="<<pBall->getPos()<<endl;
+				imshow("sd",img);
 			}
 			catch(runtime_error &re){
 				//do not pay attention to uniform errors
