@@ -41,7 +41,7 @@ public:
 	inline int getWidth(){return width;}
 	inline int getHeight(){return height;}
 	inline void bind()  {glBindFramebuffer(GL_FRAMEBUFFER, id);}
-	inline void unbind(){glBindFramebuffer(GL_FRAMEBUFFER, 0); }
+	inline void unbind(){glBindFramebuffer(GL_FRAMEBUFFER, 0);}
 	Mat toOpenCV() {
 		bind();
 	    cv::Mat img(height, width, CV_8UC3);
@@ -59,10 +59,20 @@ public:
 		//I made changes in GameEngine to solve the problem but it doesn't work
 		//glClampColor(GL_CLAMP_FRAGMENT_COLOR, GL_FALSE);
 		//glClampColor(GL_CLAMP_READ_COLOR, GL_FALSE);
-	    cv::Mat img(height, width, CV_32FC4);
-	    glPixelStorei(GL_PACK_ALIGNMENT, (img.step & 3)?1:4);
-	    glPixelStorei(GL_PACK_ROW_LENGTH, img.step/img.elemSize());
+	    cv::Mat img=Mat::zeros(height, width, CV_32FC4);
+
+	    //glPixelStorei(GL_PACK_ALIGNMENT, (img.step & 3)?1:4);
+	    //glPixelStorei(GL_PACK_ROW_LENGTH, img.step/img.elemSize());
 	    glReadPixels(0, 0, img.cols, img.rows, GL_BGRA, GL_FLOAT, img.data);
+
+        //21/01/2021 glGetTexImage it is supose to not clamp. TODO: Check it is true
+	    //color.bind();
+	    //glPixelStorei(GL_PACK_ALIGNMENT, (img.step & 3)?1:4);
+	    //glPixelStorei(GL_PACK_ROW_LENGTH, img.step/img.elemSize());
+	    //glGetTexImage(GL_TEXTURE_2D,0,GL_BGRA,GL_FLOAT,img.data);
+	    //glGetnTexImage(GL_TEXTURE_2D,0,GL_BGRA,GL_FLOAT,img.cols* img.rows*4,img.data);
+	    //glGetTextureImage(color.getId(),0,GL_BGRA,GL_FLOAT,img.cols* img.rows*4,img.data);
+	    //color.unbind();
 	    cv::Mat flipped(img);
 	    cv::flip(img, flipped, 0);
 	    unbind();

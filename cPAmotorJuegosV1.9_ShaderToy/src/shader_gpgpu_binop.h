@@ -30,9 +30,9 @@ vec4 greenScreen(vec4 v0,vec4 v1){
 }
 //texture tex is image to remap, tex1 coordinates in x and y
 //v0 is not used and uv=v1.xy/dim is the normalized coord to take the color from tex
-vec4 remap(vec v0,vec v1){
+vec4 remap(vec4 v0,vec4 v1){
   vec2 uv=v1.xy/dim;
-  return texture(tex,uv);
+  return texture(tex,vec2(uv.x,1.0-uv.y));
 }
 vec4 opt (vec4 v0,vec4 v1){return (v0+v1)/2.0;}
 

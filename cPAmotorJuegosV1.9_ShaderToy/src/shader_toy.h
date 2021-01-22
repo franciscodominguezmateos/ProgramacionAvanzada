@@ -63,6 +63,7 @@ class ShaderToy : public Solid{
 	static vector<string> parameters;
 	map<string,bool> declared;
 	bool depthTest;
+	GLSLFBOPtr pFbo;
 public:
 	ShaderToy():Solid(),
 				sTime(chrono::steady_clock::now()),
@@ -70,7 +71,7 @@ public:
 				iTimeDelta(0.33),
 				iFrame(0),
 				iFrameRate(30),
-				iChannel0(new Texture()),depthTest(false){
+				iChannel0(new Texture()),depthTest(false),pFbo(nullptr){
 		pstVao=new GLSLVAO();
 		pstVao->init();
 		pstVao->createAttribute(0,vertices,3);
@@ -106,6 +107,8 @@ public:
 		cout <<"Uniforms infered from shader toy code:"<<endl<<sr<<endl;
 		return sr;
 	}
+	inline void setFbo(GLSLFBOPtr fbo){pFbo=fbo;}
+	inline GLSLFBOPtr getFbo(){return pFbo;}
 	inline void setDepthTest(bool b){depthTest=b;	}
 	inline void setiMouse(const Vec4 v){iMouse=v;}
 	void setFragmentShader(const string &fs){
@@ -139,6 +142,7 @@ public:
 		if(!depthTest)glDepthMask(GL_FALSE);
 		//Blend mix A channel with RGB
 		glDisable(GL_BLEND);
+		if(pFbo!=nullptr) pFbo->bind();
 		spProg.start();
 		setDynamicParams();
 		iChannel0->bind();
@@ -147,12 +151,13 @@ public:
 		pstVao->unbindAll();
 		iChannel0->unbind();
 		spProg.stop();
-		if(!depthTest)glDepthMask(GL_TRUE);
 		iTimeDelta=iTime-getTimeFromStartInSeconds();
 		iFrame+=1;
 		iFrameRate=1.0/iTimeDelta;
+		if(pFbo!=nullptr) pFbo->unbind();
 		//cout << "iTimeDelta="<< iTimeDelta<<"iFrameRate="<<iFrameRate<<endl;
 		glEnable(GL_BLEND);
+		if(!depthTest)glDepthMask(GL_TRUE);
 	}
 };
 vector<string> ShaderToy::parameters={"iTime","iTimeDelta","iFrame","iFrameRate","iMouse","iResolution","iChannel0"};

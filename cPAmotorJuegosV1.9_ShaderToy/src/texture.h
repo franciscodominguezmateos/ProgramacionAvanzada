@@ -42,6 +42,7 @@ public:
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		if(!img.empty()) setImage(img);
 	}
+	GLuint getId(){return idTexture;}
 	Mat getImage(){return img;}
 	inline void setSize(int w,int h){width=w;height=h;}
 	inline int getWidth() {return width;}
@@ -76,6 +77,18 @@ public:
 	}
 	void upload(){
 		glBindTexture(GL_TEXTURE_2D, idTexture);
+		if (img.channels()==1){
+			if(img.type()==CV_8UC1)
+				glTexImage2D(GL_TEXTURE_2D,0,GL_R,img.cols,img.rows,0,GL_R,GL_UNSIGNED_BYTE,img.ptr());
+			if(img.type()==CV_32FC1)
+				glTexImage2D(GL_TEXTURE_2D,0,GL_R32F,img.cols,img.rows,0,GL_R,GL_FLOAT,img.ptr());
+		}
+		if (img.channels()==2){
+			if(img.type()==CV_8UC2)
+				glTexImage2D(GL_TEXTURE_2D,0,GL_RG,img.cols,img.rows,0,GL_RG,GL_UNSIGNED_BYTE,img.ptr());
+			if(img.type()==CV_32FC2)
+				glTexImage2D(GL_TEXTURE_2D,0,GL_RG32F,img.cols,img.rows,0,GL_RG,GL_FLOAT,img.ptr());
+		}
 		if (img.channels()==3){
 			if(img.type()==CV_8UC3)
 				glTexImage2D(GL_TEXTURE_2D,0,GL_RGB,img.cols,img.rows,0,GL_BGR,GL_UNSIGNED_BYTE,img.ptr());
@@ -90,7 +103,6 @@ public:
 		}
 	}
 	void asRenderTexture8UC3(int w,int h){
-		//glBindTexture(GL_TEXTURE_2D, idTexture);
 		bind();
 		glTexImage2D(GL_TEXTURE_2D, 0,GL_RGB, w, h, 0,GL_RGB, GL_UNSIGNED_BYTE, 0);
 		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, idTexture, 0);
@@ -98,8 +110,7 @@ public:
 	}
 	void asRenderTexture32FC4(int w,int h){
 		bind();
-		//glBindTexture(GL_TEXTURE_2D, idTexture);
-		glTexImage2D (GL_TEXTURE_2D, 0,GL_RGBA, w, h, 0,GL_RGBA, GL_FLOAT, 0);
+		glTexImage2D (GL_TEXTURE_2D, 0,GL_RGBA32F, w, h, 0,GL_RGBA, GL_FLOAT, 0);
 		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, idTexture, 0);
 		unbind();
 	}
