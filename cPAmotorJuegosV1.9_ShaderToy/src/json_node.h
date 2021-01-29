@@ -5,39 +5,32 @@
  *      Author: Francisco Dominguez
  */
 #pragma once
-/* This Abstract class try to avoid casting joining all methods */
-class JSONNode;
-using JSONNodePtr=JSONNode*;
+#include <vector>
+#include <map>
+using namespace std;
+/* I am trying to avoid polymorphism in order to make it as easy as possible
+ * This Abstract class try to avoid casting joining all methods
+ */
 class JSONNode{
-	virtual JSONNodePtr operator[](int    i){return nullptr;}
-	virtual JSONNodePtr operator[](string s){return nullptr;}
-	virtual string getString(){return string();}
-	virtual double getNumber(){return 0;}
-	virtual int size(){return 0;}
-};
-class JSONNodeDictionary:public JSONNode{
-	map<string,JSONNodePtr> m;
-public:
-	virtual JSONNodePtr operator[](string s){return m[s];}
-};
-class JSONNodeVector:public JSONNode{
-	vector<JSONNodePtr> v;
-public:
-	virtual JSONNodePtr operator[](int    i){return v[i];}
-};
-class JSONNodeString:public JSONNode{
 	string s;
+	map<string,int> m;
+	vector<JSONNode> v;
 public:
-	JSONNodeString(string s):s(s){}
-	string getString(){return s;}
+	JSONNode(){}
+	JSONNode(string s):s(s){}
+	JSONNode(double d):s(to_string(d)){}
+	inline JSONNode &operator[](int    i){return v[i];}
+	inline JSONNode &operator[](string s){return v[m[s]];}
+	inline string &getString(){return s;}
+	inline double getNumber(){return stod(s);}
+	inline int size(){return v.size();}
+	inline void add(JSONNode &n){v.push_back(n);}
+	inline void add(string k,JSONNode &n){v.push_back(n);m[k]=v.size()-1;}
+	inline bool isNodeNumber(){return false;}
+	inline bool isNodeString(){return !isNodeNumber() && s!="";}
+	inline bool isNodeDictionary(){return !isNodeString() && m.size()>0;}
+	inline bool isNodeVector(){return !isNodeDictionary() && v.size()>0;}
 };
-class JSONNodeNumber:public JSONNode{
-	double d;
-public:
-	JSONNodeNumber(double d):d(d){}
-	double getNumber(){return d;}
-};
-
 
 
 

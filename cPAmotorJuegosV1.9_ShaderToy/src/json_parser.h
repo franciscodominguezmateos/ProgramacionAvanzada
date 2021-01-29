@@ -7,66 +7,71 @@
 #pragma once
 #include "json_scanner.h"
 #include "json_node.h"
-/* Gramar:
+/* Grammar:
  *
  * JSON          -> ELEMENT
- * ELEMENT       -> DICTIONARY | VECTOR | STRING | NUMBER
+ * ELEMENT       -> DICTIONARY | VECTOR | string | number
  * DICTIONARY    -> '{' ELEMENT_PAIRS '}'
  * ELEMENT_PAIRS -> ELEMENT_PAIR ',' ELEMENT_PAIRS | ELEMENT_PAIR
- * ELEMENT_PAIR  -> ELEMENT ':' ELEMENT
+ * ELEMENT_PAIR  -> string ':' ELEMENT
  * VECTOR        -> '[' ELEMENTS ']'
  * ELEMENTS      -> ELEMENT ',' ELEMENTS | ELEMENT
- * STRING        -> just a quoted string
- * NUMBER        -> just a number with decimals but not scientific notation
+ * string        -> just a quoted string
+ * number        -> just a number with decimals but not scientific notation
  *
  */
 class JSONParser {
 	JSONScanner scanner;
+	Token t;//current token
+	JSONNode root;
 public:
-	JSONParser(JSONScanner s):scanner(s){}
-	JSONNodePtr parse(string &s){
+	JSONParser(JSONScanner s=JSONScanner()):scanner(s){}
+	JSONNode &parse(string &s){
 		scanner.setString(s);
-		return parseElement();
+		t=scanner.getNextToken();
+		root= parseElement();
+		return root;
 	}
-	JSONNodePtr parseElement(){
-		Token t=scanner.getNextToken();
-		while(t!="EOF"){
-			if(t=='[')      return parseVector();
-			if(t=='{')      return parseDictionary();
-			if(t=="string") return parseString();
-			if(t=="number") return parseNumber();
-		}
+	JSONNode parseElement(){
+		if(t=='[')      return parseVector();
+		if(t=='{')      return parseDictionary();
+		if(t=="string") return parseString();
+		if(t=="number") return parseNumber();
 	}
-	JSONNodePtr parseVector(){
-		JSONNodePtr n=new JSONNodeVector();
-		Token t=scanner.getNextToken();
+	JSONNode parseVector(){
+		JSONNode n;
+		t=scanner.getNextToken();
 		while(t!=']'){
-			JSONNodePtr child=parseStep();
-			n->add(child);
-			t=scanner.getNetToken();
+			JSONNode child=parseElement();
+			n.add(child);
+			t=scanner.getNextToken();
 			if(t!=',' || t!=']') throw runtime_error("Waiting for a ',' or a ']' in in JSONParser::parseVector()");
 		};
 		return n;
 	}
-	JSONNodePtr parseDictionary(){
-		JSONNodePtr n=new JSONNodeDictionary();
-		Token t=scanner.getNextToken();
+	JSONNode parseDictionary(){
+		JSONNode n;
+		t=scanner.getNextToken();
 		while(t!='}'){
-			JSONNodePtr key=parseStep();
-			t=scanner.getNetToken();
-			if(t!=':') throw runtime_error("Waiting for a ':' in in JSONParser::parseDictionary()");
-			JSONNodePtr child=parseStep();
-			n->add(key,child);
-			t=scanner.getNetToken();
+			if(t!="string") throw runtime_error("Waiting a string as key in JSONParser::parseDictionary()");
+			string k=t.getLexem();
+			t=scanner.getNextToken();
+			if(t!=':') throw runtime_error("Waiting for a ':' in JSONParser::parseDictionary()");
+			JSONNode child=parseElement();
+			n.add(k,child);
+			t=scanner.getNextToken();
 			if(t!=',' || t!='}') throw runtime_error("Waiting for a ',' or a '}' in in JSONParser::parseDictionary()");
 		};
 		return n;
 	}
-	JSONNodePtr parseString(){
-
-	}
-	JSONNodePtr parseNumber(){
-
-	}
+	JSONNode parseString(){return JSONNode(t.getLexem());}
+	JSONNode parseNumber(){return JSONNode(t.getLexemNumber());}
 };
-
+/*         STREAM I/O         */
+ifstream &operator>>(ifstream &ifxml,XMLNode &n){
+	string s;
+	ifxml >> s;
+	JSONParser p();
+	n=p.parse(s);
+	return ifxml;
+}

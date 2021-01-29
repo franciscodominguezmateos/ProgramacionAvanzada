@@ -17,9 +17,8 @@ public:
 	inline bool operator==(string s){return id==s;}
 	inline bool operator!=(char   c){return id!=string(c);}
 	inline bool operator!=(string s){return id!=s;}
-	string getLexem()    {return lexem;}
-	int   getLexemInt()  {return stoi(lexem);}
-	float getLexemFloat(){return stof(lexem);}
+	string getLexem()      {return lexem;}
+	double getLexemNumber(){return stod(lexem);}
 };
 class JSONScanner {
 	string s;
