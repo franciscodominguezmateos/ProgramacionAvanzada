@@ -123,6 +123,7 @@ public:
 		//cout << "pTex "<<pTex->id()<<":"<<pTex->getWidth()<<","<<pTex->getHeight()<<endl;
 		//cout << "pFbo "<<pFbo->getColorTex().id()<<":"<<pFbo->getWidth()<<","<<pFbo->getHeight()<<endl;
 		//Blend mix A channel with RGB
+		glDepthMask(GL_FALSE);
 		glDisable(GL_BLEND);
 		pFbo->bind();
 		spProg.start();
@@ -134,6 +135,7 @@ public:
 		spProg.stop();
 		pFbo->unbind();
 		glEnable(GL_BLEND);
+		glDepthMask(GL_TRUE);
 	}
 };
 //This vertex does nothing

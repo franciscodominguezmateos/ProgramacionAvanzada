@@ -2,7 +2,7 @@
  * xml_parser.h
  *
  *  Created on: 24 Mar 2020
- *      Author: Francisco Dominguegz
+ *      Author: Francisco Dominguez
  */
 #pragma once
 #include "xml_node.h"
@@ -20,7 +20,7 @@ public:
 	char getChar(){
 		string &s=getString();
 		if(idx>=s.length())
-			throw runtime_error("EOF in XMLScannerStrong::getChar()");
+			throw runtime_error("EOF in XMLScanner::getChar()");
 		char c=s[idx++];
 		return c;
 	}

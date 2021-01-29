@@ -66,7 +66,7 @@ public:
 	void setTex0(TexturePtr tex){pTex =tex;}
 	void setTex1(TexturePtr tex){pTex1=tex;}
 	void render(){
-		//glDepthMask(GL_FALSE);
+		glDepthMask(GL_FALSE);
 		//Blend mix A channel with RGB
 		glDisable(GL_BLEND);
 		pFbo->bind();
@@ -83,7 +83,7 @@ public:
 		spProg.stop();
 		pFbo->unbind();
 		glEnable(GL_BLEND);
-		//glDepthMask(GL_TRUE);
+		glDepthMask(GL_TRUE);
 		glActiveTexture(GL_TEXTURE0);
 	}
 };
