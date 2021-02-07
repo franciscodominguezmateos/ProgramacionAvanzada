@@ -79,7 +79,7 @@ public:
 		glDrawArrays(GL_TRIANGLES, 0, vertices.size());
 		pVao->unbindAll();
 		pTex->unbind();
-		pTex->unbind();
+		pTex1->unbind();
 		spProg.stop();
 		pFbo->unbind();
 		glEnable(GL_BLEND);

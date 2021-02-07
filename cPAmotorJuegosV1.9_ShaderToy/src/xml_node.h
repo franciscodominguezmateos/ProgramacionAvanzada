@@ -72,6 +72,7 @@ public:
 		string key,value;
 		//take away any space at beginning or end
 		trim(key_value_pairs);
+		//-29/01/2021 if there is space in value it doesn't work
 		vector<string> pairs=split(key_value_pairs);
 		for(string pair:pairs){
 			vector<string> keyvalue=split(pair,'=');

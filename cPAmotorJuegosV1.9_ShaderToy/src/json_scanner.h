@@ -49,7 +49,7 @@ public:
 	string scanString(){
 		string str;
 		char c=getChar();
-		if(c!='"') throw runtime_error("Waiting for a '\"' but a '"+c+"' found in JSONScanner::scanString()");
+		if(c!='"') throw runtime_error("Waiting for a '\"' but a '"+c+"' was found in JSONScanner::scanString()");
         c=getChar();
 		while(c!='"'){
 			str+=c;
