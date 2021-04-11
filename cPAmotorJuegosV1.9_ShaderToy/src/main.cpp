@@ -37,6 +37,7 @@
 #include "fourier_serie.h"
 #include "eratosthenes_sieve.h"
 #include "sphere.h"
+#include "json_scanner.h"
 
 class cPAmotorJuegosShaderToy:public GameStandard{
 	TexturePtr pTexGround;

@@ -3,10 +3,13 @@
  *
  *  Created on: 24 Mar 2020
  *      Author: Francisco Dominguegz
+ 		//-29/01/2021 if there is space in value it doesn't work
+		//-11/04/2021 fixing with scanner.h and splitAttributes()
  */
 #pragma once
 #include <regex>
 #include "util.h"
+#include "scanner.h"
 /*
  * I am trying to avoid polymorphism in order to make it as easy as possible
  * ELEMENT_CONTAINER, ELEMENT_LEAF both are XMLNode not difference in runtime just in parser time.
@@ -68,12 +71,37 @@ public:
 	XMLNodeType getType() const {return type;}
 	void        setType(XMLNodeType type) {this->type = type;}
 	/*      ATTRIBUTES     */
+	vector<string> splitAttributes(string &s){
+		vector<string> vs;
+		Token t;
+		string pair;
+		Scanner scanner(s);
+		try{
+			while(true){
+				pair="";
+				//attribute identifier
+				t=scanner.getNextToken();if(t=="EOF") break;
+				pair+=t.getLexem();
+				//attribute '='
+				t=scanner.getNextToken();if(t=="EOF") break;
+				pair+=t.getId();
+				//attribute value
+				t=scanner.getNextToken();if(t=="EOF") break;
+				pair+=t.getLexem();
+				vs.push_back(pair);
+			}
+		}
+		catch(runtime_error &re){
+		}
+		return vs;
+	}
 	void setAttributes(string key_value_pairs){
 		string key,value;
 		//take away any space at beginning or end
 		trim(key_value_pairs);
 		//-29/01/2021 if there is space in value it doesn't work
-		vector<string> pairs=split(key_value_pairs);
+		//-11/04/2021 fixing with scanner.h and splitAttributes()
+		vector<string> pairs=splitAttributes(key_value_pairs);
 		for(string pair:pairs){
 			vector<string> keyvalue=split(pair,'=');
 			if(keyvalue.size()>0){
