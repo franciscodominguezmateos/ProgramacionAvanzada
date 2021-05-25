@@ -23,6 +23,21 @@ Desde 2020
 * Motor fisico de solidos rigidos (faltan colisiones).
 * SkyBox
 
+Desde 2021
+* GPGPU programacion general con shader
+* Renderización de código RayMarching con SignedDistanceFunctions (SDF)
+* Podemos utilizar codigo de ShaderToy.com (Gracias Iñigo)
+* Podemos SolidRayMarching integra los shader RayMarching con el esto del motor, como un solido mas.
+
+Ejemplo de modelos procedural de montañas (Iñigo Kilez) interactivo. 
+Podemos volar por entre estas montañas como queramos para siempre.
+
+![Screenshot](mountain_fly.gif)
+
+Ejemplo del ShaderToy Bouncing de Iñigo Kilez, integrado con el modelo de spiderman.
+
+![Screenshot](bouncing.gif)
+
 Ejemplo de modelos .DAE con textura, articulados y animados renderizados con Shader y SkyBox
 
 ![Screenshot](zombie_chiken.gif)
