@@ -34,7 +34,7 @@ Podemos volar por entre estas montañas como queramos para siempre.
 
 ![Screenshot](mountain_fly.gif)
 
-Ejemplo del ShaderToy Bouncing de Iñigo Kilez, integrado con el modelo de spiderman.
+Ejemplo del ShaderToy Bouncing de Iñigo Kilez, integrado en el motor con el modelo de spiderman y varios ejes de coordenadas.
 
 ![Screenshot](bouncing.gif)
 
