@@ -158,7 +158,7 @@ public:
 	inline Mat asH()  {	return (Mat_<S>(4,1,CV_64F)<< x,y,z,1);}
 	inline Mat asH0() {	return (Mat_<S>(4,1,CV_64F)<< x,y,z,0);}
 	//template <class S>  //this doesn't work
-	friend ostream &operator<<(ostream &os, const Vector3Dx<S> &v);
+    friend ostream &operator<<(ostream &os, const Vector3Dx<S> &v);
 };
 Mat operator*(Mat m,Vector3D v){return m*v.asMat();}
 Mat operator+(Mat m,Vector3D v){return m+v.asMat();}
@@ -185,6 +185,11 @@ inline ostream &operator<<(ostream &os, const Vector3Di &v) {
 inline Mat asMat(Vector3D v){
 	return (Mat_<double>(3,1)<< v.getX(),v.getY(),v.getZ());
 }
+template<class T=double>
+inline Vector3Dx<T> split_Vector3D(string s,char delimiter=' '){
+	vector<T> n=split_numbers(s,delimiter);
+	return Vector3Dx<T>(n[0],n[1],n[2]);
+}
 // Skew or hat operator
 inline Mat S(Vector3D &v){
 	double x=v.getX();
@@ -209,7 +214,7 @@ inline Mat exp(Vector3D w){
 	double theta=w.norm();
 	double theta2=theta*theta;
 	double CA,CB;
-	if(theta<0.001){
+	if(theta<0.0001){
 		CA=1-theta2/6*(1-theta2/20*(1-theta2/42));
 		CB=1/2*(1-theta2/12*(1-theta2/30*(1-theta2/56)));
 	}

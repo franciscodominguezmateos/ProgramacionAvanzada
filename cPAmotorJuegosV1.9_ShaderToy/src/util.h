@@ -224,7 +224,7 @@ inline string getExtension(string &s){
 	vector<string> vs=split(s,'.');	return vs[vs.size()-1];}
 
 /**********************************************************************************************/
-/* NUMBERS TOOLS */
+/* NUMBER TOOLS */
 /**********************************************************************************************/
 template<typename S=double>
 inline bool nearZero(S d,S threshold=0.0001){return abs(d)<threshold;}

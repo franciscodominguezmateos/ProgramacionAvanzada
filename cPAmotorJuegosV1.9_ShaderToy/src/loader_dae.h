@@ -47,7 +47,7 @@ public:
 
 	    //Load joints
 	    Joint jointsRoot;
-	    //TODO: fix this trick, if dae it mean from blender and z-up, if xml mean y-up
+	    //TODO: fix this trick, if dae it means from blender and z-up, if xml mean y-up
 	    if(getExtension(getName())=="dae"){
 	    	XMLNode &armature=library_visual_scenes("visual_scene")("node","id","Armature");
 	    	XMLNode &torso=armature("node","id","Torso");

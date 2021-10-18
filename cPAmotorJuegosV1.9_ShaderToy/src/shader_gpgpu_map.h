@@ -17,7 +17,7 @@ out vec4 out_color;
 uniform sampler2D tex;
 uniform vec2 dim;
 
-//reduce operation to apply
+//map operation to apply
 vec4 square(vec4 v) {return v*v;}
 //Init for argmax and argmin reductions
 vec4 initArg(vec4 v){return vec4(v.x,gl_FragCoord.x/dim.x,gl_FragCoord.y/dim.y,1.0);}

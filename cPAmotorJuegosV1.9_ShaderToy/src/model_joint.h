@@ -10,7 +10,7 @@
 #include <string>
 #include <opencv2/opencv.hpp>
 
-// SkeletonPose is all local transformations for a hole skeleton, in this case map<string,Mat>
+// SkeletonPose is all local transformations for a whole skeleton, in this case map<string,Mat>
 // since they are indexed by name
 typedef map<string,Mat> SkeletonPose;
 inline ostream &operator<<(ostream &os, const SkeletonPose &pose) {
@@ -27,10 +27,13 @@ class Joint{
 	vector<Joint> children;
 	// ****************** INITIAL/BIND TRANSFORMS
 	// local initial/bind transfIormation with respect to parent
+	// Mparent,local
 	Mat localBindTransform;
 	// global initial/bind transformation with respect to model origin transform
+	// Mglobal,local
 	Mat bindTransform;
 	// inverse of global initial/bind transformation with respect to model origin transform
+	// Mlocal,global
 	Mat inverseBindTransform;
 	// ****************** FINAL TRANSFORMS
 	// final increment global animation transform from bindTransform to transform
@@ -110,6 +113,7 @@ public:
 		Mat I=Mat::eye(4,4,CV_32F);
 		thisJoint.applyPose2Joints(pose,I);
 	}
+	inline void applyLocalBinPose(){SkeletonPose pose=getLocalBindPose();applyPose(pose);}
 	void applyPose2Joints(SkeletonPose &pose,Mat &currentParentTransform){
 		Joint &joint=*this;
 		//not all articulations have to be animated
@@ -124,6 +128,19 @@ public:
 		joint.setAnimatedTransform(animationTransform);
 		for(Joint &j:joint.getChildren())
 			j.applyPose2Joints(pose,currentTransform);
+	}
+	//TO CHECK: 18/10/2021
+	Joint& getJointByName(string name){
+		Joint& self=*this;
+		if(getName()==name)
+			return self;
+		else{
+			for(Joint& j:getChildren()) try{
+				return j.getJointByName(name);
+			}
+			catch(runtime_error &e){}
+		}
+		throw runtime_error("Joint name="+name+" not found in joint="+getName());
 	}
 	inline vector<Joint> &getChildren()  {return children;}
 	inline int getIdx()               {return idx;}

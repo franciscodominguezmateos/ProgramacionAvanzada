@@ -3,7 +3,7 @@
  *
  *  Created on: 24 Mar 2020
  *      Author: Francisco Dominguegz
- 		//-29/01/2021 if there is space in value it doesn't work
+ 		//-29/01/2021 if there are spaces in values setAttributes doesn't work
 		//-11/04/2021 fixing with scanner.h and splitAttributes()
  */
 #pragma once
