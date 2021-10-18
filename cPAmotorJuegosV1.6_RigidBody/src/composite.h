@@ -16,7 +16,7 @@
 using namespace std;
 
 class Composite:public Solido {
-	vector<Solido*> solidos;
+	vector<Solido*> solids;
 public:
 	Composite();
 	Composite(const Composite &c){
@@ -29,15 +29,15 @@ public:
 		//	solidos.push_back(s);
 		//}
 		//Copia profunda
-		for(Solido *s:c.solidos){
-			solidos.push_back(s->clone());
+		for(Solido *s:c.solids){
+			solids.push_back(s->clone());
 		}
 	}
 	virtual ~Composite(){
-		 for(Solido *s:solidos){
+		 for(Solido *s:solids){
 			delete s;
 		 }
-		 solidos.clear();//no es necesario se llama en el destructor de vector
+		 solids.clear();//no es necesario se llama en el destructor de vector
 	}
 	Composite *clone(){
 		return new Composite(*this);
@@ -46,13 +46,13 @@ public:
 		glPushMatrix();
 		//glColor3f(this->getCol().getX(),this->getCol().getY(),this->getCol().getZ());
 		glTranslatef(this->getPos().getX(),this->getPos().getY(),this->getPos().getZ());
-		for(Solido *s:solidos)
+		for(Solido *s:solids)
 			s->render();
 		glPopMatrix();
 	}
 	template<class T=Solido>
-	vector<T*> getSolidos(){return solidos;}
-	void add(Solido *s){solidos.push_back(s);}
+	vector<T*> getSolids(){return solids;}
+	void add(Solido *s){solids.push_back(s);}
 };
 
 #endif /* COMPOSITE_H_ */

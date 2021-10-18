@@ -77,7 +77,7 @@ Mat getRightMap(){
 	Mat K=(Mat_<double>(3,3)<<958.8710177402639, 0, 310.8323417297909, 0, 954.3393084573635, 282.4460052293588, 0, 0, 1);
 	Mat d=(Mat_<double>(1,5)<<-0.5177046435417091, 0.4190207743279942, -0.01204088578226774, -0.002396026919730114, 0);
 	Mat R=(Mat_<double>(3,3)<<0.9968596736669864, 0.008162426114800682, -0.07876652725917205, -0.007394536192554946, 0.9999222997971208, 0.01003569643492776, 0.07884232271468458, -0.009421739136563212, 0.9968425748234252);
-	Mat P=(Mat_<double>(3,4)<<953.0537522907438, 0, 384.4876556396484, 0/*-57.95554829812738*/, 0, 953.0537522907438, 276.9204998016357, 0, 0, 0, 1, 0);
+	Mat P=(Mat_<double>(3,4)<<953.0537522907438, 0, 384.4876556396484, -57.95554829812738, 0, 953.0537522907438, 276.9204998016357, 0, 0, 0, 1, 0);
 	Mat map1,map2;
 	initUndistortRectifyMap(K,d,R,P,Size(640,480),CV_32FC2,map1,map2);
 	return map1;
@@ -126,9 +126,21 @@ public:
 	    //Mat image = imread(filename, IMREAD_GRAYSCALE);
 	    //Mat frame=image;
 	    Mat image = imread(filename);
+	    Mat gray;
+	    cvtColor(image,gray,cv::COLOR_BGR2GRAY);
+	    // Create and LSD detector with standard or no refinement.
+	    bool useRefine=true;
+	    Ptr<LineSegmentDetector> ls = useRefine ? createLineSegmentDetector(LSD_REFINE_STD) : createLineSegmentDetector(LSD_REFINE_NONE);
+	    vector<Vec4f> lines_std;
+	    // Detect the lines
+	    ls->detect(gray, lines_std);
+	    ls->drawSegments(image, lines_std);
+
 	    Mat frame;
 	    image.convertTo(frame,CV_32FC3);
 	    frame/=255;
+
+	    imshow("frame",frame);
 
 	    //split image in imageLeft and imageRight
 	    //read intrinsic and distortion for both cameras
@@ -164,21 +176,20 @@ public:
         Mat mapR=getRightMap();
 
         Mat imgRrect;
-	    ShaderBinOp remapR(nullptr,640,480,"vec4 opt(vec4 v0,vec4 v1){return remap(v0,v1);}");
-	    remapR.setImage(imgR);
+	    remap.setImage(imgR);
 		//Mat m=Mat::zeros(480,640,CV_32FC3);
 		//circle(m,Point( 240, 320 ), 32*4.0, Scalar( 0, 0, 1 ), 10, 8 );
 		//imshow("mapL",m);
 		//TexturePtr ptex1=new Texture(m);
 		TexturePtr ptex1R=new Texture(mapR);
 		ptex1R->init();
-		remapR.setTex1(ptex1R);
-		remapR.render();
-		imgRrect=remapR.downloadResult();
+		remap.setTex1(ptex1R);
+		remap.render();
+		imgRrect=remap.downloadResult();
 
 		fboImg=stackH(imgLrect,imgRrect);
-		for(int row=32;row<480  ;row+=32)line(fboImg,Point(0,row),Point(640*2,row),Scalar(255,0,0),1);
-		for(int col=32;col<640*2;col+=32)line(fboImg,Point(col,0),Point(col  ,480),Scalar(255,0,0),1);
+		for(int row=32;row<480  ;row+=32)line(fboImg,Point(0,row),Point(640*2,row),Scalar(255,((int(row/32))%2)*55,((int(row/32))%2)*55),1);
+		for(int col=32;col<640*2;col+=32)line(fboImg,Point(col,0),Point(col  ,480),Scalar(255,((int(col/32))%2)*55,((int(col/32))%2)*55),1);
 		imshow("ShaderBinOp/remapLR",fboImg);
 
 		ax=new Axis();

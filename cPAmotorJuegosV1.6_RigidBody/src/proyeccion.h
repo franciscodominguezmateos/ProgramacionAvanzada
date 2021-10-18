@@ -59,10 +59,10 @@ vector<GLfloat> setOrthoFrustum(float l, float r, float b, float t, float n, flo
     mat[14] = -(f + n) / (f - n);
     return mat;
 }
-class Proyeccion {
+class Projection {
 public:
-	Proyeccion(){}
-	virtual ~Proyeccion(){}
+	Projection(){}
+	virtual ~Projection(){}
 	virtual void render()=0;
 };
 

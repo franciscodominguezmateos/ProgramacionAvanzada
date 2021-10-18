@@ -16,11 +16,11 @@
 
 using namespace cv;
 
-class Camera:public Solido {
+class Camara:public Solido {
 public:
-	Camera(double x,double y,double z):Solido(x,y,z){}
-	Camera():Camera(0,0,0){}
-	virtual ~Camera(){}
+	Camara(double x,double y,double z):Solido(x,y,z){}
+	Camara():Camara(0,0,0){}
+	virtual ~Camara(){}
 	void render(){
 		 glTranslatef(-getPos().getX(),-getPos().getY(),-getPos().getZ());
 		 glRotatef(getRot().getX(), 1,0,0);
@@ -31,9 +31,9 @@ public:
 		return posEulerAnglesToTransformationMatrix(getPos(),-getRot());
 	}
 };
-class CamaraFPS: public Camera {
+class CamaraFPS: public Camara {
 public:
-	CamaraFPS(double x=0,double y=1.65,double z=0):Camera(x,y,z){}
+	CamaraFPS(double x=0,double y=1.65,double z=0):Camara(x,y,z){}
 	void update(double dt){
 		double ry=deg2rad(getRot().getY());
 		Vector3D vel={-sin(ry),0,cos(ry)};
@@ -71,11 +71,11 @@ public:
 		render();
 	}
 };
-class CamaraTPS : public Camera {
+class CamaraTPS : public Camara {
 	Solido *s;
 	bool lookSolido;
 public:
-	CamaraTPS(double x = 0, double y = 2.65, double z = 3) :Camera(x, y, z),s(nullptr),lookSolido(true) {}
+	CamaraTPS(double x = 0, double y = 2.65, double z = 3) :Camara(x, y, z),s(nullptr),lookSolido(true) {}
 	void setSolido(Solido *s) { this->s = s; }
 	Solido *getSolido() { return s; }
 	inline Vector3D getVectorOrienationY(){
@@ -131,9 +131,9 @@ public:
 		render();
 	}
 };
-class Camera: public Camera {
+class CamaraFly: public Camara {
 public:
-	Camera(double x=0,double y=1.65,double z=0):Camera(x,y,z){}
+	CamaraFly(double x=0,double y=1.65,double z=0):Camara(x,y,z){}
 	void update(double dt){
 		double ry=deg2rad(getRot().getY());
 		double rx=deg2rad(getRot().getX());
@@ -152,10 +152,10 @@ public:
  * from a OpenCV rotation vector and
  * from a OpenCV translation vector
  */
-class CamaraAR: public Camera {
+class CamaraAR: public Camara {
 	double modelviewMat[16];
 public:
-	CamaraAR(double x=0,double y=1.65,double z=0):Camera(x,y,z){}
+	CamaraAR(double x=0,double y=1.65,double z=0):Camara(x,y,z){}
 	CamaraAR(Mat rvec,Mat tvec){setPose(rvec,tvec);}
 	void setPose(Mat RVec,Mat tVec){
 		Mat rotMtx;

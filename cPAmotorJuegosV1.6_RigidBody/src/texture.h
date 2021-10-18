@@ -86,11 +86,11 @@ public:
 		flip(i,img,0);
 		//reflexion
 		//flip(img,img,1);
-		update();
+		upload();
 	}
 	void setImageFlipped(Mat i){
 		img=i;
-		update();
+		upload();
 	}
 	void bind(){
 		if(!isReady())
@@ -104,7 +104,7 @@ public:
 		glDisable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
-	void update(){
+	void upload(){
 		glBindTexture(GL_TEXTURE_2D, idTexture);
 		if (img.channels()==3)
 			glTexImage2D(GL_TEXTURE_2D,0,GL_RGB,img.cols,img.rows,0,GL_BGR,GL_UNSIGNED_BYTE,img.ptr());

@@ -17,7 +17,7 @@
 // Masters SolidVAOs are owner of the vao and should release then in the destructor
 // Masters SolidVAOs have to be initiates with a mesh in order to upload data(vertex info) to GPU
 // Example: SolidVAO mvao0(&shaderProgram),mvao1(&shaderProgram);
-// Not Masters SolidVAOs are not aware of the vao share it with master
+// Not Masters SolidVAOs are not aware of the vao instead they share it with master
 // next instance mvao0 is the master, we can use copy constructor to set not master SolidVAOs
 // not master vaos do not have to be initiated with a mesh.
 // Example: SolidVAO mvaor(mvao0);
@@ -53,7 +53,7 @@ public:
 		vao->createAttribute(2,vn,3);
 		vao->unbind();
 	}
-	// This only have to call on the master instance
+	// This only have to be call on the master instance
 	void init(ModelMesh &m){
 		vao->init();
 		vao->createIndexBuffer(m.getIvertices());
@@ -97,7 +97,7 @@ public:
 //one for each texture.
 //The first one own all vertex, normals and textcoord
 //TODO: differentiate from master and no master in order render
-//     many same objects in different locations.
+//      same objects in many different locations.
 class SolidMultiVAO:Solid{
 	GLSLShaderProgram* shaderProgram;
 	vector<SolidVAO*> solidVAOs;

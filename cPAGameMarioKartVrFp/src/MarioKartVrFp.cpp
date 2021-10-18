@@ -59,7 +59,7 @@ ModeloMaterial* circuit;
 ModeloMaterial* mariokart;
 
 Stage e;
-Cubo *pc;
+Cube *pc;
 ModeloMaterial* m;
 Texture tex,ladrillos,paredTex,texTv,spiderTex,marioKartTex,minionTex,mariokartTex;
 VideoCapture cap(0);
@@ -69,7 +69,7 @@ CajaModeloElastico* cme;
 
 FondoTextura fondo,fondoTablero;
 
-ProyeccionPerspectiva proyeccion;
+ProjectionPerspective proyeccion;
 vector<View> vistas={{0.0,0.0,0.5,1,&proyeccion},{0.5,0.0,0.5,1,&proyeccion}};//,{0.0,0.5,0.5,0.5},{0.5,0.5,0.5,0.5}};
 
 CamaraTPSVR camVR;
@@ -287,8 +287,8 @@ void keyPressed(unsigned char key,int x,int y){
 	 cout << "Baseline="<< camVR.getBaseline()<<endl;
  break;
  case ' ':
-	 Esfera *pf;
-	 pf=new Esfera();
+	 Sphere *pf;
+	 pf=new Sphere();
 	 pf->setPos(m->getPos());
 	 pf->setVel(Vector3D(0,0,-1.0));
 	 pf->setCol(Vector3D(1,0.5,0));
@@ -501,7 +501,7 @@ int main(int argc, char** argv){
  camVR.setPos(Vector3D(0,1.50,0));
  //camVR.setRot(Vector3D(0,180,0));
 
- Luz* l1=new Luz(Vector3D( 50,50,15));
+ Light* l1=new Light(Vector3D( 50,50,15));
  l1->hazFija();
  e.add(l1);
  //e.add(new Luz(Vector3D(-50,50,15)));

@@ -23,23 +23,15 @@ public:
 	}
 	void render(){
 		glPushMatrix();
-		 glColor3f(this->getCol().getX(),this->getCol().getY(),this->getCol().getZ());
-		 glTranslatef(this->getPos().getX(),this->getPos().getY(),this->getPos().getZ());
+		    glColor3f(this->getCol().getX(),this->getCol().getY(),this->getCol().getZ());
+		    glTranslatef(this->getPos().getX(),this->getPos().getY(),this->getPos().getZ());
 			glRotatef(getRot().getX(), 1, 0, 0);
 			glRotatef(getRot().getY(), 0, 1, 0);
 			glRotatef(getRot().getZ(), 0, 0, 1);
-		  gluCylinder(quadratic,b,b,h-tipH,16,16);
-		  glTranslatef(0,0,h-tipH);
-		  gluCylinder(quadratic,tipB,0,tipH,16,16);
+		    gluCylinder(quadratic,b,b,h-tipH,16,16);
+		    glTranslatef(0,0,h-tipH);
+		    gluCylinder(quadratic,tipB,0,tipH,16,16);
 		glPopMatrix();
-/*		 glPushMatrix();
-		  glTranslatef(this->getPos().getX(),this->getPos().getY(),this->getPos().getZ()+h-tipH);
-			glRotatef(getRot().getX(), 1, 0, 0);
-			glRotatef(getRot().getY(), 0, 1, 0);
-			glRotatef(getRot().getZ(), 0, 0, 1);
-		  gluCylinder(quadratic,tipB,0,tipH,16,16);
-		  */
-		 glPopMatrix();
 	}
 };
 

@@ -18,7 +18,7 @@
 #include "compuesto.h"
 #include "escena.h"
 #include "pared.h"
-#include "camara.h"
+#include "camera_ar.h"
 #include "texture.h"
 #include "rectangulo.h"
 #include "pendulo.h"
@@ -70,7 +70,7 @@ Mat K=(Mat_<double>(3,3) <<
 
 Mat dist=Mat::zeros(4,1,cv::DataType<double>::type); // Assuming no lens distortion
 CamaraAR *camAR=nullptr;
-ProyeccionCamara pCam(K);
+ProjectionCamera pCam(K);
 PoseEstimationChessBoard peChessBoard(K,dist);
 Texture texTablero;
 void setPoseCamAR(Mat &tablero){
@@ -91,7 +91,7 @@ void initCamAR(){
 	 tablero=imread("2017-11-03-091218.jpg");
 	 setPoseCamAR(tablero);
 }
-ProyeccionPerspectiva proyeccion;
+ProjectionPerspective proyeccion;
 vector<View> vistas={{0.0,0.0,0.5,1,&proyeccion},{0.5,0.0,0.5,1,&pCam}};//,{0.0,0.5,0.5,0.5},{0.5,0.5,0.5,0.5}};
 //vector<Vista> vistas={{0.0,0.0,0.5,1,&proyeccion},{0.5,0.0,0.5,1,&proyeccion}};//,{0.0,0.5,0.5,0.5},{0.5,0.5,0.5,0.5}};
 vector<CamaraTPS> camaras(vistas.size());
@@ -291,7 +291,7 @@ void mouseMoved(int x, int y)
     	for(unsigned int i=0;i<vistas.size();i++){
     		if(vistas[i].contain(x,y)){
     			Vector3D r;
-    			Camara &cam=camaras[i];
+    			Camera &cam=camaras[i];
     			r=cam.getRot()+Vector3D(y-my,x-mx,0);
     			cam.setRot(r);
     		}
@@ -380,18 +380,18 @@ int main(int argc, char** argv) try{
 	srand(10);
 	SensorWiiMote wiim;
 	Game marioKart("PAGame Mario Kart :-D");
-	marioKart.addStage(&view,&cam,&hpall);
-	marioKart.addStage(&view1,&camk,&hpall);
+	marioKart.addScene(&view,&cam,&hpall);
+	marioKart.addScene(&view1,&camk,&hpall);
 
 	 vel=0;
 	 //cout << t.isIn(Vector3D(0.25,0.25,0))<<endl;
 	 //camaras[0].setLookSolido(false);
-	 for(Camara &c:camaras){
+	 for(Camera &c:camaras){
 		 c.setPos(Vector3D(0,2.50,10));
 		 //c.setPos(Vector3D(0,1.50,0));
 		 c.setRot(Vector3D(0,180,0));
 	 }
-	 Luz* l1=new Luz(Vector3D( 50,50,15));
+	 Light* l1=new Light(Vector3D( 50,50,15));
 	 l1->hazFija();
 	 e.add(l1);
 	 //e.add(new Luz(Vector3D(-50,50,15)));

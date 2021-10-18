@@ -12,7 +12,7 @@
 #include "vector3d.h"
 #include "solido.h"
 
-class Luz:public Solido {
+class Light:public Solido {
 	// here you can see const vs constexpr
 	static const unsigned char NLIGHTS=8;
 	static constexpr GLenum ids[]={
@@ -30,17 +30,17 @@ public:
 	static void init(){
 		idCount=0;
 	}
-	Luz(Vector3D p):Solido(p),idLight(idCount++){
+	Light(Vector3D p):Solido(p),idLight(idCount++){
 		assert(idCount<=NLIGHTS);
 		glEnable(ids[idLight]);
 	}
-	Luz():Luz(Vector3D(5,10,5)){}
+	Light():Light(Vector3D(5,10,5)){}
 	void render(){
 	    GLfloat lightpos[]={(GLfloat)getPos().getX(),(GLfloat)getPos().getY(),(GLfloat)getPos().getZ(),0.0};
 	    glLightfv(ids[idLight],GL_POSITION,lightpos);
 	}
 };
 //Private static initialization
-unsigned char Luz::idCount=0;
-constexpr GLenum Luz::ids[];
+unsigned char Light::idCount=0;
+constexpr GLenum Light::ids[];
 #endif /* LUZ_H_ */

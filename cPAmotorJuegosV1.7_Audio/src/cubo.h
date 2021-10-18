@@ -4,13 +4,13 @@
 
 #include "solid.h"
 #include "vector3d.h"
-class Cubo: public Solid{
+class Cube: public Solid{
  float s;
 public:
- Cubo():Solid(),s(1){}
- Cubo(const Cubo &c):Solid(c),s(c.s){}
- Cubo *clone(){
-	 return new Cubo(*this);
+ Cube():Solid(),s(1){}
+ Cube(const Cube &c):Solid(c),s(c.s){}
+ Cube *clone(){
+	 return new Cube(*this);
  }
  inline float getS(){return s;}
  inline void setS(float sp){s=sp;}
@@ -25,9 +25,9 @@ public:
 	 glPopMatrix();
 
  }
- friend std::ostream &operator << (std::ostream &os, const Cubo &v);
+ friend std::ostream &operator << (std::ostream &os, const Cube &v);
 };
-inline std::ostream &operator<<(std::ostream &os, const Cubo &c){
+inline std::ostream &operator<<(std::ostream &os, const Cube &c){
 	os << static_cast<const Solid&>( c );
 	os <<",S="<< c.s;
     return os;

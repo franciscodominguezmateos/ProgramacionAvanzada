@@ -50,9 +50,9 @@ public:
 	    glEnable(GL_COLOR_MATERIAL);
 	    //This is in order to get no clamped info from fragment shaders in FBO
 	    //but it doesn't seem to work FBO read data is clamped¿?¿?¿?¿?¿?¿?
-	    glClampColor(GL_CLAMP_READ_COLOR,     GL_FALSE);
-	    glClampColor(GL_CLAMP_VERTEX_COLOR,   GL_FALSE);
-	    glClampColor(GL_CLAMP_FRAGMENT_COLOR, GL_FALSE);
+	    //glClampColor(GL_CLAMP_READ_COLOR,     GL_FALSE);
+	    //glClampColor(GL_CLAMP_VERTEX_COLOR,   GL_FALSE);
+	    //glClampColor(GL_CLAMP_FRAGMENT_COLOR, GL_FALSE);
 	    //Very important to activate transparency or alpha channel
         glEnable(GL_BLEND);
 	    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

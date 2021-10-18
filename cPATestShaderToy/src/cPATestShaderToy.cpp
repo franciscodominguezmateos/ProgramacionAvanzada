@@ -14,6 +14,7 @@
 #include "rectangle.h"
 #include "shader_toy.h"
 #include "pose_util.h"
+#include <omp.h>
 
 using namespace std;
 
@@ -44,14 +45,25 @@ public:
 	}
 	//cPATestShaderToy::init()
 	void init(){
+#pragma omp parallel
+{
+  // Code inside this region runs in parallel.
+  printf("Hello! %d\n",omp_get_thread_num());
+}
+#pragma omp parallel for
+for(int n=0; n<10; ++n)
+{
+  printf(" %d,%d", n, omp_get_thread_num());
+}
+printf(".\n");
 		Camera* pCam  =getCamera();
 		Stage*  pStage=getStage();
 		Camera &cam   =*pCam;
 		Stage  &stage =*pStage;
 		cam.setPos(Vector3D(0,1.65,10));
-		Luz* lightFront=new Luz(Vector3D(150.0,150.0, 100.0));
+		Light* lightFront=new Light(Vector3D(150.0,150.0, 100.0));
 		stage.add(lightFront);
-		stage.add(new Luz(Vector3D(-100.0,150.0, -150.0)));
+		stage.add(new Light(Vector3D(-100.0,150.0, -150.0)));
 
 		//Mat imgGround=imread("brown_brick_texture_map.jpg");
 
@@ -59,38 +71,9 @@ public:
 		//st->init();
 		//st->initFromFileName("heart_beats_shader_toy.glsl");
 		//st->initFromFileName("happy_jumping_shader_toy.glsl");
-		//st->initFromFileName("shader_toy_sample.stc");
-		st->initFromFileName("raymarching_for_dummies_shader_toy.glsl");
+		st->initFromFileName("shader_toy_sample.stc");
 		//st->initFromFileName("distance_pn_continous_shader_toy.glsl");
 		stage.add(st);
-
-		ax=new Axis();
-		stage.add(ax);
-		lookAtAxis=new Axis();
-		lookAtAxis->setName(Text("LookAtAxis"));
-		stage.add(lookAtAxis);
-		//Floor
-		texGround.init();
-		//Mat imgGround=imread("brick_pavement_0077_01_preview.jpg");
-		Mat imgGround=imread("brown_brick_texture_map.jpg");
-		texGround.setImage(imgGround);
-		float l=10;
-		Rectangle* r=new Rectangle(Vector3D(-l,1.1,-l),Vector3D(-l,1.1,l),Vector3D(l,0,l),Vector3D(l,0,-l));
-		r->setTextura(texGround);
-		r->setNU(10);
-		r->setNV(10);
-	    stage.add(r);
-		//we need to transpose the matrix since OpenGL
-		Mat p=getView()->getProjection()->getMat().t();
-		cout << "p="<<endl;
-		printMat<float>(p);
-		//Z values in projective mode is positive and OpenGL is negative
-		Mat v=(Mat_<float>(4,1)<<0,0,-0.5,1);
-		Mat zn=p*v;
-		cout<<"zn="<<zn<<endl<<zn.at<float>(2,0)/zn.at<float>(3,0)<<endl;
-		v=(Mat_<float>(4,1)<<0,0,-2e4,1);
-		Mat zf=p*v;
-		cout<<"zf="<<zf<<endl<<zf.at<float>(2,0)/zf.at<float>(3,0)<<endl;
 	}
 	void update(double dt){
 		if (waitKey(1) == 27) exit(0);

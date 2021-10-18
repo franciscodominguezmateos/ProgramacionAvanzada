@@ -1,11 +1,9 @@
 /*
  * util.h *
  *  Created on: 11 Dec 2018
- *      Author: francisco
+ *      Author: Francisco Dominguez
  */
-
-#ifndef UTIL_H_
-#define UTIL_H_
+#pragma once
 #include <cmath>
 #include <cassert>
 #include <vector>
@@ -49,9 +47,10 @@ pair<bool, int > findInVector(const std::vector<T>  & vecOfElements, const T  & 
 }
 
 /* RANDOMNESS */
-inline float getRand(float max,float min=0){
+//TODO change order first min then max
+inline float getRand(float max,float min){
 	float n=max-min;int ir=rand()%10000; return min+n*(float)ir/10000;}
-
+inline float getRand(float max){return getRand(max,0);}
 /* SPLITTING */
 inline vector<string> split(string s,char delimiter=' '){
 	   vector<string> tokens;
@@ -172,5 +171,3 @@ template <typename T, typename A>
 int arg_min(std::vector<T, A> const& vec) {
   return static_cast<int>(std::distance(vec.begin(), min_element(vec.begin(), vec.end())));
 }
-
-#endif /* UTIL_H_ */

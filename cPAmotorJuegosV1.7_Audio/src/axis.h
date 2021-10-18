@@ -13,25 +13,30 @@
 
 class Axis: public Solid{
  float ax,ay,az;
+ Arrow awX,awY,awZ;
 public:
- Axis():Solid(),ax(1),ay(1),az(1){}
- Axis(Vector3D v):Solid(),ax(v.getX()),ay(v.getY()),az(v.getZ()){}
- Axis(const Axis &c):Solid(c),ax(c.ax),ay(c.ay),az(c.az){}
+ Axis():Axis(Vector3D(1,1,1)){}
+ Axis(Vector3D v):Solid(),ax(v.getX()),ay(v.getY()),az(v.getZ()),awX(ax*0.05,ax),awY(ay*0.05,ay),awZ(az*0.05,az){
+	 awX.setRot(Vector3D(0,90,0));
+	 awX.setCol(Vector3D(1,0,0));
+	 awY.setRot(Vector3D(-90,0,0));
+	 awY.setCol(Vector3D(0,1,0));
+	 awZ.setCol(Vector3D(0,0,1));
+ }
+ //Axis(const Axis &c):Solid(c),ax(c.ax),ay(c.ay),az(c.az){}
  Axis *clone(){
 	 return new Axis(*this);
  }
  void render(){
-	 Arrow awX(ax*0.05,ax);
-	 awX.setRot(Vector3D(0,90,0));
-	 awX.setCol(Vector3D(1,0,0));
-	 Arrow awY(ay*0.05,ay);
-	 awY.setRot(Vector3D(-90,0,0));
-	 awY.setCol(Vector3D(0,1,0));
-	 Arrow awZ(az*0.05,az);
-	 awZ.setCol(Vector3D(0,0,1));
-	 awX.render();
-	 awY.render();
-	 awZ.render();
+	 glPushMatrix();
+		glTranslatef(getPos().getX(),getPos().getY(),getPos().getZ());
+		glRotatef(getRot().getX(), 1, 0, 0);
+		glRotatef(getRot().getY(), 0, 1, 0);
+		glRotatef(getRot().getZ(), 0, 0, 1);
+	    awX.render();
+	    awY.render();
+	    awZ.render();
+	 glPopMatrix();
 	 /*
 	 glPopMatrix();
 		glPushMatrix();

@@ -6,7 +6,7 @@
  *  It is a fragment Shader it should seem like Iñigo Quilez Shader toy
  *  06/01/2021 Parse shader toy code to define uniform parameters properly.
  *  Parameters allowed: "iTime","iTimeDelta","iFrame","iFrameRate","iMouse","iResolution"
- *  Trick: in order to make originals shaders to work just ad a space after one iTime and one iFrame
+ *  Trick: in order to make originals shadertoy.com shaders to work just add a space after one iTime and one iFrame
  */
 #pragma once
 #include "shader.h"
@@ -15,7 +15,7 @@
 const string shaderToyCode=R"glsl(
 // Created by inigo quilez - iq/2013 https://www.shadertoy.com/view/MsfGzM
 // License Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
-// Two Tweets
+// Name: Two Tweets
 float f(vec3 p) { 
 	p.z+=iTime ;return length(.05*cos(9.*p.y*p.x)+cos(p)-.1*cos(9.*(p.z+.3*p.x-p.y)))-1.; 
 }
@@ -46,6 +46,7 @@ class ShaderToy : public Solid{
 	Vec3  iResolution;
 	static vector<string> parameters;
 	map<string,bool> declared;
+	bool depthTest;
 public:
 	ShaderToy():Solid(),
 				sTime(chrono::steady_clock::now()),
@@ -53,7 +54,7 @@ public:
 				iTimeDelta(0.33),
 				iFrame(0),
 				iFrameRate(30),
-				iChannel0(new Texture()){
+				iChannel0(new Texture()),depthTest(false){
 		pstVao=new GLSLVAO();
 		pstVao->init();
 		pstVao->createAttribute(0,vertices,3);
@@ -89,7 +90,8 @@ public:
 		cout <<"Uniforms infered from shader toy code:"<<endl<<sr<<endl;
 		return sr;
 	}
-	void setiMouse(const Vec4 v){iMouse=v;}
+	inline void setDepthTest(bool b){depthTest=b;	}
+	inline void setiMouse(const Vec4 v){iMouse=v;}
 	void setFragmentShader(const string &fs){
 		string fragmentShader=fragmentShaderBaseBegin+inferUniformDeclarations(fs)+fs+fragmentShaderBaseEnd;
 		spProg.compileFromStrings(vertexShader,fragmentShader);
@@ -118,7 +120,7 @@ public:
 	inline float getTimeFromStartInSeconds(){return getDurationInSeconds<float>(sTime);}
 	void render(){
 		iTime=getTimeFromStartInSeconds();
-		//glDepthMask(GL_FALSE);
+		if(!depthTest)glDepthMask(GL_FALSE);
 		spProg.start();
 		setDynamicParams();
 		iChannel0->bind();
@@ -127,7 +129,7 @@ public:
 		pstVao->unbindAll();
 		iChannel0->unbind();
 		spProg.stop();
-		//glDepthMask(GL_TRUE);
+		if(!depthTest)glDepthMask(GL_TRUE);
 		iTimeDelta=iTime-getTimeFromStartInSeconds();
 		iFrame+=1;
 		iFrameRate=1.0/iTimeDelta;

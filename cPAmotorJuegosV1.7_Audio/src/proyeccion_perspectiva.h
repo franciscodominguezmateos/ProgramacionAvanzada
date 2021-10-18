@@ -12,7 +12,7 @@
 
 using namespace cv;
 
-class ProyeccionPerspectiva: public Proyeccion {
+class ProjectionPerspective: public Projection {
 public:
 	double campoDeVision;
 	double width;
@@ -22,13 +22,13 @@ public:
 	double zFar;
 	double fov;
 public:
-	ProyeccionPerspectiva(double fov=30.0,double width=640,double height=480,double zNear=0.5,double zFar=2e12):
+	ProjectionPerspective(double fov=30.0,double width=640,double height=480,double zNear=0.5,double zFar=2e12):
 		campoDeVision(fov),
 		width(width),height(height),
 		aspectRatio(width/height),
 		zNear(zNear),zFar(zFar),fov(fov){
 	}
-	virtual ~ProyeccionPerspectiva(){}
+	virtual ~ProjectionPerspective(){}
 	virtual void render(){
 		 glMatrixMode(GL_PROJECTION);
 		 glLoadIdentity();
@@ -44,16 +44,16 @@ public:
 	inline void setWidth(double width) { aspectRatio=width/height; this->width = width;}
 	virtual void reshape(double width,double height){setWidth(width),setHeight(height);}
 };
-class ProyeccionCamara: public ProyeccionPerspectiva{
+class ProjectionCamera: public ProjectionPerspective{
 	/* This class mimic a real camera from its intrinsic matrix */
 	/* Intrinsic matrix */
 	Mat camMtx;
 	/* Projection matrix */
 	double projectionMat[16];
 public:
-	ProyeccionCamara(Mat &K):camMtx(K){}
+	ProjectionCamera(Mat &K):camMtx(K){}
 	void reshape(double width,double height){
-		ProyeccionPerspectiva::reshape(width,height);
+		ProjectionPerspective::reshape(width,height);
 		projectionMat[0]  = 2*camMtx.at<double>(0,0)/width;
 		projectionMat[1]  = 0;
 		projectionMat[2]  = 0;

@@ -49,7 +49,7 @@ ModeloMaterial* mariokart;
 LoaderOBJ *lo;
 
 Stage e;
-Cubo *pc;
+Cube *pc;
 ModeloMaterial* m;
 Texture tex,ladrillos,paredTex,texTv,texTablero,spiderTex,marioKartTex,minionTex,mariokartTex;
 VideoCapture cap(0);
@@ -71,10 +71,10 @@ Mat K=(Mat_<double>(3,3) <<
 
 Mat dist=Mat::zeros(4,1,cv::DataType<double>::type); // Assuming no lens distortion
 CameraAR *camAR;
-ProyeccionCamara pCam(K);
+ProjectionCamera pCam(K);
 PoseEstimationChessBoard peChessBoard(K,dist);
 
-ProyeccionPerspectiva proyeccion;
+ProjectionPerspective proyeccion;
 vector<View> vistas={{0.0,0.0,1,1,&proyeccion}};
 vector<Camera> camaras(vistas.size());
 
@@ -134,8 +134,8 @@ void keyPressed(unsigned char key,int x,int y){
   case 'b':
   break;
  case ' ':
-	 Esfera *pf;
-	 pf=new Esfera();
+	 Sphere *pf;
+	 pf=new Sphere();
 	 pf->setPos(m->getPos());
 	 pf->setVel(Vector3D(0,0,-1.0));
 	 pf->setCol(Vector3D(1,0.5,0));
@@ -250,10 +250,10 @@ int main(int argc, char** argv) try{
  //glutFullScreen();
  init();
 
- Luz* l1=new Luz(Vector3D( 50,50,15));
+ Light* l1=new Light(Vector3D( 50,50,15));
  l1->hazFija();
  e.add(l1);
- e.add(new Luz(Vector3D(-50,50,15)));
+ e.add(new Light(Vector3D(-50,50,15)));
  // In order to use textures fist init() as to be called
  /*  M A R I O   K A R T */
  //mariokart=new ModeloMaterial("mk_kart.obj");

@@ -13,7 +13,7 @@ using namespace std;
 typedef CGI SensorEventData;
 
 //This class abstracts the information sent from a Wiimote as SensorEventData
-class SensorWiiMoteEventData{
+class SensorEventDataWiiMote{
 	static const int CWIID_BTN_2    =   1;
 	static const int CWIID_BTN_1    =   2;
 	static const int CWIID_BTN_B    =   4;
@@ -32,7 +32,7 @@ class SensorWiiMoteEventData{
 	int id;
 	double x,y,z;
 public:
-	SensorWiiMoteEventData():obuttons(0),ebuttons(0){}
+	SensorEventDataWiiMote():obuttons(0),ebuttons(0){}
 	void setData(SensorEventData &e){
 		obuttons=ebuttons;
 		ebuttons=e.getInt("buttons");

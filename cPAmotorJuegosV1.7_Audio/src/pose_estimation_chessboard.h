@@ -62,85 +62,25 @@ public:
 		 }
 		 return false;
 	}
-
-	int getColCorners() const {
-		return colCorners;
-	}
-
-	void setColCorners(int colCorners) {
-		this->colCorners = colCorners;
-	}
-
-	const Mat& getDist() const {
-		return dist;
-	}
-
-	void setDist(const Mat& dist) {
-		this->dist = dist;
-	}
-
-	bool isDrawCorners() const {
-		return drawCorners;
-	}
-
-	void setDrawCorners(bool drawCorners) {
-		this->drawCorners = drawCorners;
-	}
-
-	const Mat& getK() const {
-		return K;
-	}
-
-	void setK(const Mat& k) {
-		K = k;
-	}
-
-	int getRowCorners() const {
-		return rowCorners;
-	}
-
-	void setRowCorners(int rowCorners) {
-		this->rowCorners = rowCorners;
-	}
-
-	const Mat& getRvec() const {
-		return rvec;
-	}
-
-	void setRvec(const Mat& rvec) {
-		this->rvec = rvec;
-	}
-
-	double getSquareSize() const {
-		return squareSize;
-	}
-
-	void setSquareSize(double squareSize) {
-		this->squareSize = squareSize;
-	}
-
-	const Mat& getTvec() const {
-		return tvec;
-	}
-
-	void setTvec(const Mat& tvec) {
-		this->tvec = tvec;
-	}
-
-	double getXmin() const {
-		return xMin;
-	}
-
-	void setXmin(double min) {
-		xMin = min;
-	}
-
-	double getYmin() const {
-		return yMin;
-	}
-
-	void setYmin(double min) {
-		yMin = min;
-	}
+	int getColCorners() const {return colCorners;}
+	void setColCorners(int colCorners) {this->colCorners = colCorners;	}
+	const Mat& getDist() const {return dist;}
+	void setDist(const Mat& dist) {this->dist = dist;	}
+	bool isDrawCorners() const {return drawCorners;	}
+	void setDrawCorners(bool drawCorners) {	this->drawCorners = drawCorners;	}
+	const Mat& getK() const {return K;	}
+	void setK(const Mat& k) {K = k;}
+	int getRowCorners() const {return rowCorners;}
+	void setRowCorners(int rowCorners) {this->rowCorners = rowCorners;	}
+	const Mat& getRvec() const {return rvec;}
+	void setRvec(const Mat& rvec) {	this->rvec = rvec;	}
+	double getSquareSize() const {	return squareSize;	}
+	void setSquareSize(double squareSize) {	this->squareSize = squareSize;	}
+	const Mat& getTvec() const {return tvec;}
+	void setTvec(const Mat& tvec) {	this->tvec = tvec;	}
+	double getXmin() const {return xMin;}
+	void setXmin(double min) {	xMin = min;	}
+	double getYmin() const {return yMin;	}
+	void setYmin(double min) {yMin = min;}
 };
 

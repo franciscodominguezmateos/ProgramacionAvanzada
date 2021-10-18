@@ -47,9 +47,9 @@ public:
 	virtual void onDisplay(){
 		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 		for(unsigned int i=0;i<views.size();i++){
-			View*   &view=views[i];
-			Camera* &cam=cameras[i];
-			Stage*  &e=scenes[i];
+			View*   &view=views  [i];
+			Camera* &cam =cameras[i];
+			Stage*  &e   =scenes [i];
 			Solid* s=cam;//->getSolido();
 			Mat cameraViewMat=cam->getMat();
 			Mat projection=view->getProyeccion()->getMat();
@@ -60,7 +60,6 @@ public:
 				spAnimation["cameraView"]=cameraViewMat;
 				spAnimation.stop();
 			}
-
 			view->render();
 		    glLoadIdentity();
 			cam->render();
@@ -129,5 +128,4 @@ public:
 		source=audioSources[name];
 		alSourcePlay(source);
 	}
-
 };

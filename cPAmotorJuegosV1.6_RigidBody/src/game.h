@@ -15,7 +15,7 @@ using namespace std;
 class Game{
 	string title;
 	vector<View*> views;
-	vector<Camera*> cameras;
+	vector<Camara*> cameras;
 	vector<Stage*> scenes;
 	vector<GLSLShaderProgram*> shaders;
 	SensorEventProcessor seProcessor;
@@ -31,7 +31,7 @@ class Game{
 public:
 	Game(string t="PAGame default;-P",int port=8881):title(t),seProcessor(port),screen(640,480),skyBox(nullptr),t(0),dt(0.1){}
 	void addShader(GLSLShaderProgram* sp){shaders.push_back(sp);}
-	void addStage(View* v,Camera* cam,Stage* e){
+	void addScene(View* v,Camara* cam,Stage* e){
 		if(skyBox==nullptr){
 			skyBox=new SkyBox();
 			Mat m=v->getProyeccion()->getMat();
@@ -48,7 +48,7 @@ public:
 		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 		for(unsigned int i=0;i<views.size();i++){
 			View*   &view=views[i];
-			Camera* &cam=cameras[i];
+			Camara* &cam=cameras[i];
 			Stage*  &e=scenes[i];
 			Solido* s=cam;//->getSolido();
 			Mat cameraViewMat=cam->getMat();

@@ -2,6 +2,7 @@
 #ifndef VECTOR3D__
 #define VECTOR3D__
 #include <iostream>
+#include <string>
 #include <opencv2/opencv.hpp>
 #include "util.h"
 
@@ -25,6 +26,19 @@ public:
 	Vector3Dx(S x, S y, S z=0) :x(x), y(y), z(z) {}
 	//Vector3Dx(const S &x, const S &y, const S &z) :x(x), y(y), z(z) {}
 	Vector3Dx(const vector<S> &v){x=v[0];y=v[1];if(v.size()==3)z=v[2];}
+	Vector3Dx(const Mat &m){
+		if(m.rows==1){
+			x=m.at<S>(0,0);y=m.at<S>(0,1);z=m.at<S>(0,2);
+		}
+		else {
+			if(m.cols==1){
+				x=m.at<S>(0,0);y=m.at<S>(1,0);z=m.at<S>(2,0);
+			}
+			else{
+				throw runtime_error("Mat has to have one row or one column this has "+to_string(m.cols)+" columns and "+to_string(m.rows)+" rows, at Vector3D constructor");
+			}
+		}
+	}
 	Vector3Dx(const Vector3Dx<S> &v) :x(v.x), y(v.y), z(v.z) {}
 	Vector3Dx<S> *clone() { return new Vector3Dx<S>(*this); }
 	inline Vector3Dx<S> operator=(Mat m) {
@@ -162,7 +176,8 @@ inline ostream &operator<<(ostream &os, const Vector3Di &v) {
 inline Mat asMat(Vector3D v){
 	return (Mat_<double>(3,1)<< v.getX(),v.getY(),v.getZ());
 }
-inline Mat S(Vector3D v){
+// Skew or hat operator
+inline Mat S(Vector3D &v){
 	double x=v.getX();
 	double y=v.getY();
 	double z=v.getZ();
@@ -172,7 +187,18 @@ inline Mat S(Vector3D v){
               -y,        x,     0 );
 	return s;
 }
-inline Vector3D asVector3D(Mat m){return Vector3D(m.at<double>(0,0),m.at<double>(0,1),m.at<double>(0,2));}
+// Inverse skew or Vee operator
+inline Vector3D v(Mat &S){
+	Vector3D r(S.at<double>(2,1),S.at<double>(0,2),S.at<double>(1,0));
+	return r;
+}
+inline Vector3D asVector3D(Mat m){
+	if(m.rows==1)
+		return Vector3D(m.at<double>(0,0),m.at<double>(0,1),m.at<double>(0,2));
+	if(m.cols==1)
+		return Vector3D(m.at<double>(0,0),m.at<double>(1,0),m.at<double>(2,0));
+	throw runtime_error("Mat has to have one row or one column this has "+to_string(m.cols)+" columns and "+to_string(m.rows)+" rows, at Vector3D::asVector3D");
+}
 
 // FROM: https://www.learnopencv.com/rotation-matrix-to-euler-angles/
 // Calculates rotation matrix given euler angles.
@@ -239,31 +265,28 @@ Mat getTranslation(Mat &t){
 	return r;
 }
 Mat buildTransformation(Mat R,Mat t){
-	Mat r=Mat_<float>(4,4,CV_32F);
-	for(int i=0;i<3;i++){
-		for(int j=0;j<3;j++)
-			r.at<float>(i,j)=R.at<float>(i,j);
-		r.at<float>(i,3)=t.at<float>(i,0);
-		r.at<float>(3,i)=0;
-	}
-	r.at<float>(3,3)=1;
+	Mat r;
+	hconcat(R,t,r);
+	//m as to be same type as r
+	Mat m=Mat::zeros(1,4,r.type());
+	//I don't know the real type I guess float
+	// TO FIX
+	m.at<float>(0,3)=1;
+	r.push_back(m);
 	return r;
 }
 Mat uniformScaleTransform(Mat t,float s){
-	Mat r=Mat_<float>(4,4,CV_32F);
-	//copy rotation
-	for(int i=0;i<3;i++){
-		for(int j=0;j<3;j++)
-			r.at<float>(i,j)=t.at<float>(i,j);
-		//scale translation
-		r.at<float>(i,3)=t.at<float>(i,3)*s;
-		r.at<float>(3,i)=0;
-	}
-	r.at<float>(3,3)=1;
+	Mat R=getRotation(t);
+	Mat p=getTranslation(t);
+	p=p*s;
+	Mat r= buildTransformation(R,p);
+	cout << "r="<<r<<endl;
 	return r;
 }
 // this interpolated by right-> dm in on the right and update is r=T0*Tt
 // m1=m0*dm->dm=m0.inv()*m1;
+// This interpolation is not done in the SE(3) group.
+// it makes rotation and translation independently from each other.
 Mat interpolate(Mat T0,Mat T1,float t){
 	//Rotation
 	Mat m0=getRotation(T0);
@@ -294,6 +317,11 @@ inline bool isRotationMatrix(Mat &R){
     Mat shouldBeIdentity = Rt * R;
     Mat I = Mat::eye(3,3, shouldBeIdentity.type());
     return  norm(I, shouldBeIdentity) < 1e-6;
+}
+//TODO
+//Nearest rotation matrix
+inline Mat nearestRotation(Mat &R0){
+	return R0;
 }
 // Calculates rotation matrix to euler angles
 // The result is the same as MATLAB except the order

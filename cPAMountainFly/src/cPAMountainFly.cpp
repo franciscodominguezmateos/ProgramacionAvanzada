@@ -62,9 +62,9 @@ public:
 		Camera &cam   =*pCam;
 		Stage  &stage =*pStage;
 		cam.setPos(Vector3D(0,0,10));
-		Luz* lightFront=new Luz(Vector3D(150.0,150.0, 100.0));
+		Light* lightFront=new Light(Vector3D(150.0,150.0, 100.0));
 		stage.add(lightFront);
-		stage.add(new Luz(Vector3D(-100.0,150.0, -150.0)));
+		stage.add(new Light(Vector3D(-100.0,150.0, -150.0)));
 
 
 		st=new ShaderToy();

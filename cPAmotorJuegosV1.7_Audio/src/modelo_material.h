@@ -2,7 +2,7 @@
  * modelo_material.h
  *
  *  Created on: Nov 12, 2015
- *      Author: francisco
+ *      Author: Francisco Dominguez
  */
 
 #pragma once
@@ -71,7 +71,6 @@ public:
 	inline void addTriangulo(Triangle *t){
 		triangulos.push_back(t);
 	}
-
 	inline void setColor(Vector3D c){
 		for(Triangle *t:triangulos){
 			t->setCol(c);
