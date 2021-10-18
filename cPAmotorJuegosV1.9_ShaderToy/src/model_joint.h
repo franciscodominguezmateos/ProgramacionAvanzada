@@ -44,7 +44,7 @@ public:
 	Joint(GLuint idx,string name,Mat pLocalBindTransform):
 		idx(idx),
 		name(name),
-		localBindTransform(pLocalBindTransform.clone()){}
+		localBindTransform(pLocalBindTransform){}
 	void addChild(Joint child){children.push_back(child);}
 	void doUniformScale(float s){
 		localBindTransform=uniformScaleTransform(localBindTransform,s);
@@ -142,6 +142,25 @@ public:
 		}
 		throw runtime_error("Joint name="+name+" not found in joint="+getName());
 	}
+	//
+	map<string,int> getJointNamesMap(){
+		map<string,int> names;
+		getJointNamesMap(names);
+		return names;
+	}
+	//return a map of names to idx of joint
+	void getJointNamesMap(map<string,int>& names){
+		names[getName()]=getIdx();
+		for(Joint& j:getChildren())
+			j.getJointNamesMap(names);
+	}
+	vector<string> getJointNames(){
+		map<string,int> jnm=getJointNamesMap();
+		vector<string> vs(jnm.size());
+		for(pair<string,int> si:jnm)
+			vs[si.second]=si.first;
+		return vs;
+	}
 	inline vector<Joint> &getChildren()  {return children;}
 	inline int getIdx()               {return idx;}
 	inline string &getName()             {return name;}
@@ -157,10 +176,10 @@ public:
 	friend void printJoint(ostream &os, const Joint &j,int indent);
 };
 void printJoint(ostream &os, const Joint &j,int indent){
-	for(int i=0;i<indent;i++) os<<" ";
-	os<<indent<<".-Name="<<j.name<<"("<<j.idx<<")"<<endl;
+	for(int i=0;i<indent;i++) os<<"  ";
+	os<<indent<<".-"<<j.name<<"("<<j.idx<<")"<<endl;
 	for(const Joint &jc:j.children)
-		printJoint(os,jc,indent+2);
+		printJoint(os,jc,indent+1);
 }
 ostream &operator<<(ostream &os, const Joint &j){
 	printJoint(os,j,0);

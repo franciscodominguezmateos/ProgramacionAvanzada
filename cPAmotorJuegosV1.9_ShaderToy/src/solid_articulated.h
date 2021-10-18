@@ -24,17 +24,17 @@ class SolidArticulated: public Solid{
 	vector<Mat> animatedTransforms;
 	float ax=1,ay=1,az=1;
 public:
-	float L;
+	float L=0.1;
 	vector<Mat> &getAnimatedTransforms(){return animatedTransforms;}
 	vector<string> &getJointNames(){return jointNames;}
-	void            setJointNames(vector<string> &jn){
+	void            setJointNames(vector<string> jn){
 		jointNames=jn;
 		jointTransforms   =vector<Mat>(jn.size());
 		animatedTransforms=vector<Mat>(jn.size());
 		for(unsigned int i=0;i<jn.size();i++) jointIdx[jn[i]]=i;
 	}
 	SkeletonPose &getPose(){return currentPose;}
-	virtual void  setPose(SkeletonPose &cp){
+	virtual void  setPose(SkeletonPose cp){
 		currentPose=cp;
 		getJointsRoot().applyPose(currentPose);
 		getJointsRoot().fillAnimatedTransforms(animatedTransforms);
