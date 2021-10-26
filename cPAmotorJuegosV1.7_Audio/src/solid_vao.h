@@ -73,7 +73,7 @@ public:
 	}
 	void shareAttributes(SolidVAO &s){
 		vao->bind();
-		GLSLVAO* svao=s.getPtrVAO();
+		GLSLVAO* svao=s.getVAOPtr();
 		vao->setVBOs(svao->getVBOs());
 		vao->unbind();
 	}
@@ -90,7 +90,7 @@ public:
 		sp.stop();
 		material.unbind();
 	}
-	GLSLVAO* getPtrVAO(){return vao;}
+	GLSLVAO* getVAOPtr(){return vao;}
 };
 //Some model have many textures
 //With the next class we solve the problem having many SolidVAO

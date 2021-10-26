@@ -17,28 +17,43 @@ class LoaderDAE: public Loader {
     XMLNode root;
 public:
     string nameRootJoint;
-	LoaderDAE(string name,int idx=0):Loader(name),idxGeo(idx){}
+	LoaderDAE(string name,int idx=0,string folder=""):Loader(name,folder),idxGeo(idx){}
 	AnimationSkeleton &getAnimationSkeleton(){return animSkeleton;}
-	void load(){
-		//ifstream ifdae("model.dae");
-	    string fileName=getName();
-	    ifstream ifdae(fileName.c_str());
+	XMLNode& loadNodeRootFromFileName(string fileName){
+		cout << fileName<<endl;
+	    ifstream ifdae(fileName);
 	    ifdae >> root;
+	    return root;
+	}
+	inline XMLNode& getNodeCollada            (){return root("COLLADA");}
+	inline XMLNode& getNodeLibraryGeometries  (){return root("COLLADA")("library_geometries"   );}
+	inline XMLNode& getNodeLibraryControlers  (){return root("COLLADA")("library_controllers"  );}
+    inline XMLNode& getNodeLibraryVisualScenes(){return root("COLLADA")("library_visual_scenes");}
 
-	    // COLLADA FILE FORMAT
-	    //Geometry loader
-	    XMLNode &collada=root("COLLADA");
-	    XMLNode &library_geometries   =collada("library_geometries");
-	    XMLNode &library_controllers  =collada("library_controllers");
-	    XMLNode &library_visual_scenes=collada("library_visual_scenes");
-
+    // root node must be set propperly or before call loadNodeRootFromFileName()
+    void loadGeometry(int idxGeo=0){
 	    //for the moment this only load the idxGeo geometry
+	    XMLNode &library_geometries   =getNodeLibraryGeometries();
 	    XMLNode &geometry=library_geometries["geometry"][idxGeo];
 	    XMLNode &mesh=geometry("mesh");
 	    loadVertices(mesh);
 	    loadNormals (mesh);
 	    loadTextures(mesh);
-	    loadIndixes (mesh);
+	    loadIndices (mesh);
+    }
+	void load(){
+		//ifstream ifdae("model.dae");
+	    string fileName=getPath()+getName();
+	    loadNodeRootFromFileName(fileName);
+
+	    // COLLADA FILE FORMAT
+	    //Geometry loader
+	    XMLNode &collada=root("COLLADA");
+	    XMLNode &library_controllers  =collada("library_controllers");
+	    XMLNode &library_visual_scenes=collada("library_visual_scenes");
+
+	    //for the moment this only load the idxGeo geometry
+	    loadGeometry(idxGeo);
 
 	    // SkeletonLoader
 	    //Load skin
@@ -146,8 +161,8 @@ public:
 	Joint loadJoints(XMLNode &jointNode){
 		Joint joint=getJoint(jointNode);
 		if(jointNode.hasChild("node")){
-			vector<XMLNode> &vn=jointNode["node"];
-			for(XMLNode &n:vn)
+			vector<XMLNode> &children=jointNode["node"];
+			for(XMLNode &n:children)
 				if(isValidJoint(n))
 					joint.addChild(loadJoints(n));
 		}
@@ -201,23 +216,31 @@ public:
 		vector<GLfloat> vt=colladaSourceNumbers(iTextcoord,mesh);
 		setTexturesFromFloats(vt);
 	}
-	void loadIndixes(XMLNode &mesh){
+	void loadIndices(XMLNode &mesh){
 		string name;
 		if(mesh.hasChild("polylist"))
 			name="polylist";
 		else
 			name="triangles";
-		XMLNode &polylist=mesh(name);
-		int typeCount=polylist["input"].size();
-		XMLNode &p=polylist("p");
-		vector<GLuint> vi=split_numbers<GLuint>(p.getText());
-		for(unsigned int i=0;i<vi.size()/typeCount;i++){
-			GLuint iv=vi[i*typeCount+0];
-			GLuint in=vi[i*typeCount+1];
-			GLuint it=vi[i*typeCount+2];
-			addVTNindex(iv,it,in);
+		for(XMLNode &polylist:mesh[name]){
+			int count=polylist.getAttributeInt("count");
+			//TODO material attribute
+			int typeCount=polylist["input"].size();
+			XMLNode &p=polylist("p");
+			vector<GLuint> vi=split_numbers<GLuint>(p.getText());
+			//TODO: check count
+			// 21/10/2021 Done!
+			int countActual=vi.size()/typeCount/3;//not sure way last 3
+			if(count!=countActual) throw runtime_error("Count!=actual Count in LoaderDAE::loadIndices()");
+			for(unsigned int i=0;i<vi.size()/typeCount;i++){
+				//it is supossed that typeCount=3!!!
+				//TODO: more flexible index reading
+				GLuint iv=vi[i*typeCount+0];
+				GLuint in=vi[i*typeCount+1];
+				GLuint it=vi[i*typeCount+2];
+				addVTNindex(iv,it,in);
+			}
 		}
-		//TODO: check count
 	}
 	/*                   C O L A D A   U T I L                   */
 	inline string getSourceId(XMLNode &nodeID){
@@ -239,7 +262,7 @@ public:
 		// in nodeData there is a source node with id dataSourceID then get the source node
 		XMLNode &sourceNode=nodeData("source","id",dataSourceID)(source);
 		string &text=sourceNode.getText();
- 	    replaceChars(text);
+ 	    replaceChars(text);//remove special chars \n\t\r\f\v by space
 	    vector<string> vs=split(text);
 	    if(sourceNode.hasAttribute("count")){
 	    	unsigned int count=sourceNode.getAttributeInt("count");

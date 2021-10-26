@@ -4,7 +4,6 @@
  *  Created on: March 28, 2020
  *      Author: Francisco Dominguez
  */
-
 #pragma once
 #include <stdio.h>
 #include <vector>
@@ -24,8 +23,8 @@ using namespace std;
 
 class Loader {
 	ModelMeshArticulated m;
-	string name;
-	string path;
+	string name;//actually fileName
+	string path;//actually filePath
 public:
 	static string model_base_path;
 
@@ -38,28 +37,31 @@ public:
 	}
 	virtual void load()=0;
 	inline string &getName(){return name;}
+	inline string &getPath(){return path;}
 	inline ModelMesh &getModel(){return m;}
 	inline ModelMeshArticulated &getModelArticulated(){return m;}
-	inline vector<string> &getJointNames(){return m.getJointNames();}
-	inline void setJointNames(vector<string> &jn){m.setJointNames(jn);}
-	inline int getJointIdx(string name){return m.getJointIdx(name);}
-	inline vector<Triangle>& getTriangles(){return m.getTriangles();}
-	inline map<string, Material>& getMaterials() {return m.getMaterials();}
-	inline vector<Vector3D>& getVertices() {return m.getVertices();}
-	inline vector<Vector3D>& getTextures() {return m.getTextures();}
-	inline vector<Vector3D>& getNormals()  {return m.getNormals();}
+	/*              D E L E G A T I O N S              */
+	inline void clear(){m.clear();}
+	inline vector<string>&       getJointNames()         {return m.getJointNames();}
+	inline int                   getJointIdx(string name){return m.getJointIdx(name);}
+	inline vector<Triangle>&     getTriangles()          {return m.getTriangles();}
+	inline map<string, Material>&getMaterials()          {return m.getMaterials();}
+	inline vector<Vector3D>&     getVertices()           {return m.getVertices();}
+	inline vector<Vector3D>&     getTextures()           {return m.getTextures();}
+	inline vector<Vector3D>&     getNormals()            {return m.getNormals();}
 	inline void addVTNindex(unsigned int iv,unsigned int it,unsigned int in){m.addVTNindex(iv,it,in);}
-	inline void addVertex (Vector3D &v){m.addVertex(v);}
-	inline void addTexture(Vector3D &v){m.addTexture(v);}
-	inline void addNormal (Vector3D &v){m.addNormal(v);}
-	inline void addMaterial(string name,Material &mat){m.addMaterial(name,mat);}
-	inline void addTriangle(Triangle &t){m.addTriangle(t);}
+	inline void addVertex (Vector3D &v)                   {m.addVertex(v);}
+	inline void addTexture(Vector3D &v)                   {m.addTexture(v);}
+	inline void addNormal (Vector3D &v)                   {m.addNormal(v);}
+	inline void addMaterial(string name,Material &mat)    {m.addMaterial(name,mat);}
+	inline void addTriangle(Triangle &t)                  {m.addTriangle(t);}
 	inline void setVerticesFromFloats(vector<GLfloat> &vf){m.setVerticesFromFloats(vf);}
 	inline void setTexturesFromFloats(vector<GLfloat> &vf){m.setTexturesFromFloats(vf);}
 	inline void setNormalsFromFloats (vector<GLfloat> &vf){m.setNormalsFromFloats(vf) ;}
-	inline void setJointsRoot(Joint j){m.setJointsRoot(j);}
+	inline void setJointNames(vector<string> &jn)         {m.setJointNames(jn);}
+	inline void setJointsRoot(Joint j)                    {m.setJointsRoot(j);}
 	inline void setInverseBindTransforms(vector<Mat> &ivt){m.setInverseBindTransforms(ivt);}
-	inline Joint &getJointsRoot(){return m.getJointsRoot();}
+	inline Joint &getJointsRoot()                  {return m.getJointsRoot();}
 	inline void addVertexSkinData(VertexSkinData &vsd){m.addVertexSkinData(vsd);}
 };
 //must finish on slash '/'

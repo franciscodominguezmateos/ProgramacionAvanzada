@@ -126,6 +126,7 @@ public:
 	friend ofstream &operator<<(ofstream &ofxml,XMLNode &n);
 };
 /*         STREAM I/O         */
+// -21/10/2021 TODO: add indentation
 ostream &operator<<(ostream &ofxml,XMLNode &n){
 	ofxml << "<" << n.getName() << " " ;
 	// send attributes

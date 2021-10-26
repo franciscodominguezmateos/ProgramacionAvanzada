@@ -17,13 +17,13 @@ public:
 	GameStandard(string title):	Game(title),mx(0),my(0){
 		addScene(new View(),new Camera(),new Stage());
 		addSensorObserver(this);
-		getCamera()->setPos(Vector3D(0,0,10));
+		getCamera().setPos(Vector3D(0,0,10));
 	}
-	void add(SolidPtr s){getStage()->add(s);}
+	void add(SolidPtr s){getStage().add(s);}
 	virtual void mouseMoved(int x, int y){
 	    if (mx>=0 && my>=0) {
-	    	Vector3D r=getCamera()->getRot()+Vector3D(y-my,x-mx,0);
-	    	getCamera()->setRot(r);
+	    	Vector3D r=getCamera().getRot()+Vector3D(y-my,x-mx,0);
+	    	getCamera().setRot(r);
 	    }
 	    mx = x;
 	    my = y;
@@ -38,48 +38,48 @@ public:
 	        my = -1;
 	    }
 	    if (button==3){
-	    	Vector3D pos=getCamera()->getPos();
+	    	Vector3D pos=getCamera().getPos();
 	    	pos=pos*0.9;
-	    	getCamera()->setPos(pos);
+	    	getCamera().setPos(pos);
 	    }
 	    if (button==4){
-	    	Vector3D pos=getCamera()->getPos();
+	    	Vector3D pos=getCamera().getPos();
 	    	pos=pos*1.1;
-	    	getCamera()->setPos(pos);
+	    	getCamera().setPos(pos);
 	    }
 	}
 	virtual void keyPressed(char key,int x,int y){
 		Vector3D v;
 		 switch(key){
 		 case 'p':
-			 v=getCamera()->getLookAtPos()+Vector3D(0.05,0,0);
-			 getCamera()->setLookAtPos(v);
+			 v=getCamera().getLookAtPos()+Vector3D(0.05,0,0);
+			 getCamera().setLookAtPos(v);
 			 break;
 		 case 'o':
-			 v=getCamera()->getLookAtPos()+Vector3D(-0.05,0,0);
-			 getCamera()->setLookAtPos(v);
+			 v=getCamera().getLookAtPos()+Vector3D(-0.05,0,0);
+			 getCamera().setLookAtPos(v);
 			 break;
 		 case 'q':
-			 v=getCamera()->getLookAtPos()+Vector3D(0,0,-0.05);
-			 getCamera()->setLookAtPos(v);
+			 v=getCamera().getLookAtPos()+Vector3D(0,0,-0.05);
+			 getCamera().setLookAtPos(v);
 			 break;
 		 case 'a':
-			 v=getCamera()->getLookAtPos()+Vector3D(0,0,0.05);
-			 getCamera()->setLookAtPos(v);
+			 v=getCamera().getLookAtPos()+Vector3D(0,0,0.05);
+			 getCamera().setLookAtPos(v);
 			 break;
 		 case 't':
-			 v=getCamera()->getLookAtPos()+Vector3D(0, 0.05);
-			 getCamera()->setLookAtPos(v);
+			 v=getCamera().getLookAtPos()+Vector3D(0, 0.05);
+			 getCamera().setLookAtPos(v);
 			 break;
 		 case 'g':
-			 v=getCamera()->getLookAtPos()+Vector3D(0,-0.05);
-			 getCamera()->setLookAtPos(v);
+			 v=getCamera().getLookAtPos()+Vector3D(0,-0.05);
+			 getCamera().setLookAtPos(v);
 			 break;
 		 }
 	}
 	virtual ~GameStandard(){}
-	CameraPtr &getCamera() {return getScene(0)->getCamera();}
-	StagePtr  &getStage()  {return getScene(0)->getStage();}
-	ViewPtr   &getView()   {return getScene(0)->getView();}
+	inline Camera& getCamera() {return getScene(0)->getCamera();}
+	inline Stage&  getStage()  {return getScene(0)->getStage();}
+	inline View&   getView()   {return getScene(0)->getView();}
 };
 

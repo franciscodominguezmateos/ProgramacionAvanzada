@@ -17,7 +17,7 @@ using namespace std;
 class Game{
 	string title;
 	vector<ScenePtr> scenes;
-	vector<GLSLShaderProgram*> shaders;
+	vector<GLSLShaderProgramPtr> shaders;
 	SensorEventProcessor seProcessor;
 	SocketMJPEGServer  smserv;
 	GLSLFBO screen; //default frame buffer object is the screen if init() is not called
@@ -38,9 +38,9 @@ public:
 	void   setDTime(double d){dt=d;}
 	vector<ScenePtr> &getScenes(){return scenes;}
 	ScenePtr &getScene(int i){return scenes[i];}
-	void addShader(GLSLShaderProgram* sp){shaders.push_back(sp);}
-	void addScene(Scene* &scene){scenes.push_back(scene);}
-	void addScene(View* v,Camera* cam,Stage* s){
+	void addShader(GLSLShaderProgramPtr sp){shaders.push_back(sp);}
+	void addScene(ScenePtr &scene){scenes.push_back(scene);}
+	void addScene(ViewPtr v,CameraPtr cam,StagePtr s){
 		//if(skyBox==nullptr){
 			//skyBox=new SkyBox();
 			//Mat m=v->getProyeccion()->getMat();
@@ -53,8 +53,8 @@ public:
 	string &getTitle(){return title;}
 	Mat &getImg(){return img;}
 	void setShaderProgramTransformations(Scene* &scene){
-		View*   &view =scene->getView();
-		Camera* &cam  =scene->getCamera();
+		View*   &view =scene->getViewPtr();
+		Camera* &cam  =scene->getCameraPtr();
 		Mat cameraViewMat=cam->getMat();
 		Mat projection=view->getProjection()->getMat();
 		for(GLSLShaderProgram* &pSp:shaders){
@@ -89,14 +89,14 @@ public:
 		 t+=dt;
 		 update(dt);
 		 for(Scene* &e:scenes)
-			 e->getStage()->update(dt);
+			 e->getStagePtr()->update(dt);
 		 onDisplay();
 	}
 	virtual void onReshape(int width,int height){
 		screen.setWidth(width);
 		screen.setHeight(height);
 		for(Scene* &e:scenes)
-			e->getView()->reshape(width,height);
+			e->getViewPtr()->reshape(width,height);
 	}
 	//Sensor events: Keyboard and mouse
 	virtual void onKeyPressed(unsigned char key,int x,int y){

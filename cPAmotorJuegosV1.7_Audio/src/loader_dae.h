@@ -38,7 +38,7 @@ public:
 	    loadVertices(mesh);
 	    loadNormals (mesh);
 	    loadTextures(mesh);
-	    loadIndixes (mesh);
+	    loadIndices (mesh);
 
 	    // SkeletonLoader
 	    //Load skin
@@ -201,7 +201,7 @@ public:
 		vector<GLfloat> vt=colladaSourceNumbers(iTextcoord,mesh);
 		setTexturesFromFloats(vt);
 	}
-	void loadIndixes(XMLNode &mesh){
+	void loadIndices(XMLNode &mesh){
 		string name;
 		if(mesh.hasChild("polylist"))
 			name="polylist";

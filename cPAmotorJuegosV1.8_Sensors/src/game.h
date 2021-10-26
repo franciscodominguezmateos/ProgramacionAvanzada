@@ -48,8 +48,8 @@ public:
 	string &getTitle(){return title;}
 	Mat &getImg(){return img;}
 	void setShaderProgramTransformations(Scene* &scene){
-		View*   &view =scene->getView();
-		Camera* &cam  =scene->getCamera();
+		View*   &view =scene->getViewPtr();
+		Camera* &cam  =scene->getCameraPtr();
 		Mat cameraViewMat=cam->getMat();
 		Mat projection=view->getProjection()->getMat();
 		for(GLSLShaderProgram* &pSp:shaders){
@@ -84,14 +84,14 @@ public:
 		 t+=dt;
 		 update(dt);
 		 for(Scene* &e:scenes)
-			 e->getStage()->update(dt);
+			 e->getStagePtr()->update(dt);
 		 onDisplay();
 	}
 	virtual void onReshape(int width,int height){
 		screen.setWidth(width);
 		screen.setHeight(height);
 		for(Scene* &e:scenes)
-			e->getView()->reshape(width,height);
+			e->getViewPtr()->reshape(width,height);
 	}
 	//Sensor events: Keyboard and mouse
 	virtual void onKeyPressed(unsigned char key,int x,int y){

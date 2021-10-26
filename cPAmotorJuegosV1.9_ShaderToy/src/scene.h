@@ -31,13 +31,16 @@ public:
 		delete camera;
 		delete stage;
 	}
-	CameraPtr &getCamera() {return camera;}
-	void       setCamera(CameraPtr camera) {this->camera = camera;}
-	StagePtr  &getStage()  {return stage;}
-	void       setStage(StagePtr stage) {this->stage = stage;}
-	ViewPtr   &getView()   {return view;}
-	void       setView(ViewPtr view) {this->view = view;}
-	inline void render(){
+	CameraPtr &getCameraPtr() {return camera;}
+	Camera&    getCamera(){return *camera;}
+	void       setCameraPtr(CameraPtr camera) {this->camera = camera;}
+	StagePtr  &getStagePtr()  {return stage;}
+	Stage&     getStage(){return *stage;}
+	void       setStagePtr(StagePtr stage) {this->stage = stage;}
+	ViewPtr   &getViewPtr()   {return view;}
+	View&      getView(){return *view;}
+	void       setViewPtr(ViewPtr view) {this->view = view;}
+	virtual void render(){
 		view->render();
 	    glLoadIdentity();
 		camera->render();

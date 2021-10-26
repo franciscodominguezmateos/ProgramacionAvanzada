@@ -255,11 +255,38 @@ inline Vector3D asVector3D(Mat m){
 	throw runtime_error("Mat has to have one row or one column this has "+to_string(m.cols)+" columns and "+to_string(m.rows)+" rows, at Vector3D::asVector3D");
 }
 
+template<class S=double>
+inline Mat getRotX(S theta){
+    Mat R_x = (Mat_<S>(3,3) <<
+               1,                0,            0,
+               0,       cos(theta),  -sin(theta),
+               0,       sin(theta),   cos(theta)
+               );
+	return R_x;
+}
+template<class S=double>
+inline Mat getRotY(S theta){
+    Mat R_y = (Mat_<S>(3,3) <<
+               cos(theta),    0,      sin(theta),
+                        0,    1,               0,
+              -sin(theta),    0,      cos(theta)
+               );
+    return R_y;
+}
+template<class S=double>
+inline Mat getRotZ(S theta){
+    Mat R_z = (Mat_<S>(3,3) <<
+               cos(theta),    -sin(theta),       0,
+               sin(theta),     cos(theta),       0,
+                        0,              0,       1);
+    return R_z;
+}
 // FROM: https://www.learnopencv.com/rotation-matrix-to-euler-angles/
 // Calculates rotation matrix given euler angles.
+template<class S=double>
 inline Mat eulerAnglesToRotationMatrix(Vector3D theta){
 	theta=theta*DEG2RAD;
-	// Calculate rotation about x axis
+/*	// Calculate rotation about x axis
     Mat R_x = (Mat_<double>(3,3) <<
                1,       0,              0,
                0,       cos(theta[0]),   -sin(theta[0]),
@@ -277,7 +304,8 @@ inline Mat eulerAnglesToRotationMatrix(Vector3D theta){
                sin(theta[2]),    cos(theta[2]),       0,
                0,               0,                  1);
     // Combined rotation matrix
-    Mat R = R_z * R_y * R_x;
+    Mat R = R_z * R_y * R_x;*/
+    Mat R= getRotZ(theta[2])*getRotY(theta[1])*getRotX(theta[0]);
     return R;
 }
 template<class S=double>

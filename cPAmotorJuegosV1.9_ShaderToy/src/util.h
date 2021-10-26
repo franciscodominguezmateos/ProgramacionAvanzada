@@ -17,9 +17,10 @@
 
 using namespace std;
 
-//This is OpenCV specific it should be in other file? comething like opencv_util.h?
+//This is OpenCV specific it should be in other file? something like opencv_util.h?
 #include "opencv2/opencv.hpp"
 using namespace cv;
+
 string cvtype2str(int type) {
  string r;
 

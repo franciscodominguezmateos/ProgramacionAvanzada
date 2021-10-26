@@ -5,6 +5,7 @@
  *      Author: Francisco Dominguez
  */
 #pragma once
+
 class GLSLVAO;
 using GLSLVAOPtr=GLSLVAO*;
 

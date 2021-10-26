@@ -29,11 +29,11 @@ public:
 		delete camera;
 		delete stage;
 	}
-	Camera* &getCamera() {return camera;}
-	void     setCamera(Camera* camera) {this->camera = camera;}
-	Stage* &getStage() {return stage;}
-	void    setStage(Stage* stage) {this->stage = stage;}
-	View* &getView() {return view;}
+	Camera* &getCameraPtr() {return camera;}
+	void     setCameraPtr(Camera* camera) {this->camera = camera;}
+	Stage* &getStagePtr() {return stage;}
+	void    setStagePtr(Stage* stage) {this->stage = stage;}
+	View* &getViewPtr() {return view;}
 	void   getView(View* view) {this->view = view;}
 	inline void render(){
 		view->render();

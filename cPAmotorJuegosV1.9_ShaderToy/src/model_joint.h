@@ -10,6 +10,9 @@
 #include <string>
 #include <opencv2/opencv.hpp>
 
+using namespace std;
+using namespace cv;
+
 // SkeletonPose is all local transformations for a whole skeleton, in this case map<string,Mat>
 // since they are indexed by name
 typedef map<string,Mat> SkeletonPose;
@@ -20,6 +23,9 @@ inline ostream &operator<<(ostream &os, const SkeletonPose &pose) {
 	}
 	return os;
 }
+class Joint;
+using JointPtr=Joint*;
+
 class Joint{
 	// idx is the VAO index
 	int idx;
@@ -39,13 +45,30 @@ class Joint{
 	// final increment global animation transform from bindTransform to transform
 	// transform=animatedTransform*binTransform;
 	Mat animatedTransform;
+	JointPtr parent;
 public:
-	Joint(){};
+	Joint():idx(0),name(""),parent(nullptr){};
 	Joint(GLuint idx,string name,Mat pLocalBindTransform):
 		idx(idx),
 		name(name),
-		localBindTransform(pLocalBindTransform){}
-	void addChild(Joint child){children.push_back(child);}
+		localBindTransform(pLocalBindTransform),
+		parent(nullptr){
+	}
+	Joint(const Joint& j):
+		idx(j.idx),
+		name(j.name),
+		children(j.children),
+		localBindTransform(j.localBindTransform),
+		bindTransform(j.bindTransform),
+		inverseBindTransform(j.inverseBindTransform),
+		animatedTransform(j.animatedTransform),
+		parent(nullptr){
+		for(Joint& jc:getChildren()) jc.setParent(this);
+	}
+	void addChild(Joint child){
+		child.setParent(this);
+		children.push_back(child);
+	}
 	void doUniformScale(float s){
 		localBindTransform=uniformScaleTransform(localBindTransform,s);
 		bindTransform=uniformScaleTransform(bindTransform,s);
@@ -113,7 +136,6 @@ public:
 		Mat I=Mat::eye(4,4,CV_32F);
 		thisJoint.applyPose2Joints(pose,I);
 	}
-	inline void applyLocalBinPose(){SkeletonPose pose=getLocalBindPose();applyPose(pose);}
 	void applyPose2Joints(SkeletonPose &pose,Mat &currentParentTransform){
 		Joint &joint=*this;
 		//not all articulations have to be animated
@@ -129,7 +151,9 @@ public:
 		for(Joint &j:joint.getChildren())
 			j.applyPose2Joints(pose,currentTransform);
 	}
+	inline void applyLocalBinPose(){SkeletonPose pose=getLocalBindPose();applyPose(pose);}
 	//TO CHECK: 18/10/2021
+	//CHECKED : 23/10/2021
 	Joint& getJointByName(string name){
 		Joint& self=*this;
 		if(getName()==name)
@@ -161,6 +185,27 @@ public:
 			vs[si.second]=si.first;
 		return vs;
 	}
+	//TODO: 23/10/2021  fix it doesn't work
+	/*vector<Joint> getPathToRoot(string name){
+		vector<Joint> vj;
+		Joint& j=getJointByName(name);
+		vj.push_back(j);
+
+
+		getPathToRoot(name,vj);
+		return vj;
+	}*/
+	bool isChild(Joint& joint){
+		for(Joint& j:getChildren()){
+			if(j.getName()==joint.getName())
+				return true;
+		}
+		return false;
+	}
+	JointPtr getParentPtr(){return parent;}
+	void   setParent(Joint* p){parent=p;}
+	bool isRoot(){return parent==nullptr;}
+	bool isLeaf(){return getChildren().size()==0;}
 	inline vector<Joint> &getChildren()  {return children;}
 	inline int getIdx()               {return idx;}
 	inline string &getName()             {return name;}
@@ -177,7 +222,7 @@ public:
 };
 void printJoint(ostream &os, const Joint &j,int indent){
 	for(int i=0;i<indent;i++) os<<"  ";
-	os<<indent<<".-"<<j.name<<"("<<j.idx<<")"<<endl;
+	os<<indent<<".-"<<j.name<<"("<<j.idx<<")"<< j.children.size() << " "<< (j.parent==nullptr) << endl;
 	for(const Joint &jc:j.children)
 		printJoint(os,jc,indent+1);
 }

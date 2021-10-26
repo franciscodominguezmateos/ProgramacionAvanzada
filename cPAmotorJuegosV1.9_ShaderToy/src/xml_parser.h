@@ -6,6 +6,7 @@
  */
 #pragma once
 #include "xml_scanner.h"
+ifstream &operator>>(ifstream &ifxml,XMLNode &n);
 class XMLParser{
 	XMLNode n;
 	XMLScanner scanner;
@@ -38,6 +39,12 @@ public:
 			n=scanner.getNextNode();
 		}
 		return parent;
+	}
+	static XMLNode loadNodeRootFromFileName(string fileName){
+		XMLNode root;
+	    ifstream ifxml(fileName);
+	    ifxml >> root;
+		return root;
 	}
 };
 /*         STREAM I/O         */

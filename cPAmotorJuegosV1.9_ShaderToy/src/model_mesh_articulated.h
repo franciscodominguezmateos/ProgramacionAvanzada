@@ -83,6 +83,14 @@ class ModelMeshArticulated:public ModelMesh {
 	map<string,int> jointIdx;
 	vector<Mat> inverseBindTransforms;
 public:
+	void clear(){
+		ModelMesh::clear();
+		vertexSkinData.clear();
+		jointsRoot=Joint();
+		jointNames.clear();
+		jointIdx.clear();
+		inverseBindTransforms.clear();
+	}
 	inline void setJointNames(vector<string> &jn){
 		jointNames=jn;
 		for(unsigned int i=0;i<jn.size();i++) jointIdx[jn[i]]=i;

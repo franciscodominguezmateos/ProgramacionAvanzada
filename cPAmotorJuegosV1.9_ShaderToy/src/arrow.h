@@ -14,7 +14,7 @@ class Arrow: public Solid {
 	double tipB,tipH;
 	Text name;
 public:
-	Arrow(double b=0.05,double h=1):Solid(),b(b),h(h),tipB(b*1.5),tipH(0.2),name("Arrow"){
+	Arrow(double b=0.05,double h=1):Solid(),b(b),h(h),tipB(b*1.5),tipH(h*0.2),name("Arrow"){
 		 quadratic=gluNewQuadric();
 		 hazFija();
 		 name.setPos(Vector3D(b*1.5,0,h/2));

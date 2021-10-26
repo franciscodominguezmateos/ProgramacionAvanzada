@@ -8,6 +8,10 @@
 #include "shader.h"
 #include "model_mesh.h"
 #include "solid.h"
+
+class SolidVAO;
+using SolidVAOPtr=SolidVAO*;
+
 /*
  * The point of this class is to use one instance as master, the owner of the pointer vao
  * and other clones are used to share the vao attribute of the master instance.
@@ -15,7 +19,7 @@
  *
  */
 // Masters SolidVAOs are owner of the vao and should release then in the destructor
-// Masters SolidVAOs have to be initiates with a mesh in order to upload data(vertex info) to GPU
+// Masters SolidVAOs have to be initiated with a mesh in order to upload data(vertex info) to GPU
 // Example: SolidVAO mvao0(&shaderProgram),mvao1(&shaderProgram);
 // Not Masters SolidVAOs are not aware of the vao instead they share it with master
 // next instance mvao0 is the master, we can use copy constructor to set not master SolidVAOs
@@ -73,12 +77,24 @@ public:
 	}
 	void shareAttributes(SolidVAO &s){
 		vao->bind();
-		GLSLVAO* svao=s.getPtrVAO();
+		GLSLVAO* svao=s.getVAOPtr();
 		vao->setVBOs(svao->getVBOs());
 		vao->unbind();
 	}
+	void setMaterial(string filename){
+	    Material mt;
+		Texture* map_Kd_tex=new Texture();
+		map_Kd_tex->init();
+		//Mat img=imread(filename,IMREAD_UNCHANGED);
+		Mat img=imread(filename);
+		map_Kd_tex->setImage(img);
+
+	    mt.setMapKdTex(map_Kd_tex);
+	    setMaterial(mt);
+	}
 	void setMaterial(Material &m){material=m;}
 	Material &getMaterial(){return material;}
+	GLSLShaderProgramPtr getShaderProgramPtr(){return shaderProgram;}
 	void render(){
 		GLSLShaderProgram &sp=*shaderProgram;
 		material.bind();
@@ -90,7 +106,7 @@ public:
 		sp.stop();
 		material.unbind();
 	}
-	GLSLVAO* getPtrVAO(){return vao;}
+	GLSLVAOPtr getVAOPtr(){return vao;}
 };
 //Some model have many textures
 //With the next class we solve the problem having many SolidVAO
