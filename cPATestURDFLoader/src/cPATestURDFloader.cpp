@@ -25,7 +25,195 @@ public:
 
 };
 class LoaderURDF: public Loader{
+    XMLNode urdf;
+    map<string,SolidPtr> solids;
+    GLSLShaderProgram shaderProgram;
+public:
+	// return all joints where linkName appear as parent link
+	vector<string> getParentJoints(XMLNode& robot,string& linkName){
+		vector<string> jointNames;
+	    for(XMLNode &xn:robot["joint"]){
+	    	string name=xn.getAttribute("name");
+	    	string type=xn.getAttribute("type");
+	    	//cout << xn.getAttribute("name") <<": " <<xn.getAttribute("type")<< endl << "    ";
+    		try{
+				string parentLinkName=xn("parent").getAttribute("link");
+				if(parentLinkName==linkName){
+					jointNames.push_back(name);
+					//cout << "[" << parentLinkName << "->" << xn("child").getAttribute("link") << "]";
+				}
+			}catch(...){}
+    		//cout<<endl;
+	    }
+	    return jointNames;
+	}
+	// return all joints where linkName appears as child link
+	// since this is a tree this must be only one.
+	vector<string> getChildJoints(XMLNode& robot,string& linkName){
+		vector<string> jointNames;
+	    for(XMLNode &xn:robot["joint"]){
+	    	string name=xn.getAttribute("name");
+	    	string type=xn.getAttribute("type");
+	    	//cout << xn.getAttribute("name") <<": " <<xn.getAttribute("type")<< endl << "    ";
+    		try{
+				string childLinkName=xn("child").getAttribute("link");
+				if(childLinkName==linkName){
+					jointNames.push_back(name);
+					//cout << "[" << parentLinkName << "->" << xn("child").getAttribute("link") << "]";
+				}
+			}catch(...){}
+    		//cout<<endl;
+	    }
+	    return jointNames;
+	}
+	//counter is the joint idx field
+	Joint createJoint(XMLNode& robot,string& linkName,unsigned int& counter,string indent=""){
+		//cout << indent << linkName ;
+		//XMLNode xnLink=robot("link","name",linkName);
+		//if(xnLink.hasChild("visual")){
+		//	string fileName=split(xnLink("visual")("geometry")("mesh").getAttribute("filename"),':')[1];
+		//	cout << ":"<<fileName<<endl;
+		//}
+		//else cout<<endl;
+		XMLNode& xnJoint=robot("joint","name",getChildJoints(robot,linkName)[0]);
+		Mat m=getMat(xnJoint);
+		//Vector3D axis=split_Vector3D(xnJoint("axis").getAttribute("xyz"));
+		Joint joint(counter,linkName,m);
+		if(indent.size()>=5*2) return joint;
+		for(string sParent:getParentJoints(robot,linkName)){
+			XMLNode& xnJoint=robot("joint","name",sParent);
+			string linkChildName=xnJoint("child").getAttribute("link");
+			Joint jointChild=createJoint(robot,linkChildName,++counter,indent+"  ");
+			joint.addChild(jointChild);
+		}
+		return joint;
+	}
+	XMLNode& getJointParent(XMLNode& robot,XMLNode& joint){
+		string parnetLinkName=joint("parent").getAttribute("link");
+		vector<string> lj=getChildJoints(robot,parnetLinkName);
+		assert(lj.size()==1);
+		string parentJointName=lj[0];
+		XMLNode& jointParent=robot("joint","name",parentJointName);
+		return jointParent;
+	}
+void printJoint(XMLNode& xn){
+		string name=xn.getAttribute("name");
+		string type=xn.getAttribute("type");
+		cout << "    "<<xn.getAttribute("name") <<": " <<xn.getAttribute("type")<< endl << "        ";
+		if(type=="revolute" || type=="continuous" || type=="fixed"){
+			if(xn.hasChild("parent"))
+				cout << "[" << xn("parent").getAttribute("link") << "->" << xn("child").getAttribute("link") << "]";
+			if(xn.hasChild("origin"))
+				cout << " = " << xn("origin").getAttribute("rpy")<<","<< xn("origin").getAttribute("xyz");
+			if(xn.hasChild("axis"))
+				cout <<" , "<< xn("axis").getAttribute("xyz");
+		}
+		cout<<endl;
+	}
+    Mat getMat(XMLNode& joint){
+    	if(joint.hasChild("origin")){
+    		string rpy=joint("origin").getAttribute("rpy");
+    		string xyz=joint("origin").getAttribute("xyz");
+    		Vector3D pos=split_Vector3D(xyz);
+    		Vector3D theta=split_Vector3D(rpy);
+    		Mat m=posEulerAnglesToTransformationMatrix<float>(pos,theta*RAD2DEG);
+    		return m;
+    	}
+    	else throw runtime_error("Joint "+joint.getAttribute("name")+" doesn't have attribute 'origin' in getMat()");
+    }
+	SolidVAOPtr loadSolidVAO(string fileName,float scale=0.1){
+		SolidVAOPtr pvao=new SolidVAO(&shaderProgram);
+		SolidVAO& vao=*pvao;
+        ModelMesh mm=loadModelMesh(fileName,scale);
+        vao.init(mm);
+        vao.setMaterial("meshes/1.0/juliette_face.png");
+        return pvao;
+	}
+	ModelMesh loadModelMesh(string fileName,float scale=0.1){
+	    string package=".";
+	    string folder="/meshes/1.0/";
+	    Loader::model_base_path=package;
+	    LoaderDAE ldae(fileName,0,folder);
+	    ldae.loadNodeRootFromFileName(package+folder+fileName);
+	    ldae.loadGeometry();
+        ModelMesh mm=ldae.getModel();
+        mm.doScale(scale);
+        mm=mm.buildShaderReadyMeshModel();
+        return mm;
+	}
+    void init(GLSLShaderProgram& shaderProgram,Stage& stage){
+	    ifstream ifdae("pepper.urdf");
+	    ifdae >> urdf;
 
+	    string jointRootLinkName="torso";
+	    unsigned int counter=0;
+	    Joint jointRoot=createJoint(urdf("robot"),jointRootLinkName,counter);
+	    //I DON'T KNOW WHY !!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	    for(Joint& j:jointRoot.getChildren()) j.setParent(&jointRoot);
+	    cout << jointRoot << endl;
+	    Mat I=Mat::eye(4,4,CV_32F);
+	    jointRoot.calcInverseBindTransform(I);
+
+
+	    SolidArticulated* sa=new SolidArticulated();
+	    sa->setJointsRoot(jointRoot);
+	    sa->setJointNames(jointRoot.getJointNames());
+	    sa->setPose(jointRoot.getLocalBindPose());
+	    //stage.add(sa);
+
+	    //Joint& j=jointRoot.getJointByName("RThumb2_link");
+	    Joint& j=jointRoot.getJointByName("r_wrist");
+	    JointPtr pj=&j;
+	    while(!pj->isRoot()){
+	    	cout << pj->getName() << "->";
+	    	pj=pj->getParentPtr();
+	    }
+    	cout << pj->getName() <<  endl;
+	    Joint& jbf=jointRoot.getJointByName("base_footprint");
+	    pj=&jbf;
+	    while(!pj->isRoot()){
+	    	cout << pj->getName() << "->";
+	    	pj=pj->getParentPtr();
+	    }
+    	cout << pj->getName() <<  endl;
+	    //string package="/opt/ros/kinetic/share/pepper_meshes/";
+	    string package=".";
+	    string folder="/meshes/1.0/";
+
+	    cout << "*************** LINK ***************"<<endl;
+	    for(XMLNode &xn:urdf("robot")["link"]) try {
+	    	string name=xn.getAttribute("name");
+	    	//cout << name << endl;
+	    	//for(string& s:getChildJoints(urdf("robot"),name)){
+	    		//cout << "    " << s << endl;
+	    		//printJoint(urdf("robot")("joint","name",s));
+	    	//}
+	    	//cout << "    " << xn("visual")("geometry")("mesh").getAttribute("filename") << endl;
+	    	if(xn.hasChild("visual") /*&& name[0]=='L'*/){
+	    		string fileName=split(xn("visual")("geometry")("mesh").getAttribute("filename"),':')[1];
+	    		fileName=ltrim(fileName,"/");
+	    		fileName=split(fileName,'/').back();
+	    		//cout << "    " << "fileName= "<< fileName <<endl;
+	    		SolidVAOPtr pvao=loadSolidVAO(fileName,0.001);
+	    		Joint& joint=jointRoot.getJointByName(name);
+	    		Mat bt=joint.getBindTransform();
+   				bt.convertTo(bt, CV_64F);
+	    		pvao->setTransformationMat(bt);
+	    		pvao->hazFija();
+	    		stage.add(pvao);
+	    		solids[name]=pvao;
+	    	}
+	    	if(!xn.hasChild("visual")){
+	    		AxisPtr paxis=new Axis(Vector3D(0.05,0.05,0.05));
+	    		Joint& joint=jointRoot.getJointByName(name);
+	    		Mat bt=joint.getBindTransform();
+   				bt.convertTo(bt, CV_64F);
+	    		paxis->setTransformationMat(bt);
+	    		//stage.add(paxis);
+	    	}
+	    }
+	    catch(...){}
+    }
 };
 class TestURDFloader:public GameStandard{
 	Texture texGround;
@@ -145,8 +333,8 @@ void printJoint(XMLNode& xn){
     }
 	//TestURDFloader::init()
 	void init(){
-		Camera &cam   =getCamera();
-		Stage  &stage =getStage();
+		Camera& cam   =getCamera();
+		Stage&  stage =getStage();
 		cam.setPos(Vector3D(0,0,10));
 		Light* lightFront=new Light(Vector3D(150.0,150.0, 100.0));
 		stage.add(lightFront);
@@ -180,7 +368,13 @@ void printJoint(XMLNode& xn){
 	    for(Joint& j:jointRoot.getChildren()) j.setParent(&jointRoot);
 	    cout << jointRoot << endl;
 	    Mat I=Mat::eye(4,4,CV_32F);
-	    jointRoot.calcInverseBindTransform(I);
+	    Mat_<float> TI = (Mat_<float>(4,4) <<
+	               1,    0,    0, 0,
+	               0,    0,    1, 0,
+	               0,   -1,    0, 0,
+	               0,    0,    0, 1);
+
+	    jointRoot.calcInverseBindTransform(TI);
 
 
 	    SolidArticulated* sa=new SolidArticulated();
@@ -292,6 +486,11 @@ void printJoint(XMLNode& xn){
         return pvao;
 	}
 	ModelMesh loadModelMesh(string fileName,float scale=0.1){
+	    Mat_<double> TI = (Mat_<double>(4,4) <<
+	               1,    0,    0, 0,
+	               0,    0,    1, 0,
+	               0,   -1,    0, 0,
+	               0,    0,    0, 1);
 	    string package=".";
 	    string folder="/meshes/1.0/";
 	    Loader::model_base_path=package;
@@ -300,6 +499,7 @@ void printJoint(XMLNode& xn){
 	    ldae.loadGeometry();
         ModelMesh mm=ldae.getModel();
         mm.doScale(scale);
+        //mm.transform(TI);
         mm=mm.buildShaderReadyMeshModel();
         return mm;
 	}
