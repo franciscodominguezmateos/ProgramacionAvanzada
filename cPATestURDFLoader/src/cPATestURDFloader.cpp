@@ -425,9 +425,9 @@ void printJoint(XMLNode& xn){
 	    shaderProgram.stop();
         addShader(&shaderProgram);
         //ModelMesh mm=ldae.getModel().buildShaderReadyMeshModel();
-        ModelMesh mm=loadModelMesh(name);
-        mvao.init(mm);
-        mvao.setMaterial("meshes/1.0/juliette_face.png");
+        //ModelMesh mm=loadModelMesh(name);
+        //mvao.init(mm);
+        //mvao.setMaterial("meshes/1.0/juliette_face.png");
         //stage.add(&mvao);
 	    /*
 	    cout << "*************** JOINT ***************"<<endl;
