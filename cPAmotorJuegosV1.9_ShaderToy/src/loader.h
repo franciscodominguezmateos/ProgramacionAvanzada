@@ -29,7 +29,7 @@ public:
 	static string model_base_path;
 
 	Loader(string s,string folder=""){
-		if(folder=="")
+		if(folder=="" && contains(s,"."))
 			folder=takeAwayExtension(s)+"/";
 		path=model_base_path+folder;
 		name=s;

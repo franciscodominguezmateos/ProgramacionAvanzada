@@ -220,9 +220,9 @@ inline string replaceLinesIfContains(const string &wordsLine,const string &doc,c
 /* FILE EXTENSIONS */
 /**********************************************************************************************/
 inline string takeAwayExtension(string &s){
-	vector<string> vs=split(s,'.');	return vs[0];}
+	vector<string> vs=split(s,'.');	return vs.at(0);}
 inline string getExtension(string &s){
-	vector<string> vs=split(s,'.');	return vs[vs.size()-1];}
+	vector<string> vs=split(s,'.');	return vs.at(vs.size()-1);}
 
 /**********************************************************************************************/
 /* NUMBER TOOLS */

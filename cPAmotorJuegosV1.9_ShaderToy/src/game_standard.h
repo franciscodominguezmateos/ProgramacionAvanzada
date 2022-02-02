@@ -14,8 +14,11 @@
 class GameStandard: public Game,public SensorObserverStandard {
 	int mx,my;
 public:
-	GameStandard(string title):	Game(title),mx(0),my(0){
-		addScene(new View(),new Camera(),new Stage());
+	GameStandard(string title,CameraPtr camera=nullptr):	Game(title),mx(0),my(0){
+		if(camera==nullptr)
+			addScene(new View(),new Camera(),new Stage());
+		else
+			addScene(new View(),camera,new Stage());
 		addSensorObserver(this);
 		getCamera().setPos(Vector3D(0,0,10));
 	}

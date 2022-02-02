@@ -226,6 +226,7 @@ inline Mat exp(Vector3D w){
 	}
 	return I+W*CA+W2*CB;
 }
+
 inline double traceX(Mat R){
 	return R.at<double>(0,0)+R.at<double>(1,1)+R.at<double>(2,2);
 }
@@ -246,6 +247,33 @@ inline Vector3D logX(Mat R){
 	Mat mw=W*theta;
 	Vector3D w=V(mw);
 	return w;
+}
+// 02/02/2022
+// from: https://www.iri.upc.edu/people/jsola/JoanSola/objectes/notes/kinematics.pdf pag:42
+//right Jacobian
+inline Mat Jr(Vector3D w){
+	const static Mat I=Mat::eye(3,3,CV_64F);
+	Mat W=S(w);
+	Mat W2=W*W;
+	double theta=w.norm();
+	double theta2=theta*theta;
+	double theta3=theta2*theta;
+	double cw=cos(theta);
+	double sw=sin(theta);
+	Mat jr=I-(1-cw)/theta2*W+(theta-sw)/theta3*W2;
+	return jr;
+}
+//right Jacobian inverse
+inline Mat JrInv(Vector3D w){
+	const static Mat I=Mat::eye(3,3,CV_64F);
+	Mat W=S(w);
+	Mat W2=W*W;
+	double theta=w.norm();
+	double theta2=theta*theta;
+	double cw=cos(theta);
+	double sw=sin(theta);
+	Mat jri=I+0.5*W+((1/theta2)-(1+cw)/(2*theta*sw))*W2;
+	return jri;
 }
 inline Vector3D asVector3D(Mat m){
 	if(m.rows==1)

@@ -52,12 +52,12 @@ public:
 	void addSensorObserver(SensorObserver* so){seProcessor.addSensorObserver(so);}
 	string &getTitle(){return title;}
 	Mat &getImg(){return img;}
-	void setShaderProgramTransformations(Scene* &scene){
-		View*   &view =scene->getViewPtr();
-		Camera* &cam  =scene->getCameraPtr();
+	void setShaderProgramTransformations(ScenePtr &scene){
+		ViewPtr   &view =scene->getViewPtr();
+		CameraPtr &cam  =scene->getCameraPtr();
 		Mat cameraViewMat=cam->getMat();
 		Mat projection=view->getProjection()->getMat();
-		for(GLSLShaderProgram* &pSp:shaders){
+		for(GLSLShaderProgramPtr &pSp:shaders){
 			GLSLShaderProgram &sp=*pSp;
 			sp.start();
 			sp["projection"]=projection;
