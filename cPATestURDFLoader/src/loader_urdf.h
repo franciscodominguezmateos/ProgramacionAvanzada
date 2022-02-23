@@ -15,14 +15,25 @@
 
 using namespace std;
 
-class JointURDF:public Joint{
+class JointURDFdata{
 	Vector3D axis;
+	float limit_lower;
+	float limit_upper;
 public:
+
+};
+class SolidURDF: public Solid{
+public:
+	Joint joints;
+	map<string,SolidPtr> solids;
+	map<string,JointURDFdata> urdfData;
 
 };
 class LoaderURDF: public Loader{
     XMLNode urdf;
+    //one solid for each joint
     map<string,SolidPtr> solids;
+    SolidURDF solidURDF;
 public:
     // NONONONONO BUT....
     GLSLShaderProgram shaderProgram;
@@ -165,7 +176,8 @@ public:
 
 	    string jointRootLinkName="torso";
 	    unsigned int counter=0;
-	    Joint jointRoot=createJoint(urdf("robot"),jointRootLinkName,counter);
+	    solidURDF.joints=createJoint(urdf("robot"),jointRootLinkName,counter);
+	    Joint&  jointRoot=solidURDF.joints;
 	    //I DON'T KNOW WHY !!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	    for(Joint& j:jointRoot.getChildren()) j.setParent(&jointRoot);
 	    cout << jointRoot << endl;
@@ -207,18 +219,30 @@ public:
 	    	//}
 	    	//cout << "    " << xn("visual")("geometry")("mesh").getAttribute("filename") << endl;
 	    	if(xn.hasChild("visual") /*&& name[0]=='L'*/ ){
-	    		string fileName=split(xn("visual")("geometry")("mesh").getAttribute("filename"),':')[1];
+	    		XMLNode& vgm=xn("visual")("geometry")("mesh");
+	    		string fileName=split(vgm.getAttribute("filename"),':')[1];
+	    		//Apply scale to the mesh only the X axis
+	    		float scale=1;
+	    		if(vgm.hasAttribute("scale")){
+	    			string sscale=vgm.getAttribute("scale");
+	    			Vector3D vscale=split_Vector3D(sscale);
+	    			scale=vscale.getX();
+	    		}
 	    		fileName=ltrim(fileName,"/");
 	    		fileName=split(fileName,'/').back();
 	    		//cout << "    " << "fileName= "<< fileName <<endl;
-	    		SolidVAOPtr pvao=loadSolidVAO(fileName,0.001);
+	    		SolidVAOPtr pvao=loadSolidVAO(fileName,0.01*scale);
 	    		Joint& joint=jointRoot.getJointByName(name);
 	    		Mat bt=joint.getBindTransform();
    				bt.convertTo(bt, CV_64F);
 	    		pvao->setTransformationMat(bt);
 	    		pvao->hazFija();
-	    		stage.add(pvao);
-	    		solids[name]=pvao;
+	    		//stage.add(pvao);
+	    		solidURDF.solids[name]=pvao;
+	    		AxisPtr paxis=new Axis(Vector3D(0.05,0.05,0.05));
+	    		paxis->setName(name);
+	    		paxis->setTransformationMat(bt);
+	    		stage.add(paxis);
 	    	}
 	    	if(!xn.hasChild("visual")){
 	    		AxisPtr paxis=new Axis(Vector3D(0.05,0.05,0.05));
