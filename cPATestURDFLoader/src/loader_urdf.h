@@ -32,7 +32,7 @@ public:
 class LoaderURDF: public Loader{
     XMLNode urdf;
     //one solid for each joint
-    map<string,SolidPtr> solids;
+    //map<string,SolidPtr> solids;
     SolidURDF solidURDF;
 public:
     // NONONONONO BUT....
@@ -141,11 +141,11 @@ public:
 		SolidVAO& vao=*pvao;
         ModelMesh mm=loadModelMesh(fileName,scale);
         vao.init(mm);
-        vao.setMaterial("meshes/1.0/juliette_face.png");
+        vao.setMaterial("/opt/ros/kinetic/share/pepper_meshes/meshes/1.0/juliette_face.png");
         return pvao;
 	}
 	ModelMesh loadModelMesh(string fileName,float scale=0.1){
-	    string package=".";
+	    string package="/opt/ros/kinetic/share/pepper_meshes";
 	    string folder="/meshes/1.0/";
 	    Loader::model_base_path=package;
 	    LoaderDAE ldae(fileName,0,folder);
@@ -237,7 +237,7 @@ public:
    				bt.convertTo(bt, CV_64F);
 	    		pvao->setTransformationMat(bt);
 	    		pvao->hazFija();
-	    		//stage.add(pvao);
+	    		stage.add(pvao);
 	    		solidURDF.solids[name]=pvao;
 	    		AxisPtr paxis=new Axis(Vector3D(0.05,0.05,0.05));
 	    		paxis->setName(name);
