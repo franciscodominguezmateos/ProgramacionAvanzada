@@ -5,14 +5,12 @@
  *      Author: Francisco Dominguez
  */
 #pragma once
-#include <opencv2/opencv.hpp>
+#include "pose_stimation.h"
 
-class PoseEstimationChessBoard{
+class PoseEstimationChessBoard: public PoseEstimation{
 	int rowCorners;
 	int colCorners;
 	double xMin,yMin,squareSize;
-	Mat rvec,tvec;
-	Mat K,dist;
 	bool drawCorners;
 public:
 	PoseEstimationChessBoard(Mat K=Mat::eye(3,3,cv::DataType<double>::type),
@@ -20,13 +18,10 @@ public:
 							 int rc=6,int cc=8,
 							 double xm=-30,double ym=-30,double ss=10,
 							 bool dc=true):
+		PoseEstimation(K,d),
 		rowCorners(rc),
 		colCorners(cc),
 		xMin(xm),yMin(ym),squareSize(ss),
-		rvec(Mat::zeros(3,1,cv::DataType<double>::type)),
-		tvec(Mat::zeros(3,1,cv::DataType<double>::type)),
-		K(K),
-		dist(d),
 		drawCorners(dc){
 		}
 	bool estimatePose(Mat &tablero){
@@ -64,20 +59,12 @@ public:
 	}
 	int getColCorners() const {return colCorners;}
 	void setColCorners(int colCorners) {this->colCorners = colCorners;	}
-	const Mat& getDist() const {return dist;}
-	void setDist(const Mat& dist) {this->dist = dist;	}
 	bool isDrawCorners() const {return drawCorners;	}
 	void setDrawCorners(bool drawCorners) {	this->drawCorners = drawCorners;	}
-	const Mat& getK() const {return K;	}
-	void setK(const Mat& k) {K = k;}
 	int getRowCorners() const {return rowCorners;}
 	void setRowCorners(int rowCorners) {this->rowCorners = rowCorners;	}
-	const Mat& getRvec() const {return rvec;}
-	void setRvec(const Mat& rvec) {	this->rvec = rvec;	}
 	double getSquareSize() const {	return squareSize;	}
 	void setSquareSize(double squareSize) {	this->squareSize = squareSize;	}
-	const Mat& getTvec() const {return tvec;}
-	void setTvec(const Mat& tvec) {	this->tvec = tvec;	}
 	double getXmin() const {return xMin;}
 	void setXmin(double min) {	xMin = min;	}
 	double getYmin() const {return yMin;	}

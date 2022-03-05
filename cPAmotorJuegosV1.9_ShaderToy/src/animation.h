@@ -11,16 +11,57 @@
 #include "model_joint.h"
 #include "solid_articulated.h"
 
+// ABSTRACT CLASS
+class Animation;
+using AnimationPtr=Animation*;
 class Animation{
 	float duration;
 public:
 	double getDuration() const {return duration;}
 	void setDuration(float duration) {this->duration = duration;}
 	virtual void resetCurrentFrame()=0;
+	//Since this is an abstract class this should'nt be here
 	virtual SkeletonPose getCurrentPose(float currentTime)=0;
 	virtual Animation* clone()=0;
 };
-class AnimatorArticulated{
+/*
+// ABSTRACT CLASS
+class Animator;
+using AnimatorPtr=Animator*;
+class Animator{
+	AnimationPtr animation;
+	float currentTime;
+	bool isLoop;
+public:
+	Animator(AnimationPtr animation,bool l=true):animation(animation),currentTime(0),isLoop(l){}
+	Animator(const Animator &aa):animation(aa.animation->clone()),currentTime(0),isLoop(aa.isLoop){}
+	//Animator* clone(){return new Animator(*this);}
+	AnimationPtr getAnimationPtr(){return animation;}
+	void setAnimation(AnimationPtr a,bool l=true){
+		currentTime=0;
+		a->resetCurrentFrame();
+		animation=a;
+		isLoop=l;
+	}
+	virtual void update(float dt)=0;
+	void incrementTime(float dt){
+		//TODO: if dt=0.1 only it doesn't work
+		dt*=0.1;
+		currentTime+=dt;
+		float animDuration=animation->getDuration();
+		if(currentTime>animDuration){
+			if(isLoop){
+				// aproximation to remaind/mod/% with two floats
+				//while(currentTime>animDuration) currentTime-=animDuration;
+				currentTime=0;
+				animation->resetCurrentFrame();
+			}
+			else currentTime=animDuration;
+		}
+	}
+
+};
+class AnimatorArticulated: public Animator{
 	SolidArticulated* sa;
 	Animation* animation;
 	float currentTime;
@@ -39,7 +80,7 @@ public:
 	void update(float dt){
 		incrementTime(dt);
 		SkeletonPose currentPose=animation->getCurrentPose(currentTime);
-		Mat I=Mat::eye(4,4,CV_32F);
+		//Mat I=Mat::eye(4,4,CV_32F);
 	    //Mat up32f=posEulerAnglesToTransformationMatrix<float>(Vector3D(),Vector3D(-90,0,0));
 		sa->setPose(currentPose);
 	}
@@ -59,3 +100,4 @@ public:
 		}
 	}
 };
+*/

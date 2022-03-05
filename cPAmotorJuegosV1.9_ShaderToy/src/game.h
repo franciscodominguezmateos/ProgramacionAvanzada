@@ -5,7 +5,7 @@
  *      Author: Francisco Dominguez
  */
 #pragma once
-#include "game_engine.h"
+//#include "game_engine.h"
 #include "scene.h"
 #include "sensors.h"
 #include "sky_box.h"
@@ -14,6 +14,8 @@
 using namespace cv;
 using namespace std;
 
+class Game;
+using GamePtr=Game*;
 class Game{
 	string title;
 	vector<ScenePtr> scenes;

@@ -131,6 +131,7 @@ public:
 			j.addLocalJoint(sp);
 		}
 	}
+	//Update animatedTransform
 	void applyPose(SkeletonPose &pose){
 		Joint &thisJoint=*this;
 		Mat I=Mat::eye(4,4,CV_32F);

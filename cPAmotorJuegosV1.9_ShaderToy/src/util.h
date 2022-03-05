@@ -21,6 +21,8 @@ using namespace std;
 #include "opencv2/opencv.hpp"
 using namespace cv;
 
+const double PI=3.14159265358979;
+
 string cvtype2str(int type) {
  string r;
 

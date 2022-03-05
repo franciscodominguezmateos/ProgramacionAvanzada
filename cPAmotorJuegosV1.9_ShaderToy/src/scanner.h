@@ -47,7 +47,7 @@ public:
 		return c;
 	}
 	inline bool isDigit(char c){return c>='0' && c<='9';}
-	inline bool isLetter(char c){return c>='a' && c<='z' || c>='A' && c<='Z';}
+	inline bool isLetter(char c){return (c>='a' && c<='z') || (c>='A' && c<='Z');}
 	inline bool isIdentifier(char c){return isDigit(c) || isLetter(c);}
 	string scanString(){
 		string str;
