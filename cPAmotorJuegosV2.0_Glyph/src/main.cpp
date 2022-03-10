@@ -50,8 +50,8 @@ public:
 		string glv((char*)glGetString(GL_VERSION));
 		cout << "OpenGL:" <<  glv <<endl;
 
-		Camera &cam   =*getCamera();
-		Stage  &stage =*getStage();
+		Camera &cam   =getCamera();
+		Stage  &stage =getStage();
 		//cam.setPos(Vector3D(0,0,10));
 		Light* lightFront=new Light(Vector3D(-1,1,1));
 		stage.add(lightFront);
@@ -180,7 +180,7 @@ public:
 		 if(tv!=nullptr) tv->getTex().setImage(i);
 	}
 } motorJuegosShaderToy("cPAmotorJuegosShaderToy");
-
+/*
 double t=0.0;
 double dt=1.0/100;
 
@@ -222,7 +222,7 @@ PoseEstimationChessBoard peChessBoard(K,dist);
 ProjectionPerspective proyeccion;
 vector<View> vistas={{0.0,0.0,1,1,&proyeccion}};
 vector<Camera> camaras(vistas.size());
-
+*/
 
 void lds_test(){
     //String filename = "/home/francisco/Pictures/Webcam/2020-12-10-192656.jpg";

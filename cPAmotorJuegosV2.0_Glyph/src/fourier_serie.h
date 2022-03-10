@@ -13,9 +13,9 @@
 #include <vector>
 using namespace std;
 typedef complex<double> C;
-const C i(0,1);
-const C PI(3.141592653589793,0);
-const C PI2=PI*2.0;
+const C i(0.0,1.0);
+const C CPI(3.141592653589793,0);
+const C CPI2=CPI*2.0;
 class FourierSerie {
 	double N;
 public:
@@ -24,7 +24,7 @@ public:
 		C Xk(0,0);
 		for(double n=0;n<x.size();n++){
 			int in=int(n);
-			Xk+=x[in]*exp(-i*PI2*k*n/N);
+			Xk+=x[in]*exp(-i*CPI2*k*n/N);
 		}
 		return Xk;
 	}
@@ -39,7 +39,7 @@ public:
 		C xn(0,0);
 		for(double k=0;k<X.size();k++){
 			int ik=int(k);
-			xn+=X[ik]*exp(i*PI2*k*n/N);
+			xn+=X[ik]*exp(i*CPI2*k*n/N);
 		}
 		return xn/N;
 	}

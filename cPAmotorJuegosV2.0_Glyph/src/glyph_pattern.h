@@ -8,6 +8,8 @@
 #pragma once
 #include "opencv2/opencv.hpp"
 
+#include "glyph_contour.h"
+
 using namespace std;
 using namespace cv;
 
@@ -16,17 +18,31 @@ class Pattern{
 	string sPatern;
 	// size of the square face in metres
 	double size_face;
+	// Image Corner Points
+	Contour imageCornerPoints;
+	// World Corner Points
+	vector<Point3d> worldCornerPoints;
+	// Solved Pose
+	Mat rvec,tvec;
 public:
-	Pattern(string s):sPatern(s),size_face(0.1){}
-	string asString(){
-		return sPatern;
+	Pattern(string s, double sf=0.1):sPatern(s),size_face(sf){
+		double h=size_face/2.0;
+		worldCornerPoints.push_back(Point3d(-h, h,0));
+		worldCornerPoints.push_back(Point3d( h, h,0));
+		worldCornerPoints.push_back(Point3d(-h,-h,0));
+		worldCornerPoints.push_back(Point3d(-h,-h,0));
+	}
+	string asString(){return sPatern;}
+	vector<Point3d>& getWorldCornerPoints(){return worldCornerPoints;}
+	Contour&         getImageCornerPoints(){return imageCornerPoints;}
+	Mat& getRvec(){return rvec;}
+	Mat& getTvec(){return tvec;}
+	void setImageCornerPoints(Contour c){imageCornerPoints=c;}
+	void solvePose(Mat& K,Mat& dist){
+		solvePnP(worldCornerPoints,imageCornerPoints,K,dist,rvec,tvec);
 	}
 	/*Mat asImg(){
 
 	}*/
-	Mat getWorldCornerPoints(){
-		Mat points=(Mat_<double>(4,3)<< -1,1,0, 1,1,0, -1,-1,0, -1,-1,0);
-		return points*size_face/2.0;
-	}
 };
 

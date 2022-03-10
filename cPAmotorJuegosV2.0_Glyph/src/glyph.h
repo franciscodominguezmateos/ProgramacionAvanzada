@@ -19,6 +19,7 @@ public:
 	Mat drawing;// = Mat::zeros( edges.size(), CV_8UC3 );
 	Mat square;
 	PatternExtractor3x3 extractor;
+	vector<Pattern> patterns;
 public:
 	Glyph(){}
 	Glyph(String s){}
@@ -45,11 +46,12 @@ public:
 		   threshold(square, square, 0, 255, THRESH_OTSU);
 	  	   return square;
 	}
-	void findContours(){
+	vector<Pattern>& findPatterns(){
+		patterns.clear();
 		//Mat drawing;
 		//img.copyTo(drawing);
 		cvtColor(img,gray, COLOR_BGR2GRAY);
-	    namedWindow( "Contours", WINDOW_AUTOSIZE );
+	    //namedWindow( "Contours", WINDOW_AUTOSIZE );
 		vector<Contour> quads=quadDetector.detect(img);
 		for(unsigned int i=0;i<quads.size();i++){
 			Contour c=quads[i];
@@ -60,16 +62,19 @@ public:
 		       drawQuadrilateral(img,c);
 		       try{
 			  	   Pattern pattern=extractor.getPattern(square);
-			  	   cout << pattern.asString() << endl;
+			  	   pattern.setImageCornerPoints(c);
+			  	   //cout << pattern.asString() << endl;
 			  	   drawPattern();
 				   imshow("square"+pattern.asString(),square);
+				   patterns.push_back(pattern);
 		       }
 		       catch(exception& e){
 
 		       }
 		}
-		imshow( "Contours", img );
-		imshow( "Drawing", quadDetector.drawing );
+		//imshow( "Contours", img );
+		//imshow( "Drawing", quadDetector.drawing );
+		return patterns;
 	}
 	void drawPattern(){
 		vector<uchar> pattern;

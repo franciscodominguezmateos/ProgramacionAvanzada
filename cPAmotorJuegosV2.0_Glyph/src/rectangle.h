@@ -47,6 +47,7 @@ public:
 		Vector3D vCenter=(p0+p1+p2+p3)/4;
 		return vCenter;
 	}
+	inline Texture& getTextura(){return tex;}
 	inline void setTextura(Texture t){tex=t;}
 	inline void setNU(unsigned int u){nu=u;}
 	inline void setNV(unsigned int v){nv=v;}

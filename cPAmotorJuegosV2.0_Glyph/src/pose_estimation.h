@@ -10,6 +10,7 @@
 using namespace cv;
 
 class PoseEstimation{
+protected:
 	Mat rvec,tvec;
 	Mat K,dist;
 public:

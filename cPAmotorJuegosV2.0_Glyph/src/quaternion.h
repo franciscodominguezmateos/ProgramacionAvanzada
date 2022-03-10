@@ -124,7 +124,7 @@ public:
 	Mat Ja(Vector3D a){
 		Mat I=Mat::eye(3,3,CV_64F);
 		Vector3D v0=a*w+v.X(a)*2;
-		Mat m=2*(v.asMat().T*a.asMat()*I+v.O(a)-a.O(v)-w*S(a));
+		Mat m=2*(v.asMat().t()*a.asMat()*I+v.O(a)-a.O(v)-w*S(a));
 		Mat r;
 		hconcat(v0.asMat(),m,r);
 		return r;

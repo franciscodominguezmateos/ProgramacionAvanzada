@@ -12,6 +12,7 @@ class PoseEstimationChessBoard: public PoseEstimation{
 	int colCorners;
 	double xMin,yMin,squareSize;
 	bool drawCorners;
+	vector<Point3d> model_points;
 public:
 	PoseEstimationChessBoard(Mat K=Mat::eye(3,3,cv::DataType<double>::type),
 			                 Mat d=Mat::zeros(4,1,cv::DataType<double>::type),
@@ -23,7 +24,14 @@ public:
 		colCorners(cc),
 		xMin(xm),yMin(ym),squareSize(ss),
 		drawCorners(dc){
+		double x,y;
+		int i,j;
+		for(i=0,x=xMin;i<colCorners;i++,x+=squareSize){
+		 for(j=0,y=yMin;j<rowCorners;j++,y+=squareSize){
+			 model_points.push_back(Point3d(y,x,0));
+		 }
 		}
+	}
 	bool estimatePose(Mat &tablero){
 		 Size patternsize(rowCorners,colCorners); //interior number of corners
 		 Mat gray;
@@ -41,16 +49,6 @@ public:
 			 if(drawCorners)
 				 drawChessboardCorners(tablero, patternsize, Mat(corners), patternfound);
 
-			 vector<Point3d> model_points;
-			 double squareSize=10;
-			 double x,y;
-			 int i,j;
-			 for(i=0,x=xMin;i<colCorners;i++,x+=squareSize){
-				 for(j=0,y=yMin;j<rowCorners;j++,y+=squareSize){
-					 model_points.push_back(Point3d(y,x,0));
-					 //cout << "x="<<x<<"y="<<y<<endl;
-				 }
-			 }
 			 //Solve for pose
 			 solvePnP(model_points,corners,K,dist,rvec,tvec);
 			 return true;
