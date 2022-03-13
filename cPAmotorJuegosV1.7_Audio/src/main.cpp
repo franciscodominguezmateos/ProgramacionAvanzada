@@ -62,7 +62,7 @@ StageRigidBody* srb;
 Solid *pt1;
 Solid *pt2;
 
-FondoTextura fondo,fondoTablero;
+BackgroundTexture fondo,fondoTablero;
 
 Mat K=(Mat_<double>(3,3) <<
 		 1053.755323784897,                 0, 317.160420774003,
