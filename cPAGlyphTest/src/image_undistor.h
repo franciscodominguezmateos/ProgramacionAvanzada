@@ -9,16 +9,21 @@
 #include "shader_gpgpu_binop.h"
 
 class Undistor{
+public:
+	Mat K,d,R,P,KP;
 	TexturePtr ptex;
     ShaderBinOp* remap;
+    Mat frame;
 public:
 	Undistor(){
-		Mat K=(Mat_<double>(3,3)<<958.8710177402639, 0, 310.8323417297909, 0, 954.3393084573635, 282.4460052293588, 0, 0, 1);
-		Mat d=(Mat_<double>(1,5)<<-0.5177046435417091, 0.4190207743279942, -0.01204088578226774, -0.002396026919730114, 0);
-		Mat R=(Mat_<double>(3,3)<<0.9968596736669864, 0.008162426114800682, -0.07876652725917205, -0.007394536192554946, 0.9999222997971208, 0.01003569643492776, 0.07884232271468458, -0.009421739136563212, 0.9968425748234252);
-		Mat P=(Mat_<double>(3,4)<<953.0537522907438, 0, 384.4876556396484, -57.95554829812738, 0, 953.0537522907438, 276.9204998016357, 0, 0, 0, 1, 0);
+		Mat K=(Mat_<double>(3,3)<<951.4741259832514, 0, 293.3416170604175, 0, 950.3903009136468, 272.6355355349708, 0, 0, 1);
+		Mat d=(Mat_<double>(1,5)<<-0.4953024672257269, 0.3330644888148587, -0.004006958790423586, 0.008548218245607087, 0);
+		Mat R=(Mat_<double>(3,3)<<0.9960354394631838, 0.007417679552695122, -0.0886475118851934, -0.008281288486258502, 0.9999217313542504, -0.009378242187402474, 0.08857100876917536, 0.01007517719803191, 0.996018909062493);
+		Mat P=(Mat_<double>(3,4)<<953.0537522907438, 0, 384.4876556396484, 0, 0, 953.0537522907438, 276.9204998016357, 0, 0, 0, 1, 0);
+        KP=Mat::zeros(3,3,cv::DataType<double>::type);
 		Mat map1,map2;
 		initUndistortRectifyMap(K,d,R,P,Size(640,480),CV_32FC2,map1,map2);
+		printMat(KP);
 		ptex=new Texture(map1);
 	}
 	void init(){
@@ -26,11 +31,15 @@ public:
 	    remap=new ShaderBinOp(nullptr,640,480,"vec4 opt(vec4 v0,vec4 v1){return remap(v0,v1);}");
 		remap->setTex1(ptex);
 	}
-	Mat process(Mat& img){
-	    remap->setImage(img);
+	Mat process(Mat& image){
+	    image.convertTo(frame,CV_32FC3,1.0/255.0);
+	    remap->setImage(frame);
 		remap->render();
 		Mat imgRect=remap->downloadResult();
-		return imgRect;
+		Mat ret;
+		cvtColor(imgRect, ret, CV_BGRA2BGR);
+		//imgRect.convertTo(ret,CV_32FC3);
+		return ret;
 	}
 };
 

@@ -23,6 +23,7 @@ Mat K=(Mat_<double>(3,3) <<
 		951.4741259832514, 0, 293.3416170604175,
 		0, 950.3903009136468, 272.6355355349708,
 		0, 0, 1);
+Mat KP=(Mat_<double>(3,3)<<953.0537522907438, 0, 384.4876556396484, 0, 953.0537522907438, 276.9204998016357,  0, 0, 1);
 
 //Mat dist=Mat::zeros(4,1,cv::DataType<double>::type); // Assuming no lens distortion
 Mat dist=(Mat_<double>(4,1)<<-0.4953024672257269, 0.3330644888148587, -0.004006958790423586, 0.008548218245607087); // Assuming no lens distortion
@@ -32,16 +33,18 @@ class GlyphTest:public GameAR{
 	Glyph g;
 	RectanglePtr pR;
 	SpherePtr pS;
+	Undistor* undist;
 public:
-	GlyphTest(string title):
-		GameAR(title,K),cap(0){
+	GlyphTest(string title,	Undistor* und):
+		GameAR(title,KP),cap(0),undist(und){
 		cap.set(CV_CAP_PROP_FRAME_WIDTH,640);
 		cap.set(CV_CAP_PROP_FRAME_HEIGHT,480);
 	}
 	void init(){
 		GameAR::init();
+		undist->init();
 		//Pose update speed
-		getCamera().setAlpha(0.1);
+		getCamera().setAlpha(0.5);
 		Stage&  stage =getStage();
 		Light* lightFront=new Light(Vector3D(0.0,0.0, 10.0));
 		stage.add(lightFront);
@@ -49,9 +52,10 @@ public:
 		double aspectRatio=480.0/640.0;
 		double h=0.06*aspectRatio;
 		double w=0.06*1;
-		pR=new Rectangle(Vector3D(-w,-h+h),Vector3D(w,-h+h),Vector3D(w,h+h),Vector3D(-w,h+h));
-		pR->getTextura().init();
-		stage.add(pR);
+
+		//pR=new Rectangle(Vector3D(-w,-h+h),Vector3D(w,-h+h),Vector3D(w,h+h),Vector3D(-w,h+h));
+		//pR->getTextura().init();
+		//stage.add(pR);
 
 		stage.add(new Axis(0.06));
 		pS=new Sphere(0.02);
@@ -61,11 +65,15 @@ public:
 		stage.add(pS);
 	}
 	void update(double dt){
-		cap>>g.img;
+		Mat img,uimg;
+		cap>>img;
+		uimg=undist->process(img);
+		//Convert to CV_8UC3
+		uimg.convertTo(g.img,img.type(),255.0);
 		vector<Pattern>& patterns=g.findPatterns();
 		for(Pattern& p:patterns){
 			if(p.asString()=="100010101"){
-				p.solvePose(K,dist);
+				p.solvePose(KP,dist);
 				setPose(p.getRvec(),p.getTvec());
 			}
 		}
@@ -90,12 +98,14 @@ public:
 		}
 		//cout << *pS <<endl;
 	}
-
-} glyphTest("Testing Glyph detector");
+};
+GlyphTest* pGlyphTest;
 
 int main(int argc, char** argv) try{
 	srand(10);
-	GameEngine::setGame(&glyphTest);
+	Undistor* undist=new Undistor();
+	pGlyphTest=new GlyphTest("Testing Glyph detector",undist);
+	GameEngine::setGame(pGlyphTest);
 	GameEngine::gameInit(argc,argv);
 	GameEngine::gameMainLoop();
 	return 0;
