@@ -22,7 +22,7 @@ public:
 	double zFar;
 	double fov;
 public:
-	ProjectionPerspective(double fov=130.0,double width=640,double height=480,double zNear=0.5,double zFar=2e4):
+	ProjectionPerspective(double fov=130.0,double width=640,double height=480,double zNear=0.10,double zFar=2e4):
 		campoDeVision(fov),
 		width(width),height(height),
 		aspectRatio(width/height),

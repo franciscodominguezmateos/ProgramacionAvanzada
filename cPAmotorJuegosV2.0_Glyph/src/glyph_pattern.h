@@ -25,12 +25,12 @@ class Pattern{
 	// Solved Pose
 	Mat rvec,tvec;
 public:
-	Pattern(string s, double sf=0.1):sPatern(s),size_face(sf){
+	Pattern(string s, double sf=0.12):sPatern(s),size_face(sf){
 		double h=size_face/2.0;
 		worldCornerPoints.push_back(Point3d(-h, h,0));
+		worldCornerPoints.push_back(Point3d(-h,-h,0));
+		worldCornerPoints.push_back(Point3d( h,-h,0));
 		worldCornerPoints.push_back(Point3d( h, h,0));
-		worldCornerPoints.push_back(Point3d(-h,-h,0));
-		worldCornerPoints.push_back(Point3d(-h,-h,0));
 	}
 	string asString(){return sPatern;}
 	vector<Point3d>& getWorldCornerPoints(){return worldCornerPoints;}

@@ -5,10 +5,8 @@
  *      Author: Francisco Dominguez
  */
 #pragma once
-//#include "game_engine.h"
 #include "scene.h"
 #include "sensors.h"
-#include "sky_box.h"
 #include <AL/alut.h>
 
 using namespace cv;
@@ -23,7 +21,6 @@ class Game{
 	SensorEventProcessor seProcessor;
 	SocketMJPEGServer  smserv;
 	GLSLFBO screen; //default frame buffer object is the screen if init() is not called
-	SkyBox *skyBox;//this should go inside scene
 	Mat img;
 	double t;  // time in seconds
 	double dt; // time increment in seconds
@@ -31,7 +28,7 @@ class Game{
 	vector<ALuint>     audioBuffers;
 	map<string,ALuint> audioSources;
 public:
-	Game(string t="PAGame default;-P",int port=8881):title(t),seProcessor(port),screen(640,480),skyBox(nullptr),t(0),dt(0.1){}
+	Game(string t="PAGame default;-P",int port=8881):title(t),seProcessor(port),screen(640,480),t(0),dt(0.1){}
 	virtual void init(){}
 	virtual void update(double dt){}
 	double getTime(){return t;}
@@ -43,11 +40,6 @@ public:
 	void addShader(GLSLShaderProgramPtr sp){shaders.push_back(sp);}
 	void addScene(ScenePtr &scene){scenes.push_back(scene);}
 	void addScene(ViewPtr v,CameraPtr cam,StagePtr s){
-		//if(skyBox==nullptr){
-			//skyBox=new SkyBox();
-			//Mat m=v->getProyeccion()->getMat();
-			//skyBox->setProjection(m);
-		//}
 		Scene* e=new Scene(v,cam,s);
 		scenes.push_back(e);
 	}
@@ -72,8 +64,6 @@ public:
 		for(Scene* &scene:scenes){
 			setShaderProgramTransformations(scene);
 			scene->render();
-			//skyBox->setCameraView(scene->getCamera()->getMat());
-			//skyBox->render();
 		}
 		glutSwapBuffers();
 		img=screen.toOpenCV();

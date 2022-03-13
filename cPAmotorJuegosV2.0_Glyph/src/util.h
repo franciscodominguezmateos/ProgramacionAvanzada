@@ -45,6 +45,23 @@ string cvtype2str(int type) {
 
  return r;
 }
+template<class S=double>
+inline void printMat(Mat m,int precision=5){
+	//cout<<"pose_util::printMat()"<<endl;
+	cout.setf(ios::fixed);
+	cout.setf(ios::showpoint);
+	cout.precision(precision);
+	int i,j;
+	for(i=0;i<m.rows;i++){
+		for(j=0;j<m.cols;j++){
+			double d=m.at<S>(i,j);
+			if(d>=0) cout <<" ";
+			cout << d;
+			if(j!=m.cols-1 || i!=m.rows-1) cout<<",";
+		}
+		cout<<endl;
+	}
+}
 /**********************************************************************************************/
 /* TIME FUNCTIONS */
 /**********************************************************************************************/

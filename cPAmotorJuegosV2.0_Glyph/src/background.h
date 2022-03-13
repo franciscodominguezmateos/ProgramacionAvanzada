@@ -5,15 +5,18 @@
  *      Author: francisco
  */
 
-#ifndef FONDO_H_
-#define FONDO_H_
+#ifndef BACKGROUND_H_
+#define BACKGROUND_H_
 #include <GL/glut.h>
 #include "vector3d.h"
-class Fondo {
+
+class Background;
+using BackgroundPtr=Background*;
+class Background {
 	Vector3D col;
 public:
-	Fondo():col(0,0.5,1){}
-	virtual ~Fondo(){}
+	Background():col(0,0.5,1){}
+	virtual ~Background(){}
 	inline void setCol(Vector3D c){col=c;}
 	virtual void render(){
 	    //R E N D ER
@@ -23,4 +26,4 @@ public:
 	}
 };
 
-#endif /* FONDO_H_ */
+#endif /* BACKGROUND_H_ */

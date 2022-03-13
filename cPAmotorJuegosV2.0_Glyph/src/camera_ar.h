@@ -12,14 +12,29 @@
  * from a OpenCV rotation vector and
  * from a OpenCV translation vector
  */
+class CameraAR;
+using CameraARPtr=CameraAR*;
 class CameraAR: public Camera {
 	double modelviewMat[16];
+	// Lie algebra filtered pose representation
+	Mat rv,tv;
+	double alpha;
+	Mat rotMtx;
 public:
-	CameraAR(double x=0,double y=1.65,double z=0):Camera(x,y,z){}
+	CameraAR(double x=0,double y=1.65,double z=0):
+		Camera(x,y,z),
+		rv(Mat::zeros(3,1,cv::DataType<double>::type)),
+		tv(Mat::zeros(3,1,cv::DataType<double>::type)),
+		alpha(0.3){}
 	CameraAR(Mat rvec,Mat tvec){setPose(rvec,tvec);}
-	void setPose(Mat RVec,Mat tVec){
-		Mat rotMtx;
-		Rodrigues(RVec, rotMtx);
+	void setPose(Mat rvec,Mat tvec){
+		rv=rv*(1.0-alpha)+rvec*alpha;
+		tv=tv*(1.0-alpha)+tvec*alpha;
+		//cout << "tv"<<endl;
+		//printMat(tv);
+		//cout << "tvec" <<endl;
+		//printMat(tvec);
+		Rodrigues(rv, rotMtx);
 		modelviewMat[0]  =  rotMtx.at<double>(0,0);
 		modelviewMat[1]  = -rotMtx.at<double>(1,0);
 		modelviewMat[2]  = -rotMtx.at<double>(2,0);
@@ -32,9 +47,9 @@ public:
 		modelviewMat[9]  = -rotMtx.at<double>(1,2);
 		modelviewMat[10] = -rotMtx.at<double>(2,2);
 		modelviewMat[11] = 0;
-		modelviewMat[12] =  tVec.at<double>(0,0);
-		modelviewMat[13] = -tVec.at<double>(1,0);
-		modelviewMat[14] = -tVec.at<double>(2,0);
+		modelviewMat[12] =  tv.at<double>(0,0);
+		modelviewMat[13] = -tv.at<double>(1,0);
+		modelviewMat[14] = -tv.at<double>(2,0);
 		modelviewMat[15] = 1;
 	}
 	void render(){
@@ -42,7 +57,11 @@ public:
 		glLoadMatrixd(modelviewMat);
 		//set y up vs z down
 		glRotated(-90,1,0,0);
+		//set x left
+		glRotated( 90,0,1,0);
 	}
+	double getAlpha(){return alpha;}
+	void   setAlpha(double d){alpha=d;}
 };
 
 

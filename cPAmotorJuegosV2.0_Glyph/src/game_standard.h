@@ -81,8 +81,9 @@ public:
 		 }
 	}
 	virtual ~GameStandard(){}
-	inline Camera& getCamera() {return getScene(0)->getCamera();}
-	inline Stage&  getStage()  {return getScene(0)->getStage();}
-	inline View&   getView()   {return getScene(0)->getView();}
+	inline Scene&  getScene()  {return *Game::getScene(0);}
+	inline Camera& getCamera() {return getScene().getCamera();}
+	inline Stage&  getStage()  {return getScene().getStage();}
+	inline View&   getView()   {return getScene().getView();}
 };
 

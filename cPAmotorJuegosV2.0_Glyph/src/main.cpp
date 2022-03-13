@@ -9,7 +9,7 @@
 #include "pared.h"
 #include "pendulo.h"
 #include "cubo_elastico.h"
-#include "fondo_textura.h"
+#include "background_texture.h"
 #include "pose_estimation_chessboard.h"
 #include "material.h"
 #include "modelo_material.h"
@@ -52,7 +52,7 @@ public:
 
 		Camera &cam   =getCamera();
 		Stage  &stage =getStage();
-		//cam.setPos(Vector3D(0,0,10));
+		cam.setPos(Vector3D(0,0,10));
 		Light* lightFront=new Light(Vector3D(-1,1,1));
 		stage.add(lightFront);
 		stage.add(new Light(Vector3D(1,1,1)));

@@ -17,6 +17,7 @@ class Axis: public Solid{
  Text name;
 public:
  Axis():Axis(Vector3D(1,1,1)){}
+ Axis(double d):Axis(Vector3D(d,d,d)){}
  Axis(Vector3D v):
 	 Solid(),
 	 ax(v.getX()),ay(v.getY()),	 az(v.getZ()),
