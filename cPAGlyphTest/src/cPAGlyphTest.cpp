@@ -14,6 +14,7 @@
 #include "sphere.h"
 #include "axis.h"
 #include "background_texture.h"
+#include "image_undistor.h"
 
 #include "glyph.h"
 
