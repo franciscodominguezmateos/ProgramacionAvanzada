@@ -64,8 +64,10 @@ public:
 		for(Contour c:quads)
 			drawQuadrilateral(drawing,c);
 	}
-	vector<Contour> &detect(Mat &img){
-		img.copyTo(this->img);
+	vector<Contour> &detect(Mat &image){
+		image.copyTo(this->img);
+		//image*=255;
+		//image.convertTo(img,CV_8U);
 		// Stage 3: Find contours
 		vector<Vec4i> hierarchy;
 		//clean quads
@@ -79,6 +81,7 @@ public:
 		reverse(contours.begin(),contours.end());
         /// Draw contours
 		cvtColor(edges,drawing,COLOR_GRAY2BGR);
+		//cout << " img="<<cvtype2str(img.type()) << " drawing="<<cvtype2str(drawing.type())<<endl;
 		addWeighted(img,0.1,drawing,0.9,0.0,drawing);
 		for(unsigned int i = 0; i< (contours.size()>10?10:contours.size()); i++ ){
 		     Scalar color = Scalar( rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255) );

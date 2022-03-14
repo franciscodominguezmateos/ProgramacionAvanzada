@@ -74,6 +74,7 @@ public:
 		}
 		//imshow( "Contours", img );
 		//imshow( "Drawing", quadDetector.drawing );
+		//cout << "fp.img"<<cvtype2str(img.type())<<"quadDetector.drawing"<<cvtype2str(quadDetector.drawing.type());
 		return patterns;
 	}
 	void drawPattern(){
