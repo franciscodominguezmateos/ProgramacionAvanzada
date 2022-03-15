@@ -26,8 +26,8 @@ public:
 		Canny(gray,edges, 50, 150);
         // dilate canny output to remove potential
         // holes between edge segments
-        dilate(edges, edges, Mat(), Point(-1,-1));
-        erode(edges,edges,Mat(),Point(-1,-1));
+        //dilate(edges, edges, Mat(), Point(-1,-1));
+        //erode(edges,edges,Mat(),Point(-1,-1));
         return edges;
 	}
 	bool isQuadrilateralContour(vector<Point> &contour){
@@ -82,10 +82,10 @@ public:
         /// Draw contours
 		cvtColor(edges,drawing,COLOR_GRAY2BGR);
 		//cout << " img="<<cvtype2str(img.type()) << " drawing="<<cvtype2str(drawing.type())<<endl;
-		addWeighted(img,0.1,drawing,0.9,0.0,drawing);
+		addWeighted(img,0.3,drawing,0.7,0.0,drawing);
 		for(unsigned int i = 0; i< (contours.size()>10?10:contours.size()); i++ ){
-		     Scalar color = Scalar( rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255) );
 		     if(isQuadrilateralContour(contours[i])){
+			     Scalar color = Scalar( rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255) );
 		    	 drawContours( drawing, contours, i, color, 2, 8, hierarchy, 0, Point() );
 	             //imshow("drawing",drawing);
 		         sortQuadrilateralPoints();

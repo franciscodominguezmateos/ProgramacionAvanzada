@@ -12,13 +12,12 @@
 class Glyph{
 public:
 	QuadrilateralDetector quadDetector;
-	RNG rng;
-	Mat img,gray,edges;
+	Mat img,gray;
 	vector<vector<Point> > contours;
 	vector<Point2f> approx;
-	Mat drawing;// = Mat::zeros( edges.size(), CV_8UC3 );
+	//Mat drawing;// = Mat::zeros( edges.size(), CV_8UC3 );
 	Mat square;
-	PatternExtractor3x3 extractor;
+	PatternExtractorNxN extractor;
 	vector<Pattern> patterns;
 public:
 	Glyph(){}
@@ -30,75 +29,47 @@ public:
 	Mat &getImage(){return img;}
 
 	void drawQuadrilateral(Mat &drawing,Contour approx){
-	  	   cv::line(drawing,approx[0],approx[1],Scalar(255,0,0),3);
-	  	   cv::line(drawing,approx[1],approx[2],Scalar(255,255,0),3);
-	  	   cv::line(drawing,approx[2],approx[3],Scalar(255,0,255),3);
-	  	   cv::line(drawing,approx[3],approx[0],Scalar(  0,0,255),3);
+	  	   cv::line(drawing,approx[0],approx[1],Scalar(255,0,0),2);
+	  	   cv::line(drawing,approx[1],approx[2],Scalar(255,255,0),2);
+	  	   cv::line(drawing,approx[2],approx[3],Scalar(255,0,255),2);
+	  	   cv::line(drawing,approx[3],approx[0],Scalar(  0,0,255),2);
 	}
-	Mat &quadrilateralAsSquare(Mat &gray,Contour approx){
-	  	   vector<Point2f> dst;
-	  	   dst.push_back(Point2f( 0, 0));
-	  	   dst.push_back(Point2f(99, 0));
-	  	   dst.push_back(Point2f(99,99));
-	  	   dst.push_back(Point2f( 0,99));
-	  	   Mat T=cv::getPerspectiveTransform(approx,dst);
-	  	   cv::warpPerspective(gray,square,T,Size(100,100));
-		   threshold(square, square, 0, 255, THRESH_OTSU);
-	  	   return square;
+	/**
+	 * Extract the black and white thresholded square image from img and a contour
+	 * use perspectiveTransform and wrapPerspective
+	 */
+	Mat &quadrilateralAsSquareImage(Mat &img,Contour approx,uint size=100){
+		float sz1=size-1;
+		cvtColor(img,gray, COLOR_BGR2GRAY);
+	  	vector<Point2f> dst;
+	  	dst.push_back(Point2f(  0,  0));
+	  	dst.push_back(Point2f(sz1,  0));
+	  	dst.push_back(Point2f(sz1,sz1));
+	  	dst.push_back(Point2f(  0,sz1));
+	  	Mat T=cv::getPerspectiveTransform(approx,dst);
+	  	cv::warpPerspective(gray,square,T,Size(size,size));
+		threshold(square, square, 0, 255, THRESH_OTSU);
+	  	return square;
 	}
 	vector<Pattern>& findPatterns(){
 		patterns.clear();
-		//Mat drawing;
-		//img.copyTo(drawing);
-		cvtColor(img,gray, COLOR_BGR2GRAY);
-	    //namedWindow( "Contours", WINDOW_AUTOSIZE );
 		vector<Contour> quads=quadDetector.detect(img);
-		for(unsigned int i=0;i<quads.size();i++){
-			Contour c=quads[i];
-		//for(Contour c:quads){
-		  	   Rect r=boundingRect(c);
-		  	   cv::rectangle(quadDetector.drawing,r,Scalar(0,255,0),1);
-		  	   square=quadrilateralAsSquare(gray,c);
+		for(Contour c:quads){
+		  	   square=quadrilateralAsSquareImage(img,c);
 		       drawQuadrilateral(img,c);
 		       try{
 			  	   Pattern pattern=extractor.getPattern(square);
 			  	   pattern.setImageCornerPoints(c);
 			  	   //cout << pattern.asString() << endl;
-			  	   drawPattern();
-				   imshow("square"+pattern.asString(),square);
+			  	   extractor.drawCircles(square);
+				   imshow(pattern.asString(),square);
 				   patterns.push_back(pattern);
 		       }
-		       catch(exception& e){
-
-		       }
+		       catch(exception& e){ }
 		}
 		//imshow( "Contours", img );
-		//imshow( "Drawing", quadDetector.drawing );
-		//cout << "fp.img"<<cvtype2str(img.type())<<"quadDetector.drawing"<<cvtype2str(quadDetector.drawing.type());
+		imshow( "Drawing", quadDetector.drawing );
 		return patterns;
-	}
-	void drawPattern(){
-		vector<uchar> pattern;
-		string s;
-		int w=10;
-		int w2=w/2;
-		uint cell_col=square.cols/w;
-		unsigned int cell_row=square.rows/w;
-		unsigned int row1=cell_row*3;
-		unsigned int row2=cell_row*5;
-		unsigned int row3=cell_row*7;
-		unsigned int col1=cell_col*3;
-		unsigned int col2=cell_col*5;
-		unsigned int col3=cell_col*7;
-		cv::circle(square,Point(row1,col1),w2,Scalar(255,0,0));
-		cv::circle(square,Point(row1,col2),w2,Scalar(255,0,0));
-		cv::circle(square,Point(row1,col3),w2,Scalar(255,0,0));
-		cv::circle(square,Point(row2,col1),w2,Scalar(255,0,0));
-		cv::circle(square,Point(row2,col2),w2,Scalar(255,0,0));
-		cv::circle(square,Point(row2,col3),w2,Scalar(255,0,0));
-		cv::circle(square,Point(row3,col1),w2,Scalar(255,0,0));
-		cv::circle(square,Point(row3,col2),w2,Scalar(255,0,0));
-		cv::circle(square,Point(row3,col3),w2,Scalar(255,0,0));
 	}
 };
 
