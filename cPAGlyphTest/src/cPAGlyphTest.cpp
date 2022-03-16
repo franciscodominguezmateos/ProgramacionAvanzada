@@ -105,13 +105,13 @@ class GlyphTest:public GameAR{
 	Undistor* undist;
 public:
 	GlyphTest(string title,	Undistor* und):
-		GameAR(title,KP),cap(0),undist(und){
-		cap.set(CV_CAP_PROP_FRAME_WIDTH,1280>>1);
-		cap.set(CV_CAP_PROP_FRAME_HEIGHT,960>>1);
+		GameAR(title,KP),cap(1),g(8),undist(und){
+		cap.set(CV_CAP_PROP_FRAME_WIDTH,1280>>0);
+		cap.set(CV_CAP_PROP_FRAME_HEIGHT,960>>0);
 	}
 	void init(){
 		ROSCameraInfo cinfL;
-		cinfL.readYaml("/home/francisco/.ros/camera_info/stereo/left.yaml");
+		//cinfL.readYaml("/home/francisco/.ros/camera_info/stereo/left.yaml");
 		GameAR::init();
 		undist->init();
 		//Pose update speed
@@ -137,10 +137,10 @@ public:
 	}
 	void update(double dt){
 		Mat img,uimg;
-		cap>>img;
-		uimg=undist->process(img);
+		cap>>g.img;
+		//uimg=undist->process(img);
 		//Convert to CV_8UC3
-		uimg.convertTo(g.img,img.type(),255.0);
+		//uimg.convertTo(g.img,img.type(),255.0);
 		vector<Pattern>& patterns=g.findPatterns();
 		for(Pattern& p:patterns){
 			if(p.asString()=="100010101"){
