@@ -96,7 +96,8 @@ public:
 	}
 	virtual void keyPressed(char key,int x,int y){
 		GameStandard::keyPressed(key,x,y);
-		lookAtAxis->setPos(getCamera()->getLookAtPos());
+		Camera &cam   =getCamera();
+		lookAtAxis->setPos(cam.getLookAtPos());
 	}
 	Mat stackH(Mat im1,Mat im2){
 		Mat im3;
@@ -105,10 +106,8 @@ public:
 	}
 	//TestImageFilters::init()
 	void init(){
-		Camera* pCam  =getCamera();
-		Stage*  pStage=getStage();
-		Camera &cam   =*pCam;
-		Stage  &stage =*pStage;
+		Camera &cam   =getCamera();
+		Stage  &stage =getStage();
 		cam.setPos(Vector3D(0,0,10));
 		Light* lightFront=new Light(Vector3D(150.0,150.0, 100.0));
 		stage.add(lightFront);

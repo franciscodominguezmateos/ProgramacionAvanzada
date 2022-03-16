@@ -67,7 +67,7 @@ CuboElastico *ce;
 CajaElastica* cje;
 CajaModeloElastico* cme;
 
-FondoTextura fondo,fondoTablero;
+BackgroundTexture fondo,fondoTablero;
 
 ProjectionPerspective proyeccion;
 vector<View> vistas={{0.0,0.0,0.5,1,&proyeccion},{0.5,0.0,0.5,1,&proyeccion}};//,{0.0,0.5,0.5,0.5},{0.5,0.5,0.5,0.5}};

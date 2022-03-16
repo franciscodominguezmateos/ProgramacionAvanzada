@@ -9,11 +9,11 @@
 #define FONDO_H_
 #include <GL/glut.h>
 #include "vector3d.h"
-class Fondo {
+class Background {
 	Vector3D col;
 public:
-	Fondo():col(0,0.5,1){}
-	virtual ~Fondo(){}
+	Background():col(0,0.5,1){}
+	virtual ~Background(){}
 	inline void setCol(Vector3D c){col=c;}
 	virtual void render(){
 	    //R E N D ER

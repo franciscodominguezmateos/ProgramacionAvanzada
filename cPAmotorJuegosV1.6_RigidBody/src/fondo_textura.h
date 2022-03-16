@@ -10,20 +10,20 @@
 #include "fondo.h"
 #include "rectangle.h"
 
-class FondoTextura: public Fondo {
-	Rectangle fondo;
+class BackgroundTexture: public Background {
+	Rectangle recBackground;
 public:
-	FondoTextura():FondoTextura(640,480){}
-	FondoTextura(unsigned int ancho,unsigned int alto):fondo(
+	BackgroundTexture():BackgroundTexture(640,480){}
+	BackgroundTexture(unsigned int ancho,unsigned int alto):recBackground(
 		Vector3D(  0,  0,0),
 		Vector3D(ancho,  0,0),
 		Vector3D(ancho,alto,0),
 		Vector3D(  0,alto,0)){}
-	virtual ~FondoTextura(){}
-	inline void setTextura(Texture t){fondo.setTextura(t);}
+	virtual ~BackgroundTexture(){}
+	inline void setTextura(Texture t){recBackground.setTextura(t);}
 	void render(){
-		int w=fondo.getTex().getImage().cols;
-		int h=fondo.getTex().getImage().rows;
+		int w=recBackground.getTex().getImage().cols;
+		int h=recBackground.getTex().getImage().rows;
 		//Projection matrix mode
 	    glMatrixMode(GL_PROJECTION);
 	    //save perspective projection
@@ -38,7 +38,7 @@ public:
 	    glPushMatrix();
 	     glLoadIdentity();
 	     glTranslatef(-w/2,-h/2,0);
-	     fondo.render();
+	     recBackground.render();
 	    glPopMatrix();
 	    glEnable(GL_LIGHTING);
 

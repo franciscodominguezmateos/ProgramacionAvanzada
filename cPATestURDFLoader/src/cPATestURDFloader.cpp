@@ -24,11 +24,9 @@ class TestURDFloader:public GameStandard{
 	Texture texGround;
 	Axis* ax;
 	Axis* lookAtAxis;
-    //GLSLShaderProgram shaderProgram;
-    //SolidVAO mvao;
 	LoaderURDF lurdf;
 public:
-	TestURDFloader(string title):GameStandard(title)/*,mvao(&shaderProgram)*/{}
+	TestURDFloader(string title):GameStandard(title),lurdf("pepper.urdf"){}
 	virtual void mouseMoved(int x, int y){
 		GameStandard::mouseMoved(x,y);
 	}
@@ -71,9 +69,13 @@ public:
 		r->setNV(1);
 	    //stage.add(r);
 
-    	lurdf.init(stage);
-    	addShader(&lurdf.shaderProgram);
-
+    	lurdf.init();
+    	lurdf.load();
+    	addShader(lurdf.getShaderProgramPtr());
+    	SolidURDFPtr s=lurdf.getSolidPtr();
+    	stage.add(s);
+    	map<string,double> state={/*{"LShoulder",-PI/2},*/{"RShoulder",-PI/2},{"LBicep",-PI/2}};
+    	s->setState(state);
 	}
 	void update(double dt){
 		if (waitKey(1) == 27) exit(0);

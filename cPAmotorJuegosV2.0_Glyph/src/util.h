@@ -149,8 +149,8 @@ inline vector<string> split_first(string s,char delimiter=' '){
 	   istringstream iss(s);
 	   getline(iss, token, delimiter);
 	   tokens.push_back(token);
-	   if(getline(iss, token,'\r'))
-		   tokens.push_back(token);
+	   getline(iss, token);
+	   tokens.push_back(token);
 	   return tokens;
 	}
 /* TRIMMING */

@@ -13,21 +13,15 @@ class Glyph{
 public:
 	QuadrilateralDetector quadDetector;
 	Mat img,gray;
-	vector<vector<Point> > contours;
-	vector<Point2f> approx;
+	//vector<vector<Point> > contours;
+	//vector<Point2f> approx;
 	//Mat drawing;// = Mat::zeros( edges.size(), CV_8UC3 );
 	Mat square;
 	PatternExtractorNxN extractor;
 	vector<Pattern> patterns;
 public:
-	Glyph(){}
-	Glyph(String s){}
-	Glyph(vector<char> v){}
-	Glyph(vector<bool> v){}
-	Glyph(Mat square){}
-	Glyph(Mat img,vector<Point2f> quad){}
+	Glyph(uint size=5):extractor(size){}
 	Mat &getImage(){return img;}
-
 	void drawQuadrilateral(Mat &drawing,Contour approx){
 	  	   cv::line(drawing,approx[0],approx[1],Scalar(255,0,0),2);
 	  	   cv::line(drawing,approx[1],approx[2],Scalar(255,255,0),2);

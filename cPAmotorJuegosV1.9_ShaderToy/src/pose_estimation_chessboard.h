@@ -5,7 +5,7 @@
  *      Author: Francisco Dominguez
  */
 #pragma once
-#include "pose_stimation.h"
+#include "pose_estimation.h"
 
 class PoseEstimationChessBoard: public PoseEstimation{
 	int rowCorners;
