@@ -13,9 +13,6 @@ class Glyph{
 public:
 	QuadrilateralDetector quadDetector;
 	Mat img,gray;
-	//vector<vector<Point> > contours;
-	//vector<Point2f> approx;
-	//Mat drawing;// = Mat::zeros( edges.size(), CV_8UC3 );
 	Mat square;
 	PatternExtractorNxN extractor;
 	vector<Pattern> patterns;
@@ -29,8 +26,8 @@ public:
 	  	   cv::line(drawing,approx[3],approx[0],Scalar(  0,0,255),2);
 	}
 	/**
-	 * Extract the black and white thresholded square image from img and a contour
-	 * use perspectiveTransform and wrapPerspective
+	 * Extract the black and white thresholded square image from img and a contour.
+	 * Use perspectiveTransform and wrapPerspective
 	 */
 	Mat &quadrilateralAsSquareImage(Mat &img,Contour approx,uint size=100){
 		float sz1=size-1;
@@ -50,7 +47,7 @@ public:
 		vector<Contour> quads=quadDetector.detect(img);
 		for(Contour c:quads){
 		  	   square=quadrilateralAsSquareImage(img,c);
-		       drawQuadrilateral(img,c);
+		       //drawQuadrilateral(img,c);
 		       try{
 			  	   Pattern pattern=extractor.getPattern(square);
 			  	   pattern.setImageCornerPoints(c);

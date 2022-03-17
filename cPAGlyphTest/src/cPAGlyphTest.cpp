@@ -13,6 +13,7 @@
 #include "rectangle.h"
 #include "sphere.h"
 #include "axis.h"
+#include "shader_toy.h"
 #include "background_texture.h"
 #include "image_undistor.h"
 
@@ -29,16 +30,6 @@ Mat KP=(Mat_<double>(3,3)<<953.0537522907438, 0, 384.4876556396484, 0, 953.05375
 //Mat dist=Mat::zeros(4,1,cv::DataType<double>::type); // Assuming no lens distortion
 Mat dist=(Mat_<double>(4,1)<<-0.4953024672257269, 0.3330644888148587, -0.004006958790423586, 0.008548218245607087); // Assuming no lens distortion
 
-
-template<class S=double>
-Mat buildMatFromNumberList(uint rows,uint cols,vector<S>& v){
-	Mat m=Mat::zeros(rows,cols,cv::DataType<S>::type);
-	for(uint r=0;r<rows;r++)
-		for(uint c=0;c<cols;c++){
-			m.at<S>(r,c)=v[r*cols+c];
-		}
-	return m;
-}
 class ROSCameraInfo{
 public:
 	uint image_width;
@@ -61,86 +52,101 @@ public:
 		vector<double> vd=split_numbers(numbers,',');
 		return vd;
 	}
+	int getInt(vector<string>& vs,string keyName){
+		string key,val;
+		for(uint i=0;i<vs.size();i++){
+			keyVal(key,val,vs[i]);
+			if(key==keyName)  return stoi(val);
+		}
+		throw runtime_error("Key name='"+keyName+"' not found in ROSCameraInfo.getInt");
+	}
+	string getString(vector<string>& vs,string keyName){
+		string key,val;
+		for(uint i=0;i<vs.size();i++){
+			keyVal(key,val,vs[i]);
+			if(key==keyName)  return val;
+		}
+		throw runtime_error("Key name='"+keyName+"' not found in ROSCameraInfo.getString");
+	}
+	Mat getMat(vector<string>& vs,string keyName,uint rows=3,uint cols=3){
+		string key,val;
+		for(uint i=0;i<vs.size();i++){
+			keyVal(key,val,vs[i]);
+			if(key==keyName){
+				i+=3;
+				vector<double> vd=buildNumberList(vs[i]);
+				Mat r=buildMatFromNumberList(rows,cols,vd);
+				return r;
+			}
+		}
+		throw runtime_error("Key name='"+keyName+"' not found in ROSCameraInfo.getMat");
+	}
 	void readYaml(string fileName){
 		ifstream file(fileName);
 		vector<string> vs;
 		file >> vs;
-		string key,val;
-		for(uint i=0;i<vs.size();){
-			keyVal(key,val,vs[i]);
-			if(key=="image_width")  image_width =stoi(val);
-			if(key=="image_height")	image_height=stoi(val);
-			if(key=="camera_name")	camera_name =     val;
-			if(key=="camera_matrix"){
-				i+=3;
-				vector<double> vd=buildNumberList(vs[i]);
-				camera_matrix=buildMatFromNumberList(3,3,vd);
-			}
-			if(key=="distortion_model") distortion_model=val;
-			if(key=="distortion_coefficients"){
-				i+=3;
-				vector<double> vd=buildNumberList(vs[i]);
-				distortion_coefficients=buildMatFromNumberList(1,5,vd);
-			}
-			if(key=="rectification_matrix"){
-				i+=3;
-				vector<double> vd=buildNumberList(vs[i]);
-				rectification_matrix=buildMatFromNumberList(3,3,vd);
-			}
-			if(key=="projection_matrix"){
-				i+=3;
-				vector<double> vd=buildNumberList(vs[i]);
-				projection_matrix=buildMatFromNumberList(3,4,vd);
-			}
-			i++;
-		}
+		image_width            =getInt   (vs,"image_width");
+		image_height           =getInt   (vs,"image_height");
+		camera_name            =getString(vs,"camera_name");
+		camera_matrix          =getMat   (vs,"camera_matrix");
+		distortion_model       =getString(vs,"distortion_model");
+		distortion_coefficients=getMat   (vs,"distortion_coefficients",1,5);
+		rectification_matrix   =getMat   (vs,"rectification_matrix");
+		projection_matrix      =getMat   (vs,"projection_matrix",3,4);
 	}
 };
-
 class GlyphTest:public GameAR{
 	VideoCapture cap;
 	Glyph g;
 	RectanglePtr pR;
 	SpherePtr pS;
 	Undistor* undist;
+	ShaderToy* st;
 public:
 	GlyphTest(string title,	Undistor* und):
-		GameAR(title,KP),cap(1),g(8),undist(und){
-		cap.set(CV_CAP_PROP_FRAME_WIDTH,1280>>0);
-		cap.set(CV_CAP_PROP_FRAME_HEIGHT,960>>0);
+		GameAR(title,KP),cap(0),g(5),undist(und){
+		cap.set(CV_CAP_PROP_FRAME_WIDTH,1280>>1);
+		cap.set(CV_CAP_PROP_FRAME_HEIGHT,960>>1);
 	}
 	void init(){
 		ROSCameraInfo cinfL;
-		//cinfL.readYaml("/home/francisco/.ros/camera_info/stereo/left.yaml");
+		cinfL.readYaml("/home/francisco/.ros/camera_info/stereo/left.yaml");
 		GameAR::init();
 		undist->init();
+
 		//Pose update speed
-		getCamera().setAlpha(0.25);
+		getCamera().setAlpha(0.2);
 		Stage&  stage =getStage();
 		Light* lightFront=new Light(Vector3D(0.0,0.0, 10.0));
 		stage.add(lightFront);
+
+		//It is going to be rendered in the rectangle pR
+		st=new ShaderToy();
+		st->init();
+		st->setFbo(new GLSLFBO(320*2,240*2));
+		//stage.add(st);
 
 		double aspectRatio=480.0/640.0;
 		double h=0.06*aspectRatio;
 		double w=0.06*1;
 
-		//pR=new Rectangle(Vector3D(-w,-h+h),Vector3D(w,-h+h),Vector3D(w,h+h),Vector3D(-w,h+h));
-		//pR->getTextura().init();
-		//stage.add(pR);
+		pR=new Rectangle(Vector3D(-w,-h+h),Vector3D(w,-h+h),Vector3D(w,h+h),Vector3D(-w,h+h));
+		pR->getTextura().init();
+		stage.add(pR);
 
 		stage.add(new Axis(0.06));
 		pS=new Sphere(0.02);
-		pS->setPos(Vector3D(0,0.02,0.4));
+		pS->setPos(Vector3D(0,0.02,0.14));
 		pS->setCol(Vector3D(0.9,0.9,0.1));
 		pS->hazFija();
 		stage.add(pS);
 	}
 	void update(double dt){
 		Mat img,uimg;
-		cap>>g.img;
-		//uimg=undist->process(img);
+		cap>>img;
+		uimg=undist->process(img);
 		//Convert to CV_8UC3
-		//uimg.convertTo(g.img,img.type(),255.0);
+		uimg.convertTo(g.img,img.type(),255.0);
 		vector<Pattern>& patterns=g.findPatterns();
 		for(Pattern& p:patterns){
 			if(p.asString()=="100010101"){
@@ -149,7 +155,12 @@ public:
 			}
 		}
 		setBackgroundImage(g.img);
-		//pR->getTextura().setImage(g.img);
+
+		//Render the ShaderToy st in the Rectangle pR
+		st->render();
+		Mat imgRect=st->getFbo()->toOpenCV();
+		pR->getTextura().setImage(imgRect);
+
 		if(waitKey(1)==27)
 			exit(0);
 	}

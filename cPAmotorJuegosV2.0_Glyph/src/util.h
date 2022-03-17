@@ -17,11 +17,14 @@
 
 using namespace std;
 
-//This is OpenCV specific it should be in other file? something like opencv_util.h?
+/**********************************************************************************************/
+/* OPENCV FUNCTIONS */
+/**********************************************************************************************/
+//These are OpenCV specific it should be in other file? something like opencv_util.h?
 #include "opencv2/opencv.hpp"
 using namespace cv;
 
-const double PI=3.14159265358979;
+const double PI=3.141592653589793;
 
 string cvtype2str(int type) {
  string r;
@@ -61,6 +64,30 @@ inline void printMat(Mat m,int precision=5){
 		}
 		cout<<endl;
 	}
+}
+inline Mat stackH(Mat& im1,Mat& im2){
+	Mat im3;
+	hconcat(im1,im2,im3);
+	return im3;
+}
+inline Mat stackV(Mat& im1,Mat& im2){
+	Mat im3=im1;//copy??
+	im3.push_back(im2);
+	return im3;
+}
+inline bool is2DpointInFrame(Mat& curFrame,Point2f& p){
+	return p.x>=0 && p.x<curFrame.cols-1 && p.y>=0 && p.y<curFrame.rows-1;
+}
+template<class S=double>
+Mat buildMatFromNumberList(uint rows,uint cols,vector<S>& v){
+	if(v.size()!=rows*cols)
+		throw runtime_error("List/vector size()="+to_string(v.size())+" not match matrix size="+to_string(rows)+"x"+to_string(cols)+"="+to_string(rows*cols)+" in buildMatFromNumberList");
+	Mat m=Mat::zeros(rows,cols,cv::DataType<S>::type);
+	for(uint r=0;r<rows;r++)
+		for(uint c=0;c<cols;c++){
+			m.at<S>(r,c)=v[r*cols+c];
+		}
+	return m;
 }
 /**********************************************************************************************/
 /* TIME FUNCTIONS */
@@ -212,6 +239,12 @@ void operator>>(stringstream &f,vector<string> &v){
 inline void operator>>(const string &s,vector<string> &lines){
 	stringstream sstr(s);
 	sstr>>lines;
+}
+vector<string> getLinesFromFileName(string fileName){
+	vector<string> lines;
+	ifstream file(fileName);
+	file >> lines;
+	return lines;
 }
 /* Contains an Replace strings*/
 inline bool contains(const string &doc,const string &word){return doc.find(word)!=string::npos;}
