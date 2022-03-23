@@ -20,7 +20,7 @@
  * a intrinsic matrix K from camera calibration
  * a image as background with setBackgroundImage()
  * a pose from the image with setPose()
- * Image must be distorted
+ * Image must be undistorted
  */
 class GameAR;
 using GameARPtr=GameAR*;
