@@ -36,6 +36,18 @@ public:
 		//imgRect.convertTo(ret,CV_32FC3);
 		return ret;
 	}
+	const Mat& getD() const {return d;}
+	void setD(const Mat &d) {this->d = d;}
+	const Mat& getK() const {return K;}
+	void setK(const Mat &k) {K = k;	}
+	const Mat& getP() const {return P;}
+	void setP(const Mat &p) {P = p;	}
+	const Mat& getR() const {return R;}
+	void setR(const Mat &r) {R = r;	}
+	uint getWidth() const {	return width;}
+	void setWidth(uint width) {	this->width = width;}
+	uint getHeight() const {return height;	}
+	void setHeight(uint height) {this->height = height;	}
 };
 
 

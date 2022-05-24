@@ -139,7 +139,7 @@ public:
 		Vector3Dx<S> dif=t-v;
 		return dif.length();
 	}
-	inline Vector3D project(Vector3Dx<S> v){
+	inline Vector3Dx<S> project(Vector3Dx<S> v){
 		//project v on *this
 		//It is suppose *this is unit length vector
 		Vector3Dx<S> &vn=*this;
@@ -152,6 +152,22 @@ public:
 		Vector3Dx<S> &v=*this;
 		S d=vn*v;
 		return Vector3Dx<S>(vn*d);
+	}
+	inline Vector3Dx<S> reject(Vector3Dx<S> v){
+		//rejection is normal to project v on *this
+		//It is suppose *this is unit length vector
+		Vector3Dx<S> &vt=*this;
+		Vector3Dx<S> vp=vt.project(v);
+		Vector3Dx<S> r=v-vp;
+		return r;
+	}
+	inline Vector3Dx<S> rejectOn(Vector3Dx<S> vt){
+		//rejection is normal to projec *this on vt
+		//It is suppose *this is unit length vector
+		Vector3Dx<S> &v=*this;
+		Vector3Dx<S> vp=vt.project(v);
+		Vector3Dx<S> r=v-vp;
+		return r;
 	}
 	// column vector
 	inline Mat asMat(){	return (Mat_<S>(3,1,CV_64F)<< x,y,z);}

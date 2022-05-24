@@ -12,6 +12,7 @@
 #include "shader.h"
 #include "texture.h"
 #include "solid.h"
+/*
 #define STRINGIFY(A) #A
 //STRINGIFY doesn't work with / operator division¿?¿?¿?
 const string hello=STRINGIFY(
@@ -23,7 +24,7 @@ void mainImage( out vec4 c, vec2 p ){
     for(int i=0;i<128;i++)o+=f(o)*d;
     c = vec4(abs(f(o-d)*vec3(0,1,2)+f(o-.6)*vec3(2,1,0))*(1.-.1*o.z),1.0);
 }
-);
+);*/
 // Created by inigo quilez - iq/2013 https://www.shadertoy.com/view/MsfGzM
 // License Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
 // Name: Two Tweets

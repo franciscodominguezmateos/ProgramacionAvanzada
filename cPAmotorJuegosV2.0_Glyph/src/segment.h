@@ -47,6 +47,11 @@ public:
 		}
 		return false;
 	}
+	inline Vector3D lerp(double t){
+		if(t<0 || t>1) throw runtime_error("Segment::ler() param must be from 0 to 1");
+		Vector3D r=p0*(1-t)+p1*t;
+		return r;
+	}
 	void render(){
 		Vector3D c=this->getCol();
 		glColor3f(c.getX(),c.getY(),c.getZ());

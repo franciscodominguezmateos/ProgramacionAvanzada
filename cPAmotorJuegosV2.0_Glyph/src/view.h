@@ -17,9 +17,9 @@ class View {
 	//actual values in windows
 	double px,py,width,height;
 	int windowWidth, windowHeight;
-	ProjectionPerspective *p;
+	ProjectionPtr p;
 public:
-	View(double x=0,double y=0,double w=1,double h=1,ProjectionPerspective* p=nullptr):
+	View(double x=0,double y=0,double w=1,double h=1,Projection* p=nullptr):
 		x(x),y(y),w(w),h(h),
 		px(0),py(0),width(w*640),height(h*480),
 		windowWidth(640),windowHeight(480),
@@ -29,8 +29,12 @@ public:
 		if(p==nullptr)
 			this->p=new ProjectionPerspective(60);
 	}
-	inline void setProyeccion(ProjectionPerspective *py){p=py;}
-	inline ProjectionPerspective* getProjection(){return p;}
+	inline void setProjection(ProjectionPerspective *py){
+		//View is the owner of Projection
+		if(p!=nullptr) delete p;
+		p=py;
+	}
+	inline ProjectionPtr getProjection(){return p;}
 	inline void reshape(int pwindowWidth,int pwindowHeight){
 		windowWidth =pwindowWidth;
 		windowHeight=pwindowHeight;

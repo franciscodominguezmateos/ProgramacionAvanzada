@@ -28,8 +28,8 @@ class GameAR: public Game,public SensorObserverStandard {
 	CameraARPtr ca;
 	BackgroundTexturePtr pBgt;
 public:
-	GameAR(string title,Mat K,CameraARPtr camera=new CameraAR()):Game(title),ca(camera){
-		addScene(new View(0,0,1,1,new ProjectionCamera(K)),ca,new Stage());
+	GameAR(string title,CameraARPtr camera=new CameraAR()):Game(title),ca(camera){
+		addScene(new View(),ca,new Stage());
 		Scene&  scene =getScene();
 		pBgt=new BackgroundTexture();
 		scene.setBackgroundPtr(pBgt);
